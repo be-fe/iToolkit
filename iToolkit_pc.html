@@ -1,0 +1,63 @@
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- IE兼容  -->
+        <!--[if lt IE 9]>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.5/es5-shim.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+            <script>html5.addElements('test')</script>
+        <![endif]-->
+
+        <!-- 基础库  -->
+        <!--<script src="venders/riot.js"></script>-->
+        <!--<script src="venders/superagent.js"></script>-->
+        <script src="src/lib/riot.js"></script>
+        <!-- 组件  -->
+        <script src="src/iToolkit_pc.js"></script>
+    </head>
+    <body>
+        <tab></tab>
+
+        <paginate></paginate>
+        <table-view></table-view>
+
+        <script>
+            var tabOpts = {
+                data: [
+                   { title: 'tab1', content: '1111'},
+                   { title: 'tab2', content: '2222'},
+                   { title: 'tab3', content: '3333'}
+                ]
+            }
+            riot.mount('tab', { opts: tabOpts});
+
+            var pageOpts = {
+                count: 50,
+                pagesize: 10,
+                showNumber: 5
+            }
+            riot.mount('paginate', { opts: pageOpts});
+
+            var tableOpts = [
+                {
+                    count: 50,
+                    pagesize: 10,
+                    showNumber: 5
+                },
+                {
+                    count: 50,
+                    pagesize: 10,
+                    showNumber: 5
+                },
+                {
+                    count: 50,
+                    pagesize: 10,
+                    showNumber: 5
+                },
+            ]
+            riot.mount('table-view', { opts: tableOpts});
+
+        </script>
+    </body>
+</html>

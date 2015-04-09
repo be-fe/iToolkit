@@ -1,0 +1,9 @@
+.inline-form > * {
+    vertical-align: center;
+    margin-bottom: 0;
+    display: inline-block;
+}
+
+.clearfix {
+    clear: both;
+}

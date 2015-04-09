@@ -1,0 +1,21 @@
+{
+  "name": "iToolkit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "connect": "^3.3.4",
+    "gulp": "x",
+    "gulp-concat": "x",
+    "gulp-connect": "^2.2.0",
+    "gulp-riot": "x",
+    "http-proxy": "^1.8.1",
+    "proxy-middleware": "^0.11.0",
+    "url": "^0.10.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "xieyu33333",
+  "license": "ISC"
+}

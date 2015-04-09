@@ -12,3 +12,4 @@ Makefile.in
 /install-sh
 /missing
 /stamp-h1
+/build
