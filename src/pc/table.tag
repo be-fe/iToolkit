@@ -13,5 +13,5 @@
     </table>
 
     var self = this;
-    self.data = self.opts.opts;
+    self.data = self.opts.data;
 </table-view>

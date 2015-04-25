@@ -1,28 +1,4 @@
 <paginate>
-    <style>
-        .paginate {
-            display: inline-block;
-            padding: 0;
-        }
-        .paginate li {
-            cursor: pointer;
-            display: inline-block;
-            position: relative;
-            padding: 6px 12px;
-            margin-left: -1px;
-            line-height: 1.42857143;
-            color: #337ab7;
-            text-decoration: none;
-            background-color: #fff;
-            border: 1px solid #ddd;
-        }
-
-        .paginate li.active {
-            color: #23527c;
-            background-color: #eee;
-            border-color: #ddd;
-        }
-    </style>
     <div class="paginate" if={ currentPage != 1 }>
         <li>首页</li>
         <li>上一页</li>
@@ -36,28 +12,29 @@
     </div>
     
     var self = this;
-    if (self.opts.opts) {
-        self.count = self.opts.opts.count || 0;
-        self.pagesize = self.opts.opts.pagesize || 20;
-        self.pageCount = self.opts.opts.pageCount || Math.ceil(self.count/self.pagesize) || 1;
-        self.currentPage = self.opts.opts.currentPage || 1;
-        self.url = self.opts.opts.url || '';
-        self.showNumber = self.opts.opts.showNumber || 5;
+    var config = self.opts.opts || self.opts;
+    
+    self.count = config.count || 0;
+    self.pagesize = config.pagesize || 20;
+    self.pageCount = config.pageCount || Math.ceil(self.count/self.pagesize) || 1;
+    self.currentPage = config.currentPage || 1;
+    self.url = config.url || '';
+    self.showNumber = config.showNumber || 5;
+    config.callback(self.currentPage);
 
-        self.pages = [];
-        if (self.pageCount < 8) {
-            for (i = 0; i < self.pageCount; i++) {
-                self.pages.push({page: i + 1});
-            }
-        } 
-        else {
-            for (i = 0; i < 7; i++) {
-                self.pages.push({page: i + 1});
-            }
-            self.pages.push({page: '...'});
+    self.pages = [];
+    if (self.pageCount < 8) {
+        for (i = 0; i < self.pageCount; i++) {
+            self.pages.push({page: i + 1});
         }
-        self.update();
+    } 
+    else {
+        for (i = 0; i < 7; i++) {
+            self.pages.push({page: i + 1});
+        }
+        self.pages.push({page: '...'});
     }
+    self.update();
     
     
     changePage(e) {
@@ -74,6 +51,7 @@
                 self.update();
             }
         }
+        config.callback(self.currentPage);
     }
 
 </paginate>

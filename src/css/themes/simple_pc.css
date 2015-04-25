@@ -1,0 +1,110 @@
+/* 
+ *  Tab style
+ */
+tab ul {
+    border-bottom: 1px solid #e5e5e5;
+    padding: 0;
+    margin: 0;
+}
+
+tab li {
+    list-style: none; 
+    display: inline-block;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+tab li.active {
+    background: #e5e5e5;
+    border: 1px solid #333;
+    border-bottom: none;
+}
+
+tab .tab-content {
+    width: 100%;
+    padding: 5px;
+}
+
+/* 
+ *  Paginate style
+ */
+.paginate {
+    display: inline-block;
+    padding: 0;
+}
+.paginate li {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    padding: 6px 12px;
+    margin-left: -1px;
+    line-height: 1.42857143;
+    color: #337ab7;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.paginate li.active {
+    color: #23527c;
+    background-color: #eee;
+    border-color: #ddd;
+}
+
+/* 
+ *  Modal style
+ */
+modal {
+    display: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 1;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+    outline: 0;
+}
+
+.modal-dialog {
+    width: 650px;
+    margin: 50px auto;
+    background: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 6px;
+    outline: 0;
+}
+
+.modal-title {
+    width: 100%;
+    position: relative;
+    height: 43px;
+    line-height: 43px;
+    font-size: 16px;
+    font-weight: bolder;
+    color: #333;
+    border-radius: 6px 6px 0 0;
+    background: #f0f1f6;
+}
+
+.modal-title > span {
+    padding-left: 16px;
+}
+
+.modal-title .modal-close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 25px;
+    height: 25px;
+    margin: 10px 10px 0 0;
+    background: url(../imgs/icons.png) no-repeat;
+    background-position: -27px -123px;
+    cursor: pointer;
+}

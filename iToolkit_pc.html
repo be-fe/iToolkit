@@ -2,27 +2,157 @@
     <head>
         <meta charset='utf-8'>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="src/css/common.css">
+        <link rel="stylesheet" href="src/css/themes/simple_pc.css">
+        
         <!-- IE兼容  -->
         <!--[if lt IE 9]>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.5/es5-shim.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
             <script>html5.addElements('test')</script>
         <![endif]-->
-
-        <!-- 基础库  -->
-        <!--<script src="venders/riot.js"></script>-->
-        <!--<script src="venders/superagent.js"></script>-->
         <script src="src/lib/riot.js"></script>
-        <!-- 组件  -->
         <script src="src/iToolkit_pc.js"></script>
+        <style>
+            #fixed-list {
+                width: 350px;
+                position: fixed;
+            }
+        </style>
     </head>
     <body>
-        <tab></tab>
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="#">iToolkit-PC</a>
+            </div>
+          </div>
+        </nav>
+        <div class="container">
+            <div class="col-xs-4">
+                <div class="list-group" id="fixed-list">
+                    <a href="#tree" class="list-group-item">Tree</a>
+                    <a href="#tab" class="list-group-item">Tab</a>
+                    <a href="#paginate" class="list-group-item">Paginate</a>
+                    <a href="#table" class="list-group-item">Table</a>
+                    <a href="#modal" class="list-group-item">Modal</a>
+                </div>
+            </div>
+            <div class="col-xs-8">
+                <section id='tree'>
+                    <h2>Tree</h2>
+                    <tree></tree>
+                </section>
 
-        <paginate></paginate>
-        <table-view></table-view>
 
+                <section id="tab">
+                    <h2>Tab</h2>
+                    <tab></tab>
+                    <h5>HTML:</h5>
+                    <pre>
+    <tab></tab>
+                    </pre>
+                    <h5>JavaScript:</h5>
+                    <pre>
+    var tabOpts = {
+        data: [
+           { title: 'tab1', content: '1111'},
+           { title: 'tab2', content: '2222'},
+           { title: 'tab3', content: '3333'}
+        ]
+    }
+    riot.mount('tab', tabOpts);
+                    </pre>
+                </section>
+                
+                <section id="paginate">
+                    <h2>Paginate</h2>
+                    <paginate></paginate>
+                    <p>The page number is <b id="page-number"></b></p>
+                    <h5>HTML:</h5>
+                    <pre>
+    <paginate></paginate>
+                    </pre>
+                    <h5>JavaScript:</h5>
+                    <pre>
+    var pageOpts = {
+        count: 50,
+        pagesize: 10,
+        showNumber: 5,
+        callback: function(index) {
+            document.getElementById('page-number').innerHTML = index;
+        }
+    }
+    riot.mount('paginate', pageOpts);
+                    </pre>
+                </section>
+
+                <section id="table">
+                    <h2>Table</h2>
+                    <table-view></table-view>
+                </section>
+
+
+                <section id="modal">
+                    <h2>Modal</h2>
+                    <button modal-open-target='modal-demo' class="btn btn-default">打开模态框</button>
+                    <modal id="modal-demo">
+                        <h1>welcome!</h1>
+                        <p>welcome, king under the montain!</p>
+                    </modal>
+                    <h5>HTML:</h5>
+                    <pre>
+    <button modal-open-target='modal-demo'>打开模态框</button>
+    <modal id="modal-demo">
+        <h1>welcome!</h1>
+        <p>welcome, king under the montain!</p>
+        ......
+    </modal>
+                    </pre>
+                    <h5>JavaScript:</h5>
+                    <pre>
+    var modalOpts = {
+        height: 300,
+        width: 300,
+        title: '模态框demo'
+    }
+    riot.mount('modal', modalOpts);
+                    </pre>
+                </section>
+            </div>
+        </div>
+
+
+
+        <!-- JavaScript-->
         <script>
+            window.onscroll = function() {
+                var ele = document.getElementById('fixed-list');
+                if (document.body.scrollTop > 60) {
+                    ele.style.top = '10px';
+                }
+                else {
+                    ele.style.top = '70px';
+                }
+            }
+            
+            String.prototype.escapeHTML = function () {                                        
+              return(                                                                 
+                this.replace(/>/g,'&gt;').
+                     replace(/</g,'&lt;').
+                     replace(/"/g,'&quot;')
+              );
+            };
+            var codeEles = document.getElementsByTagName('pre');
+            if (codeEles) {
+                for (i = 0; i < codeEles.length; i++) {
+                    codeEles[i].innerHTML = codeEles[i].innerHTML.escapeHTML();
+                }
+            }
+            /*
+             *  tab切换
+             */
             var tabOpts = {
                 data: [
                    { title: 'tab1', content: '1111'},
@@ -30,16 +160,26 @@
                    { title: 'tab3', content: '3333'}
                 ]
             }
-            riot.mount('tab', { opts: tabOpts});
+            riot.mount('tab', tabOpts);
 
+            /*
+             *  分页
+             */
             var pageOpts = {
                 count: 50,
                 pagesize: 10,
-                showNumber: 5
+                showNumber: 5,
+                callback: function(index) {
+                    document.getElementById('page-number').innerHTML = index;
+                }
             }
-            riot.mount('paginate', { opts: pageOpts});
+            riot.mount('paginate', pageOpts);
 
-            var tableOpts = [
+            /*
+             *  表格
+             */
+            var tableOpts = {
+                data: [
                 {
                     count: 50,
                     pagesize: 10,
@@ -54,9 +194,47 @@
                     count: 50,
                     pagesize: 10,
                     showNumber: 5
+                }
+                ],
+
+                col_map: {
+                    count: '总数量',
+                    pagesize: '页面item数量',
+                    showNumber: '展示数量'
                 },
-            ]
-            riot.mount('table-view', { opts: tableOpts});
+
+                config: {
+                    fixTh: true,
+                    cutString: true
+                }
+             }
+            riot.mount('table-view', tableOpts);
+
+            /*
+             *  模态弹出框
+             */
+            var modalOpts = {
+                height: 300,
+                width: 300,
+                title: '模态框demo'
+            }
+            riot.mount('modal', modalOpts);
+
+            /*
+             *  树结构
+             */
+            var treeOpts = {
+                data: [
+                    {id: 1, pid: null, title: 'root'},
+                    {id: 2, pid: 1, title: 'item1'},
+                    {id: 3, pid: 1, title: 'item2'},
+                    {id: 4, pid: 2, title: 'item3'},
+                    {id: 5, pid: 1, title: 'item4'},
+                    {id: 6, pid: 3, title: 'item5'},
+                    {id: 7, pid: 2, title: 'item6'},
+                ]
+            }
+            riot.mount('tree', treeOpts);
 
         </script>
     </body>
