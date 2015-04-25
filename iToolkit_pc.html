@@ -37,6 +37,7 @@
                     <a href="#paginate" class="list-group-item">Paginate</a>
                     <a href="#table" class="list-group-item">Table</a>
                     <a href="#modal" class="list-group-item">Modal</a>
+                    <a href="#ajax-form" class="list-group-item">Ajax-Form</a>
                 </div>
             </div>
             <div class="col-xs-8">
@@ -120,12 +121,41 @@
     riot.mount('modal', modalOpts);
                     </pre>
                 </section>
+
+                <section id="ajax-form">
+                    <h2>Ajax-Form</h2>
+                    <ajax-form action="/test">
+                        <input name="t1" value="t1">
+                        <input name="t2" value="t2">
+                        <input type="submit" value="提交">
+                    </ajax-form>
+                    <h5>HTML</h5>
+                    <pre>
+    <ajax-form action="/test">
+        <input name="t1" value="t1">
+        <input name="t2" value="t2">
+        <input type="submit" value="提交">
+    </ajax-form>
+                    </pre>
+                    <h5>JavaScript</h5>
+                    <pre>
+    var formOpts = {
+        callback: function() {
+            alert('success');
+        },
+        errCallback: function(params) {
+            alert("error, params:" + params);
+        }
+    }
+    riot.mount('ajax-form', formOpts);
+                    </pre>
+                </section>
             </div>
         </div>
 
 
 
-        <!-- JavaScript-->
+<!-- JavaScript-->
         <script>
             window.onscroll = function() {
                 var ele = document.getElementById('fixed-list');
@@ -235,6 +265,19 @@
                 ]
             }
             riot.mount('tree', treeOpts);
+
+            /*
+             *  Ajax form 提交
+             */
+            var formOpts = {
+                callback: function() {
+                    alert('success');
+                },
+                errCallback: function(params) {
+                    alert("error, params:" + params);
+                }
+            }
+            riot.mount('ajax-form', formOpts);
 
         </script>
     </body>
