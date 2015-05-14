@@ -211,7 +211,7 @@ riot.tag('table-view', '<table> <tr> <th>测试一</th> <th>测试二</th> <th>�
     self.data = self.opts.data;
 
 });
-riot.tag('tree', '<div class="tree-item-wrap" each="{ data }"> <i class="{ tree-item-arrow: true, open: opened, empty: !children }" onclick="{ parent.toggle }"></i> <i class="tree-item-icon"></i> <div onclick="{ parent.leftClick }" class="{ tree-item-name : true }" title="{ title }">{ title }</div>  <ul class="tree-child-wrap" if="{ children }"> <tree data="{ children }" if="{ children }"></tree> </ul> </div>', function(opts) {
+riot.tag('tree', '<div class="tree-item-wrap" each="{ data }"> <i class="{ tree-item-arrow: true, open: opened, empty: !children }" onclick="{ parent.toggle }"></i> <i class="tree-item-icon"></i> <div onclick="{ parent.leftClick }" class="{ tree-item-name : true }" title="{ name }">{ name }</div>  <ul class="tree-child-wrap" if="{ children }"> <tree data="{ children }" if="{ children }"></tree> </ul> </div>', function(opts) {
 
     var self = this;
     self.config = self.opts.opts || self.opts;
@@ -224,6 +224,9 @@ riot.tag('tree', '<div class="tree-item-wrap" each="{ data }"> <i class="{ tree-
 
         var dataMap = {};
         data.forEach(function(node) {
+            if (self.config.name) {
+                node.name = node[self.config.name];
+            }
             dataMap[node[id]] = node;
         });
 
