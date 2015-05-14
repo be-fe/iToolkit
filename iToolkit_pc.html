@@ -19,6 +19,13 @@
                 width: 350px;
                 position: fixed;
             }
+
+            #tree-wrap {
+                height: 220px;
+                width: 200px;
+                border: 1px solid #e5e5e5;
+                padding-top: 10px;
+            }
         </style>
     </head>
     <body>
@@ -32,23 +39,57 @@
         <div class="container">
             <div class="col-xs-4">
                 <div class="list-group" id="fixed-list">
-                    <a href="#tree" class="list-group-item">Tree</a>
-                    <a href="#tab" class="list-group-item">Tab</a>
-                    <a href="#paginate" class="list-group-item">Paginate</a>
-                    <a href="#table" class="list-group-item">Table</a>
-                    <a href="#modal" class="list-group-item">Modal</a>
-                    <a href="#ajax-form" class="list-group-item">Ajax-Form</a>
+                    <h4>通用组件</h4>
+                    <a href="#tree" class="list-group-item">Tree (可用)</a>
+                    <a href="#tab" class="list-group-item">Tab (可用)</a>
+                    <a href="#paginate" class="list-group-item">Paginate (可用)</a>
+                    <a href="#table" class="list-group-item">Table (规划中)</a>
+                    <a href="#modal" class="list-group-item">Modal (可用)</a>
+                    <a href="#ajax-form" class="list-group-item">Ajax-Form (可用)</a>
+                    <a class="list-group-item">Ajax-File-upload (规划中)</a>
+                    <h4>样式组件</h4>
+                    <a class="list-group-item">Nav-Bar (规划中)</a>
+                    <a class="list-group-item">Foot-Bar (规划中)</a>
+                    <a class="list-group-item">Side-list (规划中)</a>
                 </div>
             </div>
             <div class="col-xs-8">
                 <section id='tree'>
-                    <h2>Tree</h2>
-                    <tree></tree>
+                    <h2>Tree</h2><hr>
+                    <div id="tree-wrap">
+                        <tree></tree>
+                    </div>
+
+                    <h5>HTML:</h5>
+                    <pre>
+<tree></tree>
+                    </pre>
+
+                    <h5>JavaScript</h5>
+                    <pre>
+var treeOpts = {
+    data: [
+        {id: 1, pid: null, title: 'root'},
+        {id: 2, pid: 1, title: 'item1'},
+        {id: 3, pid: 1, title: 'item2'},
+        {id: 4, pid: 2, title: 'item3'},
+        {id: 5, pid: 1, title: 'item4'},
+        {id: 6, pid: 3, title: 'item5'},
+        {id: 7, pid: 2, title: 'item6'},
+    ],
+    root: true,
+    handleData: true,
+    onLeftClick: function(item, target) {
+        alert(item.id);
+    }
+}
+riot.mount('tree', treeOpts);
+                    </pre>
                 </section>
 
 
                 <section id="tab">
-                    <h2>Tab</h2>
+                    <h2>Tab</h2><hr>
                     <tab></tab>
                     <h5>HTML:</h5>
                     <pre>
@@ -68,7 +109,7 @@
                 </section>
                 
                 <section id="paginate">
-                    <h2>Paginate</h2>
+                    <h2>Paginate</h2><hr>
                     <paginate></paginate>
                     <p>The page number is <b id="page-number"></b></p>
                     <h5>HTML:</h5>
@@ -90,7 +131,7 @@
                 </section>
 
                 <section id="table">
-                    <h2>Table</h2>
+                    <h2>Table</h2><hr>
                     <table-view></table-view>
                 </section>
 
@@ -123,7 +164,7 @@
                 </section>
 
                 <section id="ajax-form">
-                    <h2>Ajax-Form</h2>
+                    <h2>Ajax-Form</h2><hr>
                     <ajax-form action="/test">
                         <input name="t1" value="t1">
                         <input name="t2" value="t2">
@@ -196,7 +237,7 @@
              *  分页
              */
             var pageOpts = {
-                count: 50,
+                count: 120,
                 pagesize: 10,
                 showNumber: 5,
                 callback: function(index) {
@@ -262,7 +303,12 @@
                     {id: 5, pid: 1, title: 'item4'},
                     {id: 6, pid: 3, title: 'item5'},
                     {id: 7, pid: 2, title: 'item6'},
-                ]
+                ],
+                root: true,
+                handleData: true,
+                onLeftClick: function(item, target) {
+                    alert('This item\'s id is: ' + item.id);
+                }
             }
             riot.mount('tree', treeOpts);
 

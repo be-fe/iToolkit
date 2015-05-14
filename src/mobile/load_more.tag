@@ -1,5 +1,11 @@
-
-riot.tag('load-more', '<div id="loading" show="{ loading }"> <img src="imgs/loading.gif" if="{ !over }"> <span>{ loadingText }</span> </div>', function(opts) {
+<load-more>
+    <style>
+        
+    </style>
+    <div id="loading" show={ loading }>
+        <img src="imgs/loading.gif" if={ !over }>
+        <span>{ loadingText }</span>
+    </div>
 
     var self = this
 
@@ -18,6 +24,4 @@ riot.tag('load-more', '<div id="loading" show="{ loading }"> <img src="imgs/load
     setTimeout(function() {
         window.addEventListener('scroll', self.scrollDown, false);
     }, 50);
-
-});
-
+</load-more>

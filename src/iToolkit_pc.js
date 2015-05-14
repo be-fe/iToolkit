@@ -54,7 +54,12 @@ riot.tag('ajax-form', '<form onsubmit="{ submit }"> <yield> </form>', function(o
 riot.tag('dropdown', '', function(opts) {
 
 });
-riot.tag('modal', '<div class="modal-dialog" riot-style="width:{width}px; height:{height}px"> <div class="modal-title"> <span>{ title }</span> <div class="modal-close" onclick="{ close }">X</div> </div> <div class="modal-content"> <yield> </div> </div>', function(opts) {
+riot.tag('file-upload', '', function(opts) {
+
+
+
+});
+riot.tag('modal', '<div class="modal-dialog" riot-style="width:{width}px; height:{height}px"> <div class="modal-title"> <span>{ title }</span> <div class="modal-close" onclick="{ close }"></div> </div> <div class="modal-content"> <yield> </div> </div>', function(opts) {
 
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -73,7 +78,7 @@ riot.tag('modal', '<div class="modal-dialog" riot-style="width:{width}px; height
 
 
 });
-riot.tag('paginate', '<div class="paginate" if="{ currentPage != 1 }"> <li>首页</li> <li>上一页</li> </div> <ul class="paginate" if="{ pageCount > 1 }"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate" if="{ currentPage != pageCount }"> <li>下一页</li> <li>末页</li> </div>', function(opts) {
+riot.tag('paginate', '<div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate" if="{ pageCount > 1 }"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div>', function(opts) {
     
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -99,24 +104,75 @@ riot.tag('paginate', '<div class="paginate" if="{ currentPage != 1 }"> <li>首�
         self.pages.push({page: '...'});
     }
     self.update();
+
+    this.goFirst = function(e) {
+        config.callback(1);
+        self.currentPage = 1;
+        self.pageChange(self.currentPage);
+    }.bind(this);
+
+    this.goPrev = function(e) {
+        if (self.currentPage > 1) {
+            config.callback(self.currentPage - 1);
+            self.currentPage = self.currentPage - 1;
+            self.pageChange(self.currentPage);
+        }
+    }.bind(this);
+
+    this.goNext = function(e) {
+        if (self.currentPage < self.pageCount) {
+            config.callback(self.currentPage + 1);
+            self.currentPage = self.currentPage + 1;
+            self.pageChange(self.currentPage);
+        }
+    }.bind(this);
     
-    
+    this.goLast = function(e) {
+        config.callback(self.pageCount);
+        self.currentPage = self.pageCount;
+        self.pageChange(self.currentPage);
+    }.bind(this);
+
+    self.pageChange = function(page) {
+        if (self.currentPage != page) {
+            self.currentPage = page;
+            config.callback(page);
+        }
+        if (self.currentPage > 4 && self.pageCount > 7) {
+            self.pages = [];
+            if (self.pageCount - self.currentPage > 2) {
+                var origin = self.currentPage - 4;
+                var last = self.currentPage + 3;
+            }
+            else {
+                var last = self.pageCount;
+                var origin = self.pageCount - 7;
+            }
+            for (i = origin; i < last; i++) {
+                self.pages.push({page: i + 1});
+                self.update();
+            }
+            
+        }
+        else if (self.currentPage < 5 && self.pageCount > 7){
+            self.pages = [];
+            for (i = 0; i < 7; i++) {
+                self.pages.push({page: i + 1});
+            }
+            self.pages.push({page: '...'});
+        }
+    }
+
     this.changePage = function(e) {
         var page = e.item.page
         if (typeof(page) === 'string') {
             return false;
         }
-        if (self.currentPage != e.item.page) {
-            self.currentPage = e.item.page;
+        else {
+            self.pageChange(page);
         }
-        if (self.currentPage > 4 && self.pageCount > 7) {
-            for (i = (self.currentPage - 3); i < (self.currentPage + 3); i++) {
-                self.pages.push({page: i + 1});
-                self.update();
-            }
-        }
-        config.callback(self.currentPage);
     }.bind(this);
+
 
 
 });
@@ -155,11 +211,71 @@ riot.tag('table-view', '<table> <tr> <th>测试一</th> <th>测试二</th> <th>�
     self.data = self.opts.data;
 
 });
-riot.tag('tree', '<div class="tree-item-wrap" each="{ data }"> <i class="{ tree-item-arrow: true, open: opened, empty: !children }" onclick="{ parent.toggle }"></i> <i class="tree-item-icon"></i> <div onclick="{ parent.changeUser }" onmousedown="{ parent.rightClick }" oncontextmenu="{ parent.nomenu }" class="{ tree-item-name : true, active: deptId == parent.rootParent.currentId }" title="{ name }">{ name }</div> <div class="{ tree-item-back : true, active: deptId == parent.rootParent.currentId }" onclick="{ parent.changeUser }" onmousedown="{ parent.rightClick }" oncontextmenu="{ parent.nomenu }"></div> <ul class="tree-child-wrap" if="{ children }"> <treeview data="{ children }" if="{ children }"></treeview> </ul> </div>', function(opts) {
+riot.tag('tree', '<div class="tree-item-wrap" each="{ data }"> <i class="{ tree-item-arrow: true, open: opened, empty: !children }" onclick="{ parent.toggle }"></i> <i class="tree-item-icon"></i> <div onclick="{ parent.leftClick }" class="{ tree-item-name : true }" title="{ title }">{ title }</div>  <ul class="tree-child-wrap" if="{ children }"> <tree data="{ children }" if="{ children }"></tree> </ul> </div>', function(opts) {
 
     var self = this;
-    var config = self.opts.opts || self.opts;
-    self.data = config.data;
+    self.config = self.opts.opts || self.opts;
 
+    
+    self.dataHandle = function(data, idName, pidName) {
+        var data = data || []
+        var id = idName || 'id';
+        var pid = pidName || 'pid';
+
+        var dataMap = {};
+        data.forEach(function(node) {
+            dataMap[node[id]] = node;
+        });
+
+        var tree = [];
+        data.forEach(function(node) {
+            var parent = dataMap[node[pid]];
+            if (parent) {
+                if (!parent.children) {
+                    parent.children = [];
+                }
+                parent.children.push(node);
+            }
+            else {
+                tree.push(node);
+            }
+        });
+
+        return tree;
+    };
+    
+    
+    if (self.config.handleData) {
+        self.data = self.dataHandle(self.config.data);
+    }
+    else {
+        self.data = self.config.data;
+    }
+    
+    
+    if (self.config.root) {
+        self.rootConfig = self.config;
+    }
+    else {
+        self.rootConfig = self.parent.rootConfig || self.parent.parent.rootConfig;
+    }
+    
+    
+    this.leftClick = function(e) {
+        var leftClick = self.rootConfig.onLeftClick;
+        if (leftClick) {
+            leftClick(e.item, e.target);
+        }
+    }.bind(this);
+    
+    
+    this.toggle = function(e) {
+        if (e.item.opened === true) {
+            e.item.opened = false;
+        }
+        else {
+            e.item.opened = true;
+        }
+    }.bind(this);
 
 });

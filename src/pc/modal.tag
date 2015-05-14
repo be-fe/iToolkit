@@ -2,7 +2,7 @@
     <div class="modal-dialog" style='width:{width}px; height:{height}px'>
         <div class="modal-title">
             <span>{ title }</span>
-            <div class="modal-close" onclick={ close }>X</div>
+            <div class="modal-close" onclick={ close }></div>
         </div>
         <div class="modal-content">
            <yield>
