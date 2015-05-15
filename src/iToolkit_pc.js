@@ -176,6 +176,11 @@ riot.tag('paginate', '<div class="paginate"> <li onclick="{ goFirst }">«</li> <
 
 
 });
+riot.tag('select-box', '', function(opts) {
+
+
+
+});
 riot.tag('side-list', '<ul > <li each="{ data }"> <img riot-src="{ logoUrl }" if="{ isLogo }"> <span>{ name }</span> </li> </ul>', function(opts) {
 
 });
