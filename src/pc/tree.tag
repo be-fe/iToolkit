@@ -2,7 +2,7 @@
     <div class="tree-item-wrap" each={ data }>
         <i class={ tree-item-arrow: true, open: opened, empty: !children } onclick={ parent.toggle }></i>
         <i class="tree-item-icon"></i>
-        <div onclick={ parent.leftClick } class={ tree-item-name : true } title={ title }>{ title }</div>
+        <div onclick={ parent.leftClick } class={ tree-item-name : true } title={ name }>{ name }</div>
         <!--<div class={ tree-item-back : true, active: deptId == parent.rootParent.currentId }></div>-->
         <ul class="tree-child-wrap" if={ children }>
             <tree data={ children } if={ children }></tree>
@@ -22,6 +22,9 @@
 
         var dataMap = {};
         data.forEach(function(node) {
+            if (self.config.name) {
+                node.name = node[self.config.name];
+            }
             dataMap[node[id]] = node;
         });
 
