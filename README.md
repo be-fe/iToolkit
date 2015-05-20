@@ -17,7 +17,10 @@ iToolkit是一系列常用控件的集合，基于Riot进行构建，iToolkit拥
 ###PC端组件
 - Tree: 支持一维数组和树两种数据结构
 - Tab
+- Table: 支持定义字段、排序、表头、列宽
 - Paginate: ajax前端分页
 - Modal: 可以定制尺寸和title文字
 - Ajax-form: 使用方法和原生form完全一致
 
+###文档与Demo
+[http://be-fe.github.io/iToolkit/iToolkit_pc.html](http://be-fe.github.io/iToolkit/iToolkit_pc.html)
