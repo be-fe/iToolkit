@@ -51,6 +51,13 @@ riot.tag('ajax-form', '<form onsubmit="{ submit }"> <yield> </form>', function(o
 
 
 });
+riot.tag('rcol', '<yield>', function(opts) {
+    var self = this; 
+    this.on('mount', function(){ 
+        self.root.style.display='none'; 
+    });
+
+});
 riot.tag('dropdown', '', function(opts) {
 
 });
@@ -210,10 +217,82 @@ riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ a
     }.bind(this);
 
 });
-riot.tag('table-view', '<table> <tr> <th>测试一</th> <th>测试二</th> <th>测试三</th> </tr> <tr each="{ data }"> <td>{ count }</td> <td>{ pagesize }</td> <td>{ showNumber }</td> </tr> </table>', function(opts) {
+riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr> <th each="{ cols }">{ alias || name }</th> </tr> <tr each="{ row in rows }" > <td each="{ colkey, colval in parent.cols }"> { parent.parent.drawcell( parent.row, this, colkey) } </td> </tr> </table>', function(opts) {
 
     var self = this;
-    self.data = self.opts.data;
+    var EL = self.root;
+    self.config = self.opts.opts || self.opts;
+    self.cols = [];
+    self.rows = [];
+
+    self.on('mount', function() {
+        self.rows = self.config.data;
+        if (EL.children.length > 1) {
+            for( i = 0; i < EL.children.length; i++){
+                var child = EL.children[i];
+                if(child.localName=='rcol'){
+                    var col_style=''    
+                    if(child.attributes['width']!=undefined) {
+                        col_style='width: '+ child.attributes['width'].value;
+                    }
+
+                    var col = {
+                        name: child.attributes['name'].value,
+                        inner: child.innerHTML,
+                        style: col_style,
+                        index: i
+                    }
+                    if (child.attributes['alias']) {
+                        col.alias = child.attributes['alias'].value || ''
+                    }
+
+                    self.cols.push(col);
+                }
+
+            }
+        }
+        else {
+
+            for (i in self.rows[0]) {
+                var col = {
+                    name: i,
+                    inner: '',
+                    style: col_style,
+                }
+                self.cols.push(col);
+            }
+        }
+        self.update()
+    })
+
+
+    EL.load = function(newrows){
+        self.rows = newrows
+        self.update()
+    }
+
+    EL.append = function(newrows){
+        self.rows.push(newrows)
+        self.update()
+    }
+
+    this.drawcell = function(rowdata, tr,  col) {
+        if(col.inner){
+            setTimeout(function() {
+                var str = col.inner.replace(/&lt;%=[\s|\w]+%&gt;/g, function(v) {
+                    var key = v.replace(/&lt;%=/g, '')
+                               .replace(/\s/g, '')
+                               .replace(/%&gt;/g, '');
+                    return rowdata[key];
+                });
+                tr.root.children[col.index].innerHTML = str;
+            }, 1);
+        }
+        else{
+            return rowdata[col.name];
+        }
+    }.bind(this);
+
 
 });
 riot.tag('tree', '<div class="tree-item-wrap" each="{ data }"> <i class="{ tree-item-arrow: true, open: opened, empty: !children }" onclick="{ parent.toggle }"></i> <i class="tree-item-icon"></i> <div onclick="{ parent.leftClick }" class="{ tree-item-name : true }" title="{ name }">{ name }</div>  <ul class="tree-child-wrap" if="{ children }"> <tree data="{ children }" if="{ children }"></tree> </ul> </div>', function(opts) {

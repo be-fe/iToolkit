@@ -42,8 +42,8 @@
                     <h4>通用组件</h4>
                     <a href="#tree" class="list-group-item">Tree (可用)</a>
                     <a href="#tab" class="list-group-item">Tab (可用)</a>
+                    <a href="#table" class="list-group-item">Table (可用)</a>
                     <a href="#paginate" class="list-group-item">Paginate (可用)</a>
-                    <a href="#table" class="list-group-item">Table (规划中)</a>
                     <a href="#modal" class="list-group-item">Modal (可用)</a>
                     <a href="#ajax-form" class="list-group-item">Ajax-Form (可用)</a>
                     <a class="list-group-item">Ajax-File-upload (规划中)</a>
@@ -108,6 +108,36 @@ riot.mount('tree', treeOpts);
     riot.mount('tab', tabOpts);
                     </pre>
                 </section>
+
+                <section id="table">
+                    <h2>Table</h2><hr>
+                    <table-view>
+                        <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
+                        <rcol name="desc"></rcol>
+                        <rcol name="name" alias="姓名"></rcol>
+                    </table-view>
+
+                    <h5>HTML:</h5>
+                    <pre>
+    <table-view>
+        <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
+        <rcol name="desc"></rcol>
+        <rcol name="name" alias="姓名"></rcol>
+    </table-view>
+                    </pre>
+                    <h5>JavaScript:</h5>
+                    <pre>
+    var tableOpts = {
+        data: [
+            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'},
+            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'},
+            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'}
+        ]
+    }
+    riot.mount('table-view', tableOpts);
+    riot.mount('rcol');
+                    </pre>
+                </section>
                 
                 <section id="paginate">
                     <h2>Paginate</h2><hr>
@@ -129,11 +159,6 @@ riot.mount('tree', treeOpts);
     }
     riot.mount('paginate', pageOpts);
                     </pre>
-                </section>
-
-                <section id="table">
-                    <h2>Table</h2><hr>
-                    <table-view></table-view>
                 </section>
 
 
@@ -235,6 +260,23 @@ riot.mount('tree', treeOpts);
             riot.mount('tab', tabOpts);
 
             /*
+             *  table
+             */
+            var tableOpts = {
+                data: [
+                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank'},
+                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl'},
+                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe'},
+                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!'}
+                ],
+                class: 'table',
+                showHeader: 'true',
+                fixHeader: 'true'
+            }
+            riot.mount('table-view', tableOpts);
+            riot.mount('rcol');
+
+            /*
              *  分页
              */
             var pageOpts = {
@@ -247,40 +289,6 @@ riot.mount('tree', treeOpts);
             }
             riot.mount('paginate', pageOpts);
 
-            /*
-             *  表格
-             */
-            var tableOpts = {
-                data: [
-                {
-                    count: 50,
-                    pagesize: 10,
-                    showNumber: 5
-                },
-                {
-                    count: 50,
-                    pagesize: 10,
-                    showNumber: 5
-                },
-                {
-                    count: 50,
-                    pagesize: 10,
-                    showNumber: 5
-                }
-                ],
-
-                col_map: {
-                    count: '总数量',
-                    pagesize: '页面item数量',
-                    showNumber: '展示数量'
-                },
-
-                config: {
-                    fixTh: true,
-                    cutString: true
-                }
-             }
-            riot.mount('table-view', tableOpts);
 
             /*
              *  模态弹出框

@@ -7,3 +7,7 @@
 .clearfix {
     clear: both;
 }
+
+rcol {
+    display: none;
+}
