@@ -1,56 +1,3 @@
-riot.tag('ajax-form', '<form onsubmit="{ submit }"> <yield> </form>', function(opts) {
-
-    var self = this;
-    var config = self.opts.opts || self.opts;
-
-    this.submit = function(e) {
-        e.preventDefault();
-        var elem = self.root.getElementsByTagName('form')[0].elements;
-        var url = self.root.getAttribute('action');
-        var params = "";
-        var value;
-
-        for (var i = 0; i < elem.length; i++) {
-            if (elem[i].name) {
-                if (elem[i].tagName === "SELECT") {
-                    value = elem[i].options[elem[i].selectedIndex].value;
-                    params += elem[i].name + "=" + encodeURIComponent(value) + "&";
-                } 
-                else if (elem[i].type === "checkbox" || elem[i].type === "radio"){
-                    if (elem[i].checked) {
-                        value = elem[i].value;
-                        params += elem[i].name + "=" + encodeURIComponent(value) + "&";
-                    }
-                }
-                else {
-                    value = elem[i].value;
-                    params += elem[i].name + "=" + encodeURIComponent(value) + "&";
-                }
-            }
-        }
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("POST", url, true);
-        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp.send(params);
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4) { 
-                if (xmlhttp.status === 200) {
-                    try {
-                        var result = JSON.parse(xmlhttp.responseText);
-                        config.callback(result);
-                    }catch(e){
-                        console.log(e);
-                    }
-                }
-                else {
-                    config.errCallback(params);
-                }
-            } 
-        };
-    }.bind(this);
-
-
-});
 riot.tag('rcol', '<yield>', function(opts) {
     var self = this; 
     this.on('mount', function(){ 
@@ -195,6 +142,97 @@ riot.tag('slide', '', function(opts) {
 
 
 });
+riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function(opts) {
+
+    var self = this;
+    var config = self.opts.opts || self.opts;
+    self.data = config.data;
+    self.submitingText = config.submitingText || '提交中...';
+
+    this.valid = function(params, message) {
+        if (typeof params === 'string') {
+            if (params === 'email') {
+
+            }
+            else if (params === 'mobile') {
+
+            }
+            else if (params === 'url') {
+                
+            }
+        }
+        else if (typeof params === 'object') {
+            if (params.max) {
+
+            }
+            else if (params.min) {
+
+            }
+            
+        }
+        self.trigger('prevent')
+    }.bind(this);
+
+    this.submit = function(e) {
+        if (config.normalSubmit) { 
+            self.root.firstChild.setAttribute('action', self.root.getAttribute('action'));
+            return true 
+        }
+        e.preventDefault();
+        var elems = self.root.getElementsByTagName('form')[0].elements;
+        var url = self.root.getAttribute('action');
+        var params = "";
+        var value;
+        
+        for (var i = 0; i < elems.length; i++) {
+            if (elems[i].name) {
+                if (elems[i].tagName === "SELECT") {
+                    value = elems[i].options[elems[i].selectedIndex].value;
+                    params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                } 
+                else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
+                    if (elems[i].checked) {
+                        value = elems[i].value;
+                        params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    }
+                }
+                else {
+                    value = elems[i].value;
+                    params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                }
+            }
+            if (elems[i].type === "submit") {
+                var submitbtn = elems[i];
+                var submitText = submitbtn.value || submitbtn.innerText;
+                submitbtn.disabled = 'disabled';
+                submitbtn.value = self.submitingText;
+            }
+        }
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("POST", url, true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.send(params);
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4) { 
+                if (xmlhttp.status === 200) {
+                    try {
+                        var result = JSON.parse(xmlhttp.responseText);
+                        config.callback(result);
+                    }catch(e){
+                        console.log(e);
+                    }
+                }
+                else {
+                    config.errCallback(params);
+                }
+                submitbtn.value = submitText;
+                submitbtn.disabled = false;
+            } 
+        };
+    }.bind(this);
+
+
+});
 riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ active: parent.currentIndex==index }">{ title }</li> </ul> <div class="tab-content"> { content } </div>', function(opts) {
 
     var self = this
@@ -217,7 +255,7 @@ riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ a
     }.bind(this);
 
 });
-riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr> <th each="{ cols }">{ alias || name }</th> </tr> <tr each="{ row in rows }" > <td each="{ colkey, colval in parent.cols }"> { parent.parent.drawcell( parent.row, this, colkey) } </td> </tr> </table>', function(opts) {
+riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr> <th each="{ cols }" riot-style="{ col_style }">{ alias || name }</th> </tr> <tr each="{ row in rows }" > <td each="{ colkey, colval in parent.cols }"> { parent.parent.drawcell( parent.row, this, colkey) } </td> </tr> </table>', function(opts) {
 
     var self = this;
     var EL = self.root;
@@ -230,9 +268,9 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr> <th each="
         if (EL.children.length > 1) {
             for( i = 0; i < EL.children.length; i++){
                 var child = EL.children[i];
-                if(child.localName=='rcol'){
-                    var col_style=''    
-                    if(child.attributes['width']!=undefined) {
+                if(child.localName === 'rcol'){
+                    var col_style = ''    
+                    if(child.attributes['width'] != undefined) {
                         col_style='width: '+ child.attributes['width'].value;
                     }
 
@@ -265,15 +303,87 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr> <th each="
         self.update()
     })
 
+    self.compare = function(a, b) {
+        if (a[self.orderkeyName] > b[self.orderkeyName]) {
+            return 1;
+        } 
+        else if (a[self.orderkeyName] === b[self.orderkeyName]) {
+            return 0;
+        }
+        else {
+            return -1;
+        }
+    }
 
-    EL.load = function(newrows){
+    self.clearOrder = function() {
+        self.ordered = false;
+        self.reversed = false;
+    }
+
+
+    EL.loadData = function(newrows){
+        self.clearOrder();
         self.rows = newrows
         self.update()
     }
 
-    EL.append = function(newrows){
+    EL.appendData = function(newrows){
+        self.clearOrder();
         self.rows.push(newrows)
         self.update()
+    }
+
+    EL.clearData = function(newrows){
+        self.clearOrder();
+        self.rows = [];
+        self.update()
+    }
+
+    EL.orderData = function(keyName){
+        self.orderkeyName = keyName;
+        if (self.ordered !== keyName) {
+            if (self.reversed !== keyName) {
+                self.rows = self.rows.sort(self.compare)
+            }
+            else {
+                self.rows = self.rows.reverse();
+            }
+        }
+        else {
+            return
+        }
+        self.ordered = keyName;
+        self.reversed = false;
+        self.update()
+    }
+
+    EL.reverseData = function(keyName){
+        self.orderkeyName = keyName;
+        if (self.reversed !== keyName) {
+            if (self.ordered !== keyName) {
+                self.rows = self.rows.sort(self.compare)
+            }
+            self.rows = self.rows.reverse();
+        }
+        else {
+            return
+        }
+        self.ordered = false;
+        self.reversed = keyName;
+        self.update()
+    }
+
+    EL.deleteData = function(keyName, value){
+        self.clearOrder();
+        var keyName = keyName || 'id';
+        for (i = 0; i < self.rows.length; i++) {
+            if (self.rows[i][keyName] === value) {
+                self.rows.splice(i, 1);
+                EL.deleteData(keyName, value);
+            }
+        }
+        self.update();
+        return EL;
     }
 
     this.drawcell = function(rowdata, tr,  col) {
@@ -286,7 +396,7 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr> <th each="
                     return rowdata[key];
                 });
                 tr.root.children[col.index].innerHTML = str;
-            }, 1);
+            }, 10);
         }
         else{
             return rowdata[col.name];
