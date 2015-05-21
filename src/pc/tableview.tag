@@ -2,7 +2,7 @@
     <yield>
     <table class={ config.class }> 
         <tr>
-            <th each={ cols }>{ alias || name }</th>
+            <th each={ cols } style={ col_style }>{ alias || name }</th>
         </tr>
         <tr each={ row in rows } > 
             <td each={ colkey, colval in parent.cols }>
@@ -22,9 +22,9 @@
         if (EL.children.length > 1) {
             for( i = 0; i < EL.children.length; i++){
                 var child = EL.children[i];
-                if(child.localName=='rcol'){
-                    var col_style=''    
-                    if(child.attributes['width']!=undefined) {
+                if(child.localName === 'rcol'){
+                    var col_style = ''    
+                    if(child.attributes['width'] != undefined) {
                         col_style='width: '+ child.attributes['width'].value;
                     }
 
@@ -57,15 +57,87 @@
         self.update()
     })
 
+    self.compare = function(a, b) {
+        if (a[self.orderkeyName] > b[self.orderkeyName]) {
+            return 1;
+        } 
+        else if (a[self.orderkeyName] === b[self.orderkeyName]) {
+            return 0;
+        }
+        else {
+            return -1;
+        }
+    }
 
-    EL.load = function(newrows){
+    self.clearOrder = function() {
+        self.ordered = false;
+        self.reversed = false;
+    }
+
+
+    EL.loadData = function(newrows){
+        self.clearOrder();
         self.rows = newrows
         self.update()
     }
 
-    EL.append = function(newrows){
+    EL.appendData = function(newrows){
+        self.clearOrder();
         self.rows.push(newrows)
         self.update()
+    }
+
+    EL.clearData = function(newrows){
+        self.clearOrder();
+        self.rows = [];
+        self.update()
+    }
+
+    EL.orderData = function(keyName){
+        self.orderkeyName = keyName;
+        if (self.ordered !== keyName) {
+            if (self.reversed !== keyName) {
+                self.rows = self.rows.sort(self.compare)
+            }
+            else {
+                self.rows = self.rows.reverse();
+            }
+        }
+        else {
+            return
+        }
+        self.ordered = keyName;
+        self.reversed = false;
+        self.update()
+    }
+
+    EL.reverseData = function(keyName){
+        self.orderkeyName = keyName;
+        if (self.reversed !== keyName) {
+            if (self.ordered !== keyName) {
+                self.rows = self.rows.sort(self.compare)
+            }
+            self.rows = self.rows.reverse();
+        }
+        else {
+            return
+        }
+        self.ordered = false;
+        self.reversed = keyName;
+        self.update()
+    }
+
+    EL.deleteData = function(keyName, value){
+        self.clearOrder();
+        var keyName = keyName || 'id';
+        for (i = 0; i < self.rows.length; i++) {
+            if (self.rows[i][keyName] === value) {
+                self.rows.splice(i, 1);
+                EL.deleteData(keyName, value);
+            }
+        }
+        self.update();
+        return EL;
     }
 
     drawcell(rowdata, tr,  col) {
@@ -78,7 +150,7 @@
                     return rowdata[key];
                 });
                 tr.root.children[col.index].innerHTML = str;
-            }, 1);
+            }, 10);
         }
         else{
             return rowdata[col.name];

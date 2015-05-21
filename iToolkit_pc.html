@@ -60,105 +60,34 @@
                     <div id="tree-wrap">
                         <tree></tree>
                     </div>
-
-                    <h5>HTML:</h5>
-                    <pre>
-<tree></tree>
-                    </pre>
-
-                    <h5>JavaScript</h5>
-                    <pre>
-var treeOpts = {
-    data: [
-        {id: 1, pid: null, title: 'root'},
-        {id: 2, pid: 1, title: 'item1'},
-        {id: 3, pid: 1, title: 'item2'},
-        {id: 4, pid: 2, title: 'item3'},
-        {id: 5, pid: 1, title: 'item4'},
-        {id: 6, pid: 3, title: 'item5'},
-        {id: 7, pid: 2, title: 'item6'},
-    ],
-    root: true,
-    handleData: true,
-    onLeftClick: function(item, target) {
-        alert(item.id);
-    }
-}
-riot.mount('tree', treeOpts);
-                    </pre>
                 </section>
 
 
                 <section id="tab">
                     <h2>Tab</h2><hr>
                     <tab></tab>
-                    <h5>HTML:</h5>
-                    <pre>
-    <tab></tab>
-                    </pre>
-                    <h5>JavaScript:</h5>
-                    <pre>
-    var tabOpts = {
-        data: [
-           { title: 'tab1', content: '1111'},
-           { title: 'tab2', content: '2222'},
-           { title: 'tab3', content: '3333'}
-        ]
-    }
-    riot.mount('tab', tabOpts);
-                    </pre>
                 </section>
 
                 <section id="table">
                     <h2>Table</h2><hr>
                     <table-view>
                         <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
-                        <rcol name="desc"></rcol>
+                        <rcol name="desc" width="20px"></rcol>
                         <rcol name="name" alias="姓名"></rcol>
                     </table-view>
-
-                    <h5>HTML:</h5>
-                    <pre>
-    <table-view>
-        <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
-        <rcol name="desc"></rcol>
-        <rcol name="name" alias="姓名"></rcol>
-    </table-view>
-                    </pre>
-                    <h5>JavaScript:</h5>
-                    <pre>
-    var tableOpts = {
-        data: [
-            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'},
-            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'},
-            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'}
-        ]
-    }
-    riot.mount('table-view', tableOpts);
-    riot.mount('rcol');
-                    </pre>
+                    <button class="btn btn-default" onclick="recoverTable()">恢复初始值</button>
+                    <button class="btn btn-default" onclick="reloadTable()">加载新数据</button>
+                    <button class="btn btn-default" onclick="appendCell()">追加数据</button>
+                    <button class="btn btn-default" onclick="deleteCell()">删除指定数据</button>
+                    <button class="btn btn-default" onclick="clearCell()">清空数据</button>
+                    <button class="btn btn-default" onclick="orderCell()">指定字段排序</button>
+                    <button class="btn btn-default" onclick="reverseCell()">指定字段倒序</button>
                 </section>
                 
                 <section id="paginate">
                     <h2>Paginate</h2><hr>
                     <paginate></paginate>
                     <p>The page number is <b id="page-number"></b></p>
-                    <h5>HTML:</h5>
-                    <pre>
-    <paginate></paginate>
-                    </pre>
-                    <h5>JavaScript:</h5>
-                    <pre>
-    var pageOpts = {
-        count: 50,
-        pagesize: 10,
-        showNumber: 5,
-        callback: function(index) {
-            document.getElementById('page-number').innerHTML = index;
-        }
-    }
-    riot.mount('paginate', pageOpts);
-                    </pre>
                 </section>
 
 
@@ -169,53 +98,17 @@ riot.mount('tree', treeOpts);
                         <h1>welcome!</h1>
                         <p>welcome, king under the montain!</p>
                     </modal>
-                    <h5>HTML:</h5>
-                    <pre>
-    <button modal-open-target='modal-demo'>打开模态框</button>
-    <modal id="modal-demo">
-        <h1>welcome!</h1>
-        <p>welcome, king under the montain!</p>
-        ......
-    </modal>
-                    </pre>
-                    <h5>JavaScript:</h5>
-                    <pre>
-    var modalOpts = {
-        height: 300,
-        width: 300,
-        title: '模态框demo'
-    }
-    riot.mount('modal', modalOpts);
-                    </pre>
+                    
                 </section>
 
                 <section id="ajax-form">
-                    <h2>Ajax-Form</h2><hr>
-                    <ajax-form action="/test">
-                        <input name="t1" value="t1">
-                        <input name="t2" value="t2">
+                    <h2>Super-form</h2><hr>
+                    <super-form action="/test">
+                        <input name="t1" value="{ data.a }" show="{ data.a==1 }">
+                        <input name="t2" value="{ data.b }" onsubmit="{ valid({max: 10}) }">
+                        <input name="t3" value="{ data.b }" oninput="{ valid({min: 10}) }">
                         <input type="submit" value="提交">
-                    </ajax-form>
-                    <h5>HTML</h5>
-                    <pre>
-    <ajax-form action="/test">
-        <input name="t1" value="t1">
-        <input name="t2" value="t2">
-        <input type="submit" value="提交">
-    </ajax-form>
-                    </pre>
-                    <h5>JavaScript</h5>
-                    <pre>
-    var formOpts = {
-        callback: function() {
-            alert('success');
-        },
-        errCallback: function(params) {
-            alert("error, params:" + params);
-        }
-    }
-    riot.mount('ajax-form', formOpts);
-                    </pre>
+                    </super-form>
                 </section>
             </div>
         </div>
@@ -273,9 +166,47 @@ riot.mount('tree', treeOpts);
                 showHeader: 'true',
                 fixHeader: 'true'
             }
-            riot.mount('table-view', tableOpts);
+            riot.mount('section table-view', tableOpts);
             riot.mount('rcol');
 
+            function recoverTable() {
+                dom = document.querySelector('table-view');
+                dom.loadData([
+                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank'},
+                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl'},
+                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe'},
+                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!'}
+                ]);
+            }
+
+            function reloadTable() {
+                dom = document.querySelector('table-view');
+                dom.loadData([{city: 'LuoYang', name: 'mudan', desc: 'It is pretty'}]);
+            }
+
+            function appendCell() {
+                dom = document.querySelector('table-view');
+                dom.appendData({city: 'LuoYang', name: 'mudan', desc: 'It is pretty'});
+            }
+
+            function deleteCell() {
+                dom = document.querySelector('table-view');
+                dom.deleteData('city', 'LuoYang');
+            }
+            function clearCell() {
+                dom = document.querySelector('table-view');
+                dom.clearData();
+            }
+
+            function orderCell() {
+                dom = document.querySelector('table-view');
+                dom.orderData('city');
+            }
+
+            function reverseCell() {
+                dom = document.querySelector('table-view');
+                dom.reverseData('city');
+            }
             /*
              *  分页
              */
@@ -326,14 +257,19 @@ riot.mount('tree', treeOpts);
              *  Ajax form 提交
              */
             var formOpts = {
+                data: {
+                    a: 1,
+                    b: 'hehe'
+                },
                 callback: function() {
                     alert('success');
                 },
                 errCallback: function(params) {
                     alert("error, params:" + params);
-                }
+                },
+                //normalSubmit: true
             }
-            riot.mount('ajax-form', formOpts);
+            riot.mount('super-form', formOpts);
 
         </script>
     </body>
