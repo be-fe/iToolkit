@@ -4,7 +4,7 @@
 - 可以进行排序、追加、清空、加载新数据、删除指定项等功能。
 
 #### 表格生成器示例代码：
-[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)   
 HTML:
 
     <table-view>
@@ -43,7 +43,7 @@ JavaScript:
 - 提供了表单验证功能
 
 #### 示例代码
-[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)   
 HTML:
 
     <super-form action="/test">
@@ -75,7 +75,7 @@ JavaScript:
 - 分页组件可以配置总数、每页展示数量、页码显示数量、页码跳转回调。
 
 ####示例代码
-[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)   
 HTML:
     
     <paginate></paginate>
@@ -97,7 +97,7 @@ JavaScript:
 - 树结构组件可以配置左键点击回调、数据。
 
 #### 示例代码
-[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)   
 HTML:
     
     <tree></tree>
@@ -128,7 +128,7 @@ JavaScript:
 - 可以支持内部模板
 
 ####示例代码
-[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)    
 HTML:
     
     <modal id="modal-demo">

@@ -38,4 +38,4 @@ iToolkit是一系列常用控件的集合，基于Riot进行构建，iToolkit拥
 规划中......
 
 ### 文档与Demo
-[http://be-fe.github.io/iToolkit/iToolkit_pc.html](http://be-fe.github.io/iToolkit/iToolkit_pc.html)
+[文档](https://github.com/BE-FE/iToolkit/blob/master/doc.md)
