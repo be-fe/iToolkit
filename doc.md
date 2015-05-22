@@ -1,4 +1,24 @@
 ## iToolKit接口文档
+### 基本调用方式
+- 使用相应的HTML标签
+- riot.mount()的第一个参数是一个字符串，写法等同于css选择器。
+- riot.mount()的第二个参数统一是一个object。
+- 数据统一使用data字段，其他配置项请参考文档。
+
+####示例
+    <div id="test">
+        <tree></tree>
+    </div>
+    <script>
+        $.ajax({
+            url: '/test',
+            success: function(data) {
+                riot.mount('#test tree', {data: data, root: true});
+            }
+        })
+    </script>
+
+
 ### Table
 - 可以由数据直接生成表格，支持变量组装、表头定义、列宽定义。
 - 可以进行排序、追加、清空、加载新数据、删除指定项等功能。
