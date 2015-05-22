@@ -12,12 +12,14 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
             <script>html5.addElements('test')</script>
         <![endif]-->
-        <script src="src/lib/riot.js"></script>
+        <script src="src/lib/riot2.1.0.js"></script>
         <script src="src/iToolkit_pc.js"></script>
         <style>
             #fixed-list {
                 width: 350px;
                 position: fixed;
+                height: 92%;
+                overflow: auto;
             }
 
             #tree-wrap {
@@ -45,7 +47,8 @@
                     <a href="#table" class="list-group-item">Table (可用)</a>
                     <a href="#paginate" class="list-group-item">Paginate (可用)</a>
                     <a href="#modal" class="list-group-item">Modal (可用)</a>
-                    <a href="#ajax-form" class="list-group-item">Ajax-Form (可用)</a>
+                    <a href="#super-form" class="list-group-item">Form (可用)</a>
+                    <a href="#super-div" class="list-group-item">Div (可用)</a>
                     <a class="list-group-item">Ajax-File-upload (规划中)</a>
                     <a class="list-group-item">Slider (规划中)</a>
                     <h4>样式组件</h4>
@@ -57,6 +60,7 @@
             <div class="col-xs-8">
                 <section id='tree'>
                     <h2>Tree</h2><hr>
+                    <p>树结构组件可以直接根据数据生成树结构，支持一维数组结构和树状结构的数据，可以配置点击回调。</p>
                     <div id="tree-wrap">
                         <tree></tree>
                     </div>
@@ -70,6 +74,8 @@
 
                 <section id="table">
                     <h2>Table</h2><hr>
+                    <p>表格组件可以根据数据生成表格，使用rcol标签控制字段的排序、表头名、内容的拼接、列的宽度，使用参数配置表头展示、固定等。</p>
+                    <p>表格组件还支持加载、追加、情况、删除、排序等功能函数。</p>
                     <table-view>
                         <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
                         <rcol name="desc" width="20px"></rcol>
@@ -86,29 +92,46 @@
                 
                 <section id="paginate">
                     <h2>Paginate</h2><hr>
+                    <p>分页组件可以由配置数据直接生成，可以配置跳页回调、展示数量等数据</p>
                     <paginate></paginate>
                     <p>The page number is <b id="page-number"></b></p>
                 </section>
 
 
                 <section id="modal">
-                    <h2>Modal</h2>
-                    <button modal-open-target='modal-demo' class="btn btn-default">打开模态框</button>
+                    <h2>Modal</h2><hr>
+                    <p>可以配置模态框的高度、宽度、title; 并且可以将相关的数据代入模板</p>
+                    <button modal-open-target='modal-demo' class="btn btn-success">打开模态框</button>
                     <modal id="modal-demo">
                         <h1>welcome!</h1>
                         <p>welcome, king under the montain!</p>
+                        <p>{ data.desc }</p>
                     </modal>
-                    
                 </section>
 
-                <section id="ajax-form">
+                <section id="super-form">
                     <h2>Super-form</h2><hr>
+                    <p>可以提供ajax提交、防连击保护、表单校验、数据模板、常用指令等五大功能</p>
                     <super-form action="/test">
-                        <input name="t1" value="{ data.a }" show="{ data.a==1 }">
-                        <input name="t2" value="{ data.b }" onsubmit="{ valid({max: 10}) }">
-                        <input name="t3" value="{ data.b }" oninput="{ valid({min: 10}) }">
-                        <input type="submit" value="提交">
+                        <input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
+                        <input type="text" name="t2" value="{ data.b }" onsubmit="{ valid({max: 10}) }">
+                        <input type="text" name="t3" value="{ data.b }" oninput="{ valid({min: 10}) }">
+                        <input type="submit" class="btn btn-primary" value="提交">
                     </super-form>
+                </section>
+
+                <section id="super-div">
+                    <h2>Super-div</h2><hr>
+                    <p>为super-div容器内的元素提供模板和基础指令</p>
+                    <div style="padding: 10px; border: 1px solid #e5e5e5;">
+                        <super-div>
+                            <h4>{ data.title }</h4>
+                            <p>{ data.desc }</p>
+                            <ul>
+                                <li each="{ data.list }">{ name }</li>
+                            </ul>
+                        </super-div>
+                    </div>
                 </section>
             </div>
         </div>
@@ -227,7 +250,10 @@
             var modalOpts = {
                 height: 300,
                 width: 300,
-                title: '模态框demo'
+                title: '模态框demo',
+                data: {
+                    desc: 'hehehe'
+                }
             }
             riot.mount('modal', modalOpts);
 
@@ -254,7 +280,7 @@
             riot.mount('tree', treeOpts);
 
             /*
-             *  Ajax form 提交
+             *  super form 提交
              */
             var formOpts = {
                 data: {
@@ -270,6 +296,18 @@
                 //normalSubmit: true
             }
             riot.mount('super-form', formOpts);
+
+            /*
+             *  super-div
+             */
+             var divOpts = {
+                data: {
+                    title: '复仇者联盟',
+                    desc: '讲述了超级英雄拯救世界的故事。',
+                    list: [{name: "钢铁侠"},{name: "绿巨人"},{name: "美国队长"},{name: "黑寡妇"},{name:"鹰眼"}]
+                },
+            }
+            riot.mount('super-div', divOpts);
 
         </script>
     </body>

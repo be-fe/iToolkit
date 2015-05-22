@@ -109,6 +109,10 @@ modal {
     cursor: pointer;
 }
 
+.modal-container {
+    padding: 10px 20px;
+}
+
 
 /***************
 树结构样式

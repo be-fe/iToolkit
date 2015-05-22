@@ -149,3 +149,26 @@ JavaScript:
         }
     }
     riot.mount('modal', modalOpts);
+
+###Div
+
+HTML:
+
+    <super-div>
+        <h4>{ data.title }</h4>
+        <p>{ data.desc }</p>
+        <ul>
+            <li each="{ data.list }">{ name }</li>
+        </ul>
+    </super-div>
+
+JavaScript:
+
+    var divOpts = {
+        data: {
+            title: '复仇者联盟',
+            desc: '讲述了超级英雄拯救世界的故事。',
+            list: [{name: "钢铁侠"},{name: "绿巨人"},{name: "美国队长"},{name: "黑寡妇"},{name:"鹰眼"}]
+        },
+    }
+    riot.mount('super-div', divOpts);

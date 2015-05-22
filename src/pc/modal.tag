@@ -4,7 +4,7 @@
             <span>{ title }</span>
             <div class="modal-close" onclick={ close }></div>
         </div>
-        <div class="modal-content">
+        <div class="modal-container">
            <yield>
         </div>
     </div>
@@ -14,6 +14,7 @@
     self.width = config.width || 600;
     self.height = config.width || 300;
     self.title = config.title;
+    self.data = config.data;
 
     close(e) {
         self.root.style.display = 'none';
