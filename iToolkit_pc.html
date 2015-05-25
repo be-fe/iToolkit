@@ -28,6 +28,15 @@
                 border: 1px solid #e5e5e5;
                 padding-top: 10px;
             }
+            .tip-container {
+                color: red;
+                padding-left: 10px;
+                font-size: 13px;
+            }
+
+            .tip-container.success{
+                color: green;
+            }
         </style>
     </head>
     <body>
@@ -61,26 +70,32 @@
                 <section id='tree'>
                     <h2>Tree</h2><hr>
                     <p>树结构组件可以直接根据数据生成树结构，支持一维数组结构和树状结构的数据，可以配置点击回调。</p>
-                    <div id="tree-wrap">
-                        <tree></tree>
+                    <div class="demo">
+                        <div id="tree-wrap">
+                            <tree></tree>
+                        </div>
                     </div>
                 </section>
 
 
                 <section id="tab">
                     <h2>Tab</h2><hr>
-                    <tab></tab>
+                    <div class="demo">
+                        <tab></tab>
+                    </div>
                 </section>
 
                 <section id="table">
                     <h2>Table</h2><hr>
                     <p>表格组件可以根据数据生成表格，使用rcol标签控制字段的排序、表头名、内容的拼接、列的宽度，使用参数配置表头展示、固定等。</p>
                     <p>表格组件还支持加载、追加、情况、删除、排序等功能函数。</p>
-                    <table-view>
-                        <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
-                        <rcol name="desc" width="20px"></rcol>
-                        <rcol name="name" alias="姓名"></rcol>
-                    </table-view>
+                    <div class="demo">
+                        <table-view>
+                            <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
+                            <rcol name="desc" width="20px"></rcol>
+                            <rcol name="name" alias="姓名"></rcol>
+                        </table-view>
+                    </div>
                     <button class="btn btn-default" onclick="recoverTable()">恢复初始值</button>
                     <button class="btn btn-default" onclick="reloadTable()">加载新数据</button>
                     <button class="btn btn-default" onclick="appendCell()">追加数据</button>
@@ -93,44 +108,56 @@
                 <section id="paginate">
                     <h2>Paginate</h2><hr>
                     <p>分页组件可以由配置数据直接生成，可以配置跳页回调、展示数量等数据</p>
-                    <paginate></paginate>
-                    <p>The page number is <b id="page-number"></b></p>
+                    <div class="demo">
+                        <paginate></paginate>
+                        <p>The page number is <b id="page-number"></b></p>
+                    </div>
                 </section>
 
 
                 <section id="modal">
                     <h2>Modal</h2><hr>
-                    <p>可以配置模态框的高度、宽度、title; 并且可以将相关的数据代入模板</p>
-                    <button modal-open-target='modal-demo' class="btn btn-success">打开模态框</button>
-                    <modal id="modal-demo">
-                        <h1>welcome!</h1>
-                        <p>welcome, king under the montain!</p>
-                        <p>{ data.desc }</p>
-                    </modal>
+                    <p>可以配置模态框的高度、宽度、title; 并且可以将相关的数据带入模板</p>
+                    <div class="demo">
+                        <button modal-open-target='modal-demo' class="btn btn-success">打开模态框</button>
+                        <modal id="modal-demo">
+                            <h1>welcome!</h1>
+                            <p>welcome, king under the montain!</p>
+                            <p>{ data.desc }</p>
+                        </modal>
+                    </div>
                 </section>
 
                 <section id="super-form">
                     <h2>Super-form</h2><hr>
                     <p>可以提供ajax提交、防连击保护、表单校验、数据模板、常用指令等五大功能</p>
-                    <super-form action="/test">
-                        <input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
-                        <input type="text" name="t2" value="{ data.b }" onsubmit="{ valid({max: 10}) }">
-                        <input type="text" name="t3" value="{ data.b }" oninput="{ valid({min: 10}) }">
-                        <input type="submit" class="btn btn-primary" value="提交">
-                    </super-form>
+                    <div class="demo">
+                        <super-form action="/test">
+                            <input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
+                            <label>必填: <input type="text" name="present" value="" valid="present"></label><br>
+                            <label>email: <input type="text" name="email" value="xieyu" valid="email"></label><br>
+                            <label>url: <input type="text" name="url" value="http://www." valid="url"></label><br>
+                            <label>mobile: <input type="text" name="mobile" value="a13927678767" valid="mobile"></label><br>
+                            <label>text more than 2: <input type="text" name="t3" value="{ data.b }" min="3"></label><br>
+                            <label>text less than 9: <input type="text" name="t4" value="good! There it is!" max="9"></label><br>
+                            <input type="submit" class="btn btn-primary" value="提交">
+                        </super-form>
+                    </div>
                 </section>
 
                 <section id="super-div">
                     <h2>Super-div</h2><hr>
                     <p>为super-div容器内的元素提供模板和基础指令</p>
-                    <div style="padding: 10px; border: 1px solid #e5e5e5;">
-                        <super-div>
-                            <h4>{ data.title }</h4>
-                            <p>{ data.desc }</p>
-                            <ul>
-                                <li each="{ data.list }">{ name }</li>
-                            </ul>
-                        </super-div>
+                    <div class="demo">
+                        <div style="padding: 10px; border: 1px solid #e5e5e5;">
+                            <super-div>
+                                <h4 onclick="{ warning }">{ data.title }</h4>
+                                <p>{ data.desc }</p>
+                                <ul>
+                                    <li each="{ data.list }">{ name }</li>
+                                </ul>
+                            </super-div>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -173,7 +200,7 @@
                    { title: 'tab3', content: '3333'}
                 ]
             }
-            riot.mount('tab', tabOpts);
+            riot.mount('.demo tab', tabOpts);
 
             /*
              *  table
@@ -189,7 +216,7 @@
                 showHeader: 'true',
                 fixHeader: 'true'
             }
-            riot.mount('section table-view', tableOpts);
+            riot.mount('.demo  table-view', tableOpts);
             riot.mount('rcol');
 
             function recoverTable() {
@@ -241,7 +268,7 @@
                     document.getElementById('page-number').innerHTML = index;
                 }
             }
-            riot.mount('paginate', pageOpts);
+            riot.mount('.demo paginate', pageOpts);
 
 
             /*
@@ -255,7 +282,7 @@
                     desc: 'hehehe'
                 }
             }
-            riot.mount('modal', modalOpts);
+            riot.mount('.demo modal', modalOpts);
 
             /*
              *  树结构
@@ -277,7 +304,7 @@
                     alert('This item\'s id is: ' + item.id);
                 }
             }
-            riot.mount('tree', treeOpts);
+            riot.mount('.demo tree', treeOpts);
 
             /*
              *  super form 提交
@@ -285,8 +312,9 @@
             var formOpts = {
                 data: {
                     a: 1,
-                    b: 'hehe'
+                    b: 'he'
                 },
+                valid: true,       //是否执行校验
                 callback: function() {
                     alert('success');
                 },
@@ -294,8 +322,29 @@
                     alert("error, params:" + params);
                 },
                 //normalSubmit: true
+                onValidRefuse: function(dom, message) {
+                    var tip = dom.parentNode.getElementsByClassName('tip-container')[0];
+                    if (tip) {
+                        dom.parentNode.removeChild(tip);
+                    }
+                    var tipContainer = document.createElement('span');
+                    tipContainer.className = 'tip-container';
+                    tipContainer.innerHTML = message;
+                    dom.parentNode.appendChild(tipContainer);
+                },
+
+                onValidPass: function(dom, message) {
+                    var tip = dom.parentNode.getElementsByClassName('tip-container')[0];
+                    if (tip) {
+                        dom.parentNode.removeChild(tip);
+                    }
+                    var tipContainer = document.createElement('span');
+                    tipContainer.className = 'tip-container success';
+                    tipContainer.innerHTML = message;
+                    dom.parentNode.appendChild(tipContainer);
+                }
             }
-            riot.mount('super-form', formOpts);
+            riot.mount('.demo super-form', formOpts);
 
             /*
              *  super-div
@@ -306,8 +355,13 @@
                     desc: '讲述了超级英雄拯救世界的故事。',
                     list: [{name: "钢铁侠"},{name: "绿巨人"},{name: "美国队长"},{name: "黑寡妇"},{name:"鹰眼"}]
                 },
+
+                warning: function(e) {
+                    console.log(e.target);
+                    alert('test');
+                }
             }
-            riot.mount('super-div', divOpts);
+            riot.mount('.demo super-div', divOpts);
 
         </script>
     </body>

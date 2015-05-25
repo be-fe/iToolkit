@@ -87,7 +87,7 @@ JavaScript:
             alert("error, params:" + params);
         },
         normalSubmit: true  //true为正常表单提交，不配置或false为ajax提交
-        submitingText: 
+        submitingText: "submiting..."
     }
     riot.mount('super-form', formOpts);
 

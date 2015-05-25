@@ -8,5 +8,8 @@
     
     var self = this;
     var config = self.opts.opts || self.opts;
-    self.data = config.data;
+
+    for (i in config) {
+        self[i] = config[i];
+    }
 </super-div>
