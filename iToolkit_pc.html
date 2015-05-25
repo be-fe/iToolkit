@@ -5,6 +5,7 @@
         <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
         <link rel="stylesheet" href="src/css/common.css">
         <link rel="stylesheet" href="src/css/themes/simple_pc.css">
+        <link rel="stylesheet" href="demos/prism.css">
         
         <!-- IE兼容  -->
         <!--[if lt IE 9]>
@@ -16,10 +17,11 @@
         <script src="src/iToolkit_pc.js"></script>
         <style>
             #fixed-list {
-                width: 350px;
+                width: 300px;
                 position: fixed;
                 height: 92%;
                 overflow: auto;
+                margin-top: 15px;
             }
 
             #tree-wrap {
@@ -40,55 +42,110 @@
         </style>
     </head>
     <body>
-        <nav class="navbar navbar-default">
-          <div class="container-fluid">
-            <div class="navbar-header">
-              <a class="navbar-brand" href="#">iToolkit-PC</a>
-            </div>
-          </div>
-        </nav>
         <div class="container">
             <div class="col-xs-4">
                 <div class="list-group" id="fixed-list">
-                    <h4>通用组件</h4>
-                    <a href="#tree" class="list-group-item">Tree (可用)</a>
-                    <a href="#tab" class="list-group-item">Tab (可用)</a>
-                    <a href="#table" class="list-group-item">Table (可用)</a>
-                    <a href="#paginate" class="list-group-item">Paginate (可用)</a>
-                    <a href="#modal" class="list-group-item">Modal (可用)</a>
-                    <a href="#super-form" class="list-group-item">Form (可用)</a>
-                    <a href="#super-div" class="list-group-item">Div (可用)</a>
-                    <a class="list-group-item">Ajax-File-upload (规划中)</a>
-                    <a class="list-group-item">Slider (规划中)</a>
-                    <h4>样式组件</h4>
-                    <a class="list-group-item">Nav-Bar (规划中)</a>
-                    <a class="list-group-item">Foot-Bar (规划中)</a>
-                    <a class="list-group-item">Side-list (规划中)</a>
+                    <h4>Introduction</h4>
+                    <a href="#start" class="list-group-item">Get Start</a>
+                    <h4>Common components</h4>
+                    <a href="#tree" class="list-group-item">Tree</a>
+                    <a href="#tab" class="list-group-item">Tab</a>
+                    <a href="#table" class="list-group-item">Table</a>
+                    <a href="#paginate" class="list-group-item">Paginate</a>
+                    <a href="#modal" class="list-group-item">Modal</a>
+                    <a href="#super-form" class="list-group-item">Form</a>
+                    <a href="#super-div" class="list-group-item">Div</a>
                 </div>
             </div>
             <div class="col-xs-8">
+                <h1>iToolKit-PC</h1><hr>
+                iToolkit是一系列常用控件的集合，基于<a href="https://muut.com/riotjs/">Riot</a>进行构建, 主要为了快速构建后台系统，针对后台系统中常用的表格、表单、树、分页等应用场景进行封装, 可以根据后台数据直接生成视图。
+                <h3>为什么要开发iToolkit？</h3>
+                <ul>
+                    <li>统一的调用方式</li>
+                    <li>数据直接生成视图</li>
+                    <li>到处可用，无论原网站是采用何种技术方案，都可以加入使用</li>
+                    <li>依赖库小，riot压缩后只有3.5KB, 适用于移动端开发、老项目改造</li>
+                </ul>
+
+                <section id="start">
+                    <h2>Get Start</h2><hr>
+                    <h4>如何引用</h4>
+                    <ul>
+                        <li>引入核心样式文件</li>
+                        <li>引入JS文件</li>
+                        <li>目前版本还需要引入图片</li>
+                    </ul>
+                    <h5>Example:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<link rel="stylesheet" href="simple_pc.css">
+<script src="iToolkit_pc.js"></script></script></code></pre>
+
+                    <h4>基本调用方式</h4>
+                    <ul>
+                        <li>使用相应的HTML标签</li>
+                        <li>riot.mount()的第一个参数是一个字符串，写法等同于css选择器。</li>
+                        <li>riot.mount()的第二个参数统一是一个object。</li>
+                        <li>数据统一使用data字段，其他配置项请参考文档。</li>
+                    </ul>
+                    <h5>Example:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<div id="tree-wrap" class="demo">
+    <tree></tree>
+</div></script></code></pre>
+                    <pre><code class="language-javascript">
+$.ajax({
+    url: '/test',
+    success: function(data) {
+        riot.mount('#tree-wrap tree', {data: data, root: true});
+    }
+})</code></pre>
+                </section>
+
                 <section id='tree'>
                     <h2>Tree</h2><hr>
                     <p>树结构组件可以直接根据数据生成树结构，支持一维数组结构和树状结构的数据，可以配置点击回调。</p>
+                    <h5>实例:</h5>
                     <div class="demo">
                         <div id="tree-wrap">
                             <tree></tree>
                         </div>
                     </div>
-                </section>
+                    <h5>HTML:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<div id="tree-wrap" class="demo">
+    <tree></tree>
+</div></script></code></pre>
 
-
-                <section id="tab">
-                    <h2>Tab</h2><hr>
-                    <div class="demo">
-                        <tab></tab>
-                    </div>
+                    <h5>JavaScript:</h5>
+                    <pre><code class="language-javascript">
+var treeOpts = {
+    data: [
+        {id: 1, pid: null, title: 'root'},
+        {id: 2, pid: 1, title: 'item1'},
+        {id: 3, pid: 1, title: 'item2'},
+        {id: 4, pid: 2, title: 'item3'},
+        {id: 5, pid: 1, title: 'item4'},
+        {id: 6, pid: 3, title: 'item5'},
+        {id: 7, pid: 2, title: 'item6'},
+    ],
+    root: true,
+    handleData: true,
+    name: 'title',
+    onLeftClick: function(item, target) {
+        alert('This item\'s id is: ' + item.id);
+    }
+}
+riot.mount('.demo tree', treeOpts);
+                    </code></pre>
                 </section>
 
                 <section id="table">
                     <h2>Table</h2><hr>
                     <p>表格组件可以根据数据生成表格，使用rcol标签控制字段的排序、表头名、内容的拼接、列的宽度，使用参数配置表头展示、固定等。</p>
                     <p>表格组件还支持加载、追加、情况、删除、排序等功能函数。</p>
+
+                    <h5>实例:</h5>
                     <div class="demo">
                         <table-view>
                             <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
@@ -103,46 +160,223 @@
                     <button class="btn btn-default" onclick="clearCell()">清空数据</button>
                     <button class="btn btn-default" onclick="orderCell()">指定字段排序</button>
                     <button class="btn btn-default" onclick="reverseCell()">指定字段倒序</button>
+
+                    <h5>HTML:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<div class="demo">
+    <table-view>
+        <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
+        <rcol name="desc" width="20px"></rcol>
+        <rcol name="name" alias="姓名"></rcol>
+    </table-view>
+</div></script></code></pre>
+
+                    <h5>JavaScript:</h5>
+                    <pre><code class="language-javascript">
+var tableOpts = {
+    data: [
+        {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank'},
+        {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl'},
+        {city: 'ChengDu', name: 'Billy', desc: 'hehehe'},
+        {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!'}
+    ],
+    class: 'table',
+    showHeader: 'true',
+    fixHeader: 'true'
+}
+riot.mount('.demo  table-view', tableOpts);
+riot.mount('rcol');
+                    </code></pre>
+
+                    <h5>Handle The Table:</h5>
+                    <pre><code class="language-javascript">
+var dom = document.querySelector('table-view');
+dom.loadData([{city: 'LuoYang', name: 'mudan', desc: 'It is pretty'}]);  //load new data
+dom.appendData({city: 'LuoYang', name: 'mudan', desc: 'It is pretty'}); //append data
+dom.deleteData('city', 'LuoYang'); //delete data
+dom.clearData();  //clear data
+dom.orderData('city'); //order by 'city'
+dom.reverseData('city'); //reverse by 'city'
+                    </code></pre>
                 </section>
                 
                 <section id="paginate">
                     <h2>Paginate</h2><hr>
                     <p>分页组件可以由配置数据直接生成，可以配置跳页回调、展示数量等数据</p>
+                    <h5>Example:</h5>
                     <div class="demo">
                         <paginate></paginate>
                         <p>The page number is <b id="page-number"></b></p>
                     </div>
+                    <h5>HTML:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<div class="demo">
+    <paginate></paginate>
+    <p>The page number is <b id="page-number"></b></p>
+</div></script></code></pre>
+                    
+                    <h5>JavaScript:</h5>
+                    <pre><code class="language-javascript">
+var pageOpts = {
+    count: 120,
+    pagesize: 10,
+    showNumber: 5,
+    callback: function(index) {
+        document.getElementById('page-number').innerHTML = index;
+    }
+}
+riot.mount('.demo paginate', pageOpts);
+                    </code></pre>
+
                 </section>
 
 
                 <section id="modal">
                     <h2>Modal</h2><hr>
                     <p>可以配置模态框的高度、宽度、title; 并且可以将相关的数据带入模板</p>
+                    <h5>Example:</h5>
                     <div class="demo">
-                        <button modal-open-target='modal-demo' class="btn btn-success">打开模态框</button>
+                        <button modal-open-target='modal-demo' class="btn btn-success">Open Modal</button>
                         <modal id="modal-demo">
                             <h1>welcome!</h1>
                             <p>welcome, king under the montain!</p>
                             <p>{ data.desc }</p>
                         </modal>
                     </div>
+
+                    <h5>HTML:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<div class="demo">
+    <button modal-open-target='modal-demo' class="btn btn-success">Open Modal</button>
+    <modal id="modal-demo">
+        <h1>welcome!</h1>
+        <p>welcome, king under the montain!</p>
+        <p>{ data.desc }</p>
+    </modal>
+</div></script></code></pre>
+
+                    <h5>JavaScript:</h5>
+                    <pre><code class="language-javascript">
+var modalOpts = {
+    height: 300,
+    width: 300,
+    title: 'Modal demo',
+    data: {
+        desc: 'hehehe'
+    }
+}
+riot.mount('.demo modal', modalOpts);
+                    </code></pre>
                 </section>
 
                 <section id="super-form">
                     <h2>Super-form</h2><hr>
                     <p>可以提供ajax提交、防连击保护、表单校验、数据模板、常用指令等五大功能</p>
+                    <h5>Example:</h5>
                     <div class="demo">
                         <super-form action="/test">
                             <input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
-                            <label>必填: <input type="text" name="present" value="" valid="present"></label><br>
-                            <label>email: <input type="text" name="email" value="xieyu" valid="email"></label><br>
-                            <label>url: <input type="text" name="url" value="http://www." valid="url"></label><br>
-                            <label>mobile: <input type="text" name="mobile" value="a13927678767" valid="mobile"></label><br>
-                            <label>text more than 2: <input type="text" name="t3" value="{ data.b }" min="3"></label><br>
-                            <label>text less than 9: <input type="text" name="t4" value="good! There it is!" max="9"></label><br>
+
+                            <label>
+                                Must be: 
+                                <input type="text" name="present" value="" valid="present">
+                            </label><br>
+
+                            <label>
+                                email: 
+                                <input type="text" name="email" value="xieyu" valid="email">
+                            </label><br>
+
+                            <label>
+                                url: 
+                                <input type="text" name="url" value="http://www." valid="url">
+                            </label><br>
+
+                            <label>
+                                mobile: 
+                                <input type="text" name="mobile" value="a13927678767" valid="mobile">
+                            </label><br>
+
+                            <label>
+                                text more than 2: 
+                                <input type="text" name="t3" value="{ data.b }" min="3">
+                            </label><br>
+
+                            <label>
+                                text less than 9: 
+                                <input type="text" name="t4" value="good! There it is!" max="9">
+                            </label><br>
+
                             <input type="submit" class="btn btn-primary" value="提交">
                         </super-form>
                     </div>
+
+                    <h5>HTML:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<div class="demo">
+    <super-form action="/test">
+        <input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
+        <label>
+            Must be:  <input type="text" name="present" value="" valid="present">
+        </label><br>
+        <label>
+            email: <input type="text" name="email" value="xieyu" valid="email">
+        </label><br>
+        <label>
+            url: <input type="text" name="url" value="http://www." valid="url">
+        </label><br>
+        <label>
+            mobile: <input type="text" name="mobile" value="a13927678767" valid="mobile">
+        </label><br>
+        <label>
+            text more than 2: <input type="text" name="t3" value="{ data.b }" min="3">
+        </label><br>
+        <label>
+            text less than 9: <input type="text" name="t4" value="good! There it is!" max="9">
+        </label><br>
+        <input type="submit" class="btn btn-primary" value="提交">
+    </super-form>
+</div></script></code></pre>
+
+                    <h5>JavaScript</h5>
+                    <pre><code class="language-javascript">
+var formOpts = {
+    data: {
+        a: 1,
+        b: 'he'
+    },
+    valid: true,       //是否执行校验
+    callback: function() {
+        alert('success');
+    },
+    errCallback: function(params) {
+        alert("error, params:" + params);
+    },
+    normalSubmit: false,
+    onValidRefuse: function(dom, message) {
+        var tip = dom.parentNode.getElementsByClassName('tip-container')[0];
+        if (tip) {
+            dom.parentNode.removeChild(tip);
+        }
+        var tipContainer = document.createElement('span');
+        tipContainer.className = 'tip-container';
+        tipContainer.innerHTML = message;
+        dom.parentNode.appendChild(tipContainer);
+    },
+
+    onValidPass: function(dom, message) {
+        var tip = dom.parentNode.getElementsByClassName('tip-container')[0];
+        if (tip) {
+            dom.parentNode.removeChild(tip);
+        }
+        var tipContainer = document.createElement('span');
+        tipContainer.className = 'tip-container success';
+        tipContainer.innerHTML = message;
+        dom.parentNode.appendChild(tipContainer);
+    }
+}
+riot.mount('.demo super-form', formOpts);
+                    </code></pre>
                 </section>
 
                 <section id="super-div">
@@ -151,7 +385,7 @@
                     <div class="demo">
                         <div style="padding: 10px; border: 1px solid #e5e5e5;">
                             <super-div>
-                                <h4 onclick="{ warning }">{ data.title }</h4>
+                                <h4 onclick="{ warning }" style="cursor: pointer;">{ data.title }</h4>
                                 <p>{ data.desc }</p>
                                 <ul>
                                     <li each="{ data.list }">{ name }</li>
@@ -159,6 +393,60 @@
                             </super-div>
                         </div>
                     </div>
+
+                    <h5>HTML:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<div class="demo">
+    <super-div>
+        <h4 onclick="{ warning }">{ data.title }</h4>
+        <p>{ data.desc }</p>
+        <ul>
+            <li each="{ data.list }">{ name }</li>
+        </ul>
+    </super-div>
+</div></script></code></pre>
+                    
+                    <h5>JavaScript:</h5>
+                    <pre><code class="language-javascript">
+var divOpts = {
+    data: {
+        title: '复仇者联盟',
+        desc: '讲述了超级英雄拯救世界的故事。',
+        list: [{name: "钢铁侠"},{name: "绿巨人"},{name: "美国队长"},{name: "黑寡妇"},{name:"鹰眼"}]
+    },
+
+    warning: function(e) {
+        console.log(e.target);
+        alert('test');
+    }
+}
+riot.mount('.demo super-div', divOpts);
+                    </code></pre>
+                </section>
+
+                <section id="tab">
+                    <h2>Tab</h2><hr>
+                    <h5>Example:</h5>
+                    <div class="demo">
+                        <tab></tab>
+                    </div>
+                    <h5>HTML:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<div class="demo">
+    <tab></tab>
+</div></script></code></pre>
+
+                    <h5>JavaScript:</h5>
+                    <pre><code class="language-javascript">
+var tabOpts = {
+    data: [
+       { title: 'tab1', content: '1111'},
+       { title: 'tab2', content: '2222'},
+       { title: 'tab3', content: '3333'}
+    ]
+}
+riot.mount('.demo tab', tabOpts);
+                    </code></pre>
                 </section>
             </div>
         </div>
@@ -166,30 +454,7 @@
 
 
 <!-- JavaScript-->
-        <script>
-            window.onscroll = function() {
-                var ele = document.getElementById('fixed-list');
-                if (document.body.scrollTop > 60) {
-                    ele.style.top = '10px';
-                }
-                else {
-                    ele.style.top = '70px';
-                }
-            }
-            
-            String.prototype.escapeHTML = function () {                                        
-              return(                                                                 
-                this.replace(/>/g,'&gt;').
-                     replace(/</g,'&lt;').
-                     replace(/"/g,'&quot;')
-              );
-            };
-            var codeEles = document.getElementsByTagName('pre');
-            if (codeEles) {
-                for (i = 0; i < codeEles.length; i++) {
-                    codeEles[i].innerHTML = codeEles[i].innerHTML.escapeHTML();
-                }
-            }
+        <script>            
             /*
              *  tab切换
              */
@@ -277,7 +542,7 @@
             var modalOpts = {
                 height: 300,
                 width: 300,
-                title: '模态框demo',
+                title: 'Modal demo',
                 data: {
                     desc: 'hehehe'
                 }
@@ -349,7 +614,7 @@
             /*
              *  super-div
              */
-             var divOpts = {
+            var divOpts = {
                 data: {
                     title: '复仇者联盟',
                     desc: '讲述了超级英雄拯救世界的故事。',
@@ -364,5 +629,6 @@
             riot.mount('.demo super-div', divOpts);
 
         </script>
+        <script src="demos/prism.js"></script>
     </body>
 </html>
