@@ -1,42 +1,181 @@
 iToolkit
 ========
 
-iToolkit是一系列常用控件的集合，基于Riot进行构建，iToolkit拥有统一的配置方式：
-例如：
+iToolkit are some Commonly used tools build on Riot Framework, you can only use data to create view, and have similar way to invoke them.  
+e.g:  
 
-    <tree></tree>
-    riot.mount('tree', config);
+    <div id="test">
+        <tree></tree>
+    </div>
+    <script>
+        $.ajax({
+            url: '/test',
+            success: function(data) {
+                riot.mount('#test tree', {data: data, root: true});
+            }
+        })
+    </script>
 
-可以根据选择器选择mount指定的元素：
-    
-    riot.mount('#container tree', config);
-
-每个组件的配置项各不相同，但是基本用法是一致的,统一采用data字段包装数据：
-
-    tableOpts: {
-        data: [{name: 'Sherman'}],
-        fixHeader: true,
-        class: 'table'
-    }
-
-### 为什么要开发iToolkit？
-1. 统一的调用方式,数据直接生成视图。
-2. 到处可用，无论原网站是采用何种技术方案，都可以加入使用
-3. 依赖库小，riot压缩后只有3.5KB, 适用于移动端开发、老项目改造。
-4. 样式和逻辑完全分离，样式上具有较高的灵活性。
-5. 语义清晰，源码更容易维护。
-
-### PC端组件
-- Tree: 支持一维数组和树两种数据结构
-- Tab
-- Table: 支持定义字段、排序、表头、列宽
-- Paginate: ajax前端分页
-- Modal: 可以定制尺寸和title文字
-- Ajax-form: 使用方法和原生form完全一致
-
-### 移动端组件
-规划中......
-
-### 文档与Demo
-[文档](https://github.com/BE-FE/iToolkit/blob/master/doc.md)
+[中文readme](https://github.com/BE-FE/iToolkit/blob/master/README_Chinese.md)
+[中文文档](https://github.com/BE-FE/iToolkit/blob/master/doc.md)
 [Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)
+
+### Table
+#### Table generator:
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html#table)   
+HTML:
+
+    <table-view>
+        <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
+        <rcol name="desc" width="100px"></rcol>
+        <rcol name="name" alias="姓名"></rcol>
+    </table-view>
+
+JavaScript:
+
+    var tableOpts = {
+        data: [
+            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'},
+            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'},
+            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'}
+        ]
+    }
+    riot.mount('table-view', tableOpts);
+    riot.mount('rcol');
+
+#### Handle the table：
+JavaScript:
+
+    var dom = document.querySelector('table-view');
+    dom.loadData([{city: 'LuoYang', name: 'mudan', desc: 'It is pretty'}]);  //load new data
+    dom.appendData({city: 'LuoYang', name: 'mudan', desc: 'It is pretty'}); //append data
+    dom.deleteData('city', 'LuoYang'); //delete data
+    dom.clearData();  //clear data
+    dom.orderData('city'); //order by 'city'
+    dom.reverseData('city'); //reverse by 'city'
+
+### Form
+#### example code:
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)   
+HTML:
+
+    <super-form action="/test">
+        <input name="t1" value="{ data.a }" if="{ data.a==1 }">
+        <input name="t2" value="{ data.b }" valid="email">
+        <input name="t3" valid="url">
+        <input name="t4" value="{ data.b }" max="10">
+        <input type="submit" value="提交">
+    </super-form>
+
+JavaScript:
+
+    var formOpts = {
+        data: {
+            a: 1,
+            b: 'hehe'
+        },
+        callback: function() {
+            alert('success');
+        },
+        errCallback: function(params) {
+            alert("error, params:" + params);
+        },
+        valid: true,
+        normalSubmit: false,  //true is normal submit，false is ajax submit.
+        submitingText: "submiting..."
+    }
+    riot.mount('super-form', formOpts);
+
+### Paginate
+#### example code:
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html#paginate)   
+HTML:
+    
+    <paginate></paginate>
+
+JavaScript:
+
+    var pageOpts = {
+        count: 50,
+        pagesize: 10,
+        showNumber: 5,
+        callback: function(index) {
+            document.getElementById('page-number').innerHTML = index;
+        }
+    }
+    riot.mount('paginate', pageOpts);
+
+### Tree
+#### example code:
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html#tree)   
+HTML:
+    
+    <tree></tree>
+
+JavaScript:
+
+    var treeOpts = {
+        data: [
+            {id: 1, pid: null, title: 'root'},
+            {id: 2, pid: 1, title: 'item1'},
+            {id: 3, pid: 1, title: 'item2'},
+            {id: 4, pid: 2, title: 'item3'},
+            {id: 5, pid: 1, title: 'item4'},
+            {id: 6, pid: 3, title: 'item5'},
+            {id: 7, pid: 2, title: 'item6'},
+        ],
+        root: true,              //must be true
+        handleData: true,        //array use true，treeData use false
+        name: 'title',           // item name in the data
+        onLeftClick: function(item, target) {
+            alert('This item\'s id is: ' + item.id);
+        }                        //left click callback
+    }
+    riot.mount('tree', treeOpts);
+
+### Modal
+####example code:
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html#modal)    
+HTML:
+    
+    <modal id="modal-demo">
+        <h1>welcome!</h1>
+        <p>welcome, king under the montain!</p>
+        <p>{ data.desc }</p>
+    </modal>
+    <button modal-open-target="modal-demo">打开模态框</button>
+
+JavaScript:
+
+    var modalOpts = {
+        height: 300,
+        width: 300,
+        title: 'Modal demo',
+        data: {
+            desc: 'My name is xieyu'
+        }
+    }
+    riot.mount('modal', modalOpts);
+
+###Div
+####example code:
+HTML:
+
+    <super-div>
+        <h4>{ data.title }</h4>
+        <p>{ data.desc }</p>
+        <ul>
+            <li each="{ data.list }">{ name }</li>
+        </ul>
+    </super-div>
+
+JavaScript:
+
+    var divOpts = {
+        data: {
+            title: 'The Avengers',
+            desc: 'The story of super hero save the world.',
+            list: [{name: "iron man"},{name: "Hulk"},{name: "American Captain"},{name: "Black widow"},{name:"Eagle Eye"}]
+        },
+    }
+    riot.mount('super-div', divOpts);
