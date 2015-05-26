@@ -97,16 +97,37 @@ modal {
     padding-left: 16px;
 }
 
-.modal-title .modal-close {
+.modal-title .modal-close-wrap {
     position: absolute;
     right: 0;
     top: 0;
-    width: 25px;
-    height: 25px;
-    margin: 10px 10px 0 0;
-    background: url(../imgs/icons.png) no-repeat;
-    background-position: -27px -123px;
+    height: 30px;
     cursor: pointer;
+}
+.modal-title .modal-close {
+    margin: 20px 10px 0 0;
+    display:inline-block; 
+    width:12px; 
+    height:2px; 
+    background:#29282f; 
+    font-size:0; 
+    line-height:0;
+    vertical-align:middle;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    transform: rotate(45deg);
+    cursor: pointer;
+}
+
+.modal-title .modal-close:after { 
+    content:'.'; 
+    display:block; 
+    width:12px; 
+    height:2px; 
+    background-color: #29282f;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    transform: rotate(-90deg);
 }
 
 .modal-container {
@@ -189,25 +210,25 @@ selector .tree-item-name.right-active + .tree-item-back {
 }
 
 .tree-item-arrow {
-    width: 20px;
-    height: 20px;
     display: inline-block;
-    margin: 3px 2px 0 0;
+    margin: 5px 2px 0 0;
     vertical-align: top;
-    background: url(../imgs/icon.png);
-    background-position: -18px -24px;
+    border-top: 5px solid transparent;
+    border-left: 10px solid #999999;
+    border-bottom: 5px solid transparent;
     cursor: pointer;
     position: relative;
     z-index: 100;
 }
 
 .tree-item-arrow.open {
-    background: url(../imgs/icon.png);
-    background-position: 2px -24px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 10px solid #999999;
 }
 
 .tree-item-arrow.empty {
-    background: inherit;
+    border: none;
 }
 
 .tree-item-arrow ~ ul {
@@ -217,3 +238,26 @@ selector .tree-item-name.right-active + .tree-item-back {
 .tree-item-arrow.open ~ ul {
     display: block;
 }
+
+/* 
+ *  Table style
+ */
+
+table-view table {
+    table-layout:fixed;
+    cursor: default;
+}
+
+table-view table td.newline{
+    word-wrap:break-word;
+    word-break:break-all;
+}
+
+table-view table td.cut{
+    word-wrap:break-word;
+    word-break:break-all;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+

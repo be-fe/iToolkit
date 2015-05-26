@@ -16,7 +16,17 @@ gulp.task('riot_mobile', function () {
     .pipe(gulp.dest('src'));
 });
 
-gulp.task('default', ['riot_pc', 'riot_mobile'], function () {
-    gulp.watch(['src/*/*.tag', 'src/*.tag'], ['riot_pc', 'riot_mobile']);
+gulp.task('build', function () {
+    gulp.src(['src/css/themes/*.css'])
+    .pipe(gulp.dest('build/themes'));
+
+    gulp.src(['src/lib/riot2.1.0.js','src/iToolkit_pc.js'])
+    .pipe(concat('iToolkit_pc.js'))
+    .pipe(gulp.dest('build'));
+    
+});
+
+gulp.task('default', ['riot_pc', 'riot_mobile', 'build'], function () {
+    gulp.watch(['src/*/*.tag', 'src/*.tag', 'src/themes/*.css'], ['riot_pc', 'riot_mobile', 'build']);
 });
 

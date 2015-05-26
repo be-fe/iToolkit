@@ -28,7 +28,7 @@
                 height: 220px;
                 width: 200px;
                 border: 1px solid #e5e5e5;
-                padding-top: 10px;
+                padding: 10px;
             }
             .tip-container {
                 color: red;
@@ -78,8 +78,8 @@
                     </ul>
                     <h5>Example:</h5>
                     <pre><code class="language-markup"><script type="prism-html-markup">
-<link rel="stylesheet" href="simple_pc.css">
-<script src="iToolkit_pc.js"></script></script></code></pre>
+<link rel="stylesheet" href="build/themes/simple_pc.css">
+<script src="build/iToolkit_pc.js"></script></script></code></pre>
 
                     <h4>基本调用方式</h4>
                     <ul>
@@ -148,8 +148,8 @@ riot.mount('.demo tree', treeOpts);
                     <h5>实例:</h5>
                     <div class="demo">
                         <table-view>
-                            <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
-                            <rcol name="desc" width="20px"></rcol>
+                            <rcol name="city" width="200px"><a href="<%= desc%>"><%= city%></a></rcol>
+                            <rcol name="desc" width="200px"></rcol>
                             <rcol name="name" alias="姓名"></rcol>
                         </table-view>
                     </div>
@@ -166,7 +166,7 @@ riot.mount('.demo tree', treeOpts);
 <div class="demo">
     <table-view>
         <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
-        <rcol name="desc" width="20px"></rcol>
+        <rcol name="desc" width="200px"></rcol>
         <rcol name="name" alias="姓名"></rcol>
     </table-view>
 </div></script></code></pre>
@@ -180,9 +180,10 @@ var tableOpts = {
         {city: 'ChengDu', name: 'Billy', desc: 'hehehe'},
         {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!'}
     ],
-    class: 'table',
-    showHeader: 'true',
-    fixHeader: 'true'
+    class: 'table',    //table上添加的class，可配合Bootstrap
+    showHeader: true,  //是否展示表头
+    cut: true,         //内容超长是否省略
+    newline: false,    //内容超长是否换行
 }
 riot.mount('.demo  table-view', tableOpts);
 riot.mount('rcol');
@@ -472,14 +473,15 @@ riot.mount('.demo tab', tabOpts);
              */
             var tableOpts = {
                 data: [
-                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank'},
+                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank, wahahahahaha'},
                     {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl'},
                     {city: 'ChengDu', name: 'Billy', desc: 'hehehe'},
                     {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!'}
                 ],
                 class: 'table',
-                showHeader: 'true',
-                fixHeader: 'true'
+                showHeader: true,
+                cut: true,
+                newline: false
             }
             riot.mount('.demo  table-view', tableOpts);
             riot.mount('rcol');

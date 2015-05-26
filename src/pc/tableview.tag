@@ -1,12 +1,12 @@
 <table-view>
     <yield>
     <table class={ config.class }> 
-        <tr>
-            <th each={ cols } style={ col_style }>{ alias || name }</th>
+        <tr show={ showHeader }>
+            <th each={ cols } style={ style }>{ alias || name }</th>
         </tr>
         <tr each={ row in rows } > 
-            <td each={ colkey, colval in parent.cols }>
-                { parent.parent.drawcell( parent.row, this, colkey) }
+            <td each={ colkey, colval in parent.cols } class={ newline: parent.parent.config.newline, cut: parent.parent.config.cut } title={ parent.row[colkey.name] }>
+                { parent.parent.drawcell(parent.row, this, colkey) }
             </td>
         </tr>
     </table>
@@ -14,6 +14,13 @@
     var self = this;
     var EL = self.root;
     self.config = self.opts.opts || self.opts;
+    if (self.config.showHeader===false) {
+        self.showHeader = false
+    }
+    else {
+        self.showHeader = true;
+    }
+
     self.cols = [];
     self.rows = [];
 
