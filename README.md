@@ -16,9 +16,9 @@ e.g:
         })
     </script>
 
-[中文readme](https://github.com/BE-FE/iToolkit/blob/master/README_Chinese.md)
-[中文文档](https://github.com/BE-FE/iToolkit/blob/master/doc.md)
-[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)
+[中文readme](https://github.com/BE-FE/iToolkit/blob/master/README_Chinese.md)   
+[中文文档](https://github.com/BE-FE/iToolkit/blob/master/doc.md)    
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)    
 
 ### Table
 #### Table generator:

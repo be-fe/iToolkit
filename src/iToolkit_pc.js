@@ -4,16 +4,16 @@ riot.tag('dropdown', '', function(opts) {
 riot.tag('file-upload', '', function(opts) {
 
 
-
 });
-riot.tag('modal', '<div class="modal-dialog" riot-style="width:{width}px; height:{height}px"> <div class="modal-title"> <span>{ title }</span> <div class="modal-close" onclick="{ close }"></div> </div> <div class="modal-container"> <yield> </div> </div>', function(opts) {
+riot.tag('modal', '<div class="modal-dialog" riot-style="width:{width}px; height:{height}px"> <div class="modal-title"> <span>{ title }</span> <div class="modal-close-wrap" onclick="{ close }"> <div class="modal-close"></div> </div> </div> <div class="modal-container"> <yield> </div> </div>', function(opts) {
 
     var self = this;
     var config = self.opts.opts || self.opts;
+    for (i in config) {
+        self[i] = config[i];
+    }
     self.width = config.width || 600;
     self.height = config.width || 300;
-    self.title = config.title;
-    self.data = config.data;
 
     this.close = function(e) {
         self.root.style.display = 'none';
@@ -335,11 +335,18 @@ riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ a
     }.bind(this);
 
 });
-riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr> <th each="{ cols }" riot-style="{ col_style }">{ alias || name }</th> </tr> <tr each="{ row in rows }" > <td each="{ colkey, colval in parent.cols }"> { parent.parent.drawcell( parent.row, this, colkey) } </td> </tr> </table>', function(opts) {
+riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ showHeader }"> <th each="{ cols }" riot-style="{ style }">{ alias || name }</th> </tr> <tr each="{ row in rows }" > <td each="{ colkey, colval in parent.cols }" class="{ newline: parent.parent.config.newline, cut: parent.parent.config.cut }" title="{ parent.row[colkey.name] }"> { parent.parent.drawcell(parent.row, this, colkey) } </td> </tr> </table>', function(opts) {
 
     var self = this;
     var EL = self.root;
     self.config = self.opts.opts || self.opts;
+    if (self.config.showHeader===false) {
+        self.showHeader = false
+    }
+    else {
+        self.showHeader = true;
+    }
+
     self.cols = [];
     self.rows = [];
 

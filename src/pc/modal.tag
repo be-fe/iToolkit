@@ -2,7 +2,9 @@
     <div class="modal-dialog" style='width:{width}px; height:{height}px'>
         <div class="modal-title">
             <span>{ title }</span>
-            <div class="modal-close" onclick={ close }></div>
+            <div class="modal-close-wrap" onclick={ close }>
+                <div class="modal-close"></div>
+            </div>
         </div>
         <div class="modal-container">
            <yield>
@@ -11,10 +13,11 @@
 
     var self = this;
     var config = self.opts.opts || self.opts;
+    for (i in config) {
+        self[i] = config[i];
+    }
     self.width = config.width || 600;
     self.height = config.width || 300;
-    self.title = config.title;
-    self.data = config.data;
 
     close(e) {
         self.root.style.display = 'none';
