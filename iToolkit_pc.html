@@ -14,6 +14,7 @@
             <script>html5.addElements('test')</script>
         <![endif]-->
         <script src="src/lib/riot2.1.0.js"></script>
+        <script src="src/lib/common.js"></script>
         <script src="src/iToolkit_pc.js"></script>
         <style>
             #fixed-list {
@@ -29,15 +30,6 @@
                 width: 200px;
                 border: 1px solid #e5e5e5;
                 padding: 10px;
-            }
-            .tip-container {
-                color: red;
-                padding-left: 10px;
-                font-size: 13px;
-            }
-
-            .tip-container.success{
-                color: green;
             }
         </style>
     </head>
@@ -129,12 +121,13 @@ var treeOpts = {
         {id: 6, pid: 3, title: 'item5'},
         {id: 7, pid: 2, title: 'item6'},
     ],
-    root: true,
-    handleData: true,
-    name: 'title',
-    onLeftClick: function(item, target) {
+    root: true,         //标示符，必须为true
+    handleData: true,   //data为一维数组，选true, data为树结构，选false
+    name: 'title',      //名称字段在接口中的字段名
+    onLeftClick: function(item, target) {     
         alert('This item\'s id is: ' + item.id);
     }
+    //左键点击的回调。第一个参数为对应的数据item, 第二个参数为对应的dom
 }
 riot.mount('.demo tree', treeOpts);
                     </code></pre>
@@ -219,12 +212,13 @@ dom.reverseData('city'); //reverse by 'city'
                     <h5>JavaScript:</h5>
                     <pre><code class="language-javascript">
 var pageOpts = {
-    count: 120,
-    pagesize: 10,
-    showNumber: 5,
+    count: 120,     //总条目数
+    pagesize: 10,   //每页的条目数
+    pageCount: 12,  //页数，非必须，会覆盖总条数/每页条数的计算结果
+    showNumber: 5,  //分页格的最大数量
     callback: function(index) {
         document.getElementById('page-number').innerHTML = index;
-    }
+    }               //页数变化时的回调，会将跳转页码作为参数传入
 }
 riot.mount('.demo paginate', pageOpts);
                     </code></pre>
@@ -280,22 +274,27 @@ riot.mount('.demo modal', modalOpts);
 
                             <label>
                                 Must be: 
-                                <input type="text" name="present" value="" valid="present">
+                                <input type="text" name="present" value="1" valid="present">
                             </label><br>
 
                             <label>
                                 email: 
-                                <input type="text" name="email" value="xieyu" valid="email">
+                                <input type="text" name="email" value="xieyu@baidu.com" valid="email">
                             </label><br>
 
                             <label>
                                 url: 
-                                <input type="text" name="url" value="http://www." valid="url">
+                                <input type="text" name="url" value="http://www.baidu.com" valid="url">
                             </label><br>
 
                             <label>
                                 mobile: 
-                                <input type="text" name="mobile" value="a13927678767" valid="mobile">
+                                <input type="text" name="mobile" value="13927678767" valid="mobile">
+                            </label><br>
+
+                            <label>
+                                RegExp:
+                                <input type="text" name="t4" value="test" valid="/test/">
                             </label><br>
 
                             <label>
@@ -330,6 +329,9 @@ riot.mount('.demo modal', modalOpts);
             mobile: <input type="text" name="mobile" value="a13927678767" valid="mobile">
         </label><br>
         <label>
+            RegExp: <input type="text" name="t4" value="tes" valid="/test/">
+        </label><br>
+        <label>
             text more than 2: <input type="text" name="t3" value="{ data.b }" min="3">
         </label><br>
         <label>
@@ -346,35 +348,23 @@ var formOpts = {
         a: 1,
         b: 'he'
     },
-    valid: true,       //是否执行校验
-    callback: function() {
-        alert('success');
+    valid: true,                //是否执行校验
+    callback: function() {      //提交成功的回调
+        alert('success');      
     },
-    errCallback: function(params) {
+    errCallback: function(params) {   //提交失败的回调
         alert("error, params:" + params);
     },
-    normalSubmit: false,
-    onValidRefuse: function(dom, message) {
-        var tip = dom.parentNode.getElementsByClassName('tip-container')[0];
-        if (tip) {
-            dom.parentNode.removeChild(tip);
-        }
-        var tipContainer = document.createElement('span');
-        tipContainer.className = 'tip-container';
-        tipContainer.innerHTML = message;
-        dom.parentNode.appendChild(tipContainer);
+    normalSubmit: false,             //是否为ajax提交
+    onValidRefuse: function(dom, message) {        //验证失败的回调函数,非必需,组件提供了默认动作
+       alert(message);  //覆盖默认动作
     },
 
-    onValidPass: function(dom, message) {
-        var tip = dom.parentNode.getElementsByClassName('tip-container')[0];
-        if (tip) {
-            dom.parentNode.removeChild(tip);
-        }
-        var tipContainer = document.createElement('span');
-        tipContainer.className = 'tip-container success';
-        tipContainer.innerHTML = message;
-        dom.parentNode.appendChild(tipContainer);
+    onValidPass: function(dom, message) {    //验证成功的回调函数,非必需,组件提供了默认动作
+        alert(message);
     }
+
+    submitingText: 'submiting...'   //提交中状态文字，默认为“提交中...”
 }
 riot.mount('.demo super-form', formOpts);
                     </code></pre>
@@ -416,7 +406,7 @@ var divOpts = {
         list: [{name: "钢铁侠"},{name: "绿巨人"},{name: "美国队长"},{name: "黑寡妇"},{name:"鹰眼"}]
     },
 
-    warning: function(e) {
+    warning: function(e) {     //可以定义函数，供事件调用
         console.log(e.target);
         alert('test');
     }
@@ -587,28 +577,6 @@ riot.mount('.demo tab', tabOpts);
                 },
                 errCallback: function(params) {
                     alert("error, params:" + params);
-                },
-                //normalSubmit: true
-                onValidRefuse: function(dom, message) {
-                    var tip = dom.parentNode.getElementsByClassName('tip-container')[0];
-                    if (tip) {
-                        dom.parentNode.removeChild(tip);
-                    }
-                    var tipContainer = document.createElement('span');
-                    tipContainer.className = 'tip-container';
-                    tipContainer.innerHTML = message;
-                    dom.parentNode.appendChild(tipContainer);
-                },
-
-                onValidPass: function(dom, message) {
-                    var tip = dom.parentNode.getElementsByClassName('tip-container')[0];
-                    if (tip) {
-                        dom.parentNode.removeChild(tip);
-                    }
-                    var tipContainer = document.createElement('span');
-                    tipContainer.className = 'tip-container success';
-                    tipContainer.innerHTML = message;
-                    dom.parentNode.appendChild(tipContainer);
                 }
             }
             riot.mount('.demo super-form', formOpts);

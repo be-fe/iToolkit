@@ -23,13 +23,13 @@
     config.callback(self.currentPage);
 
     self.pages = [];
-    if (self.pageCount < 8) {
+    if (self.pageCount < (self.showNumber + 1)) {
         for (i = 0; i < self.pageCount; i++) {
             self.pages.push({page: i + 1});
         }
     } 
     else {
-        for (i = 0; i < 7; i++) {
+        for (i = 0; i < self.showNumber; i++) {
             self.pages.push({page: i + 1});
         }
         self.pages.push({page: '...'});
@@ -69,15 +69,15 @@
             self.currentPage = page;
             config.callback(page);
         }
-        if (self.currentPage > 4 && self.pageCount > 7) {
+        if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
             self.pages = [];
             if (self.pageCount - self.currentPage > 2) {
-                var origin = self.currentPage - 4;
-                var last = self.currentPage + 3;
+                var origin = self.currentPage - Math.ceil(self.showNumber/2);
+                var last = self.currentPage + Math.floor(self.showNumber/2);
             }
             else {
                 var last = self.pageCount;
-                var origin = self.pageCount - 7;
+                var origin = self.pageCount - self.showNumber;
             }
             for (i = origin; i < last; i++) {
                 self.pages.push({page: i + 1});
@@ -85,9 +85,9 @@
             }
             
         }
-        else if (self.currentPage < 5 && self.pageCount > 7){
+        else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
             self.pages = [];
-            for (i = 0; i < 7; i++) {
+            for (i = 0; i < self.showNumber; i++) {
                 self.pages.push({page: i + 1});
             }
             self.pages.push({page: '...'});

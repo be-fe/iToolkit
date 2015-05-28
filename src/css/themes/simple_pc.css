@@ -261,3 +261,16 @@ table-view table td.cut{
     text-overflow: ellipsis;
 }
 
+/*
+ *  super-form
+ */
+.tip-container {
+    color: red;
+    padding-left: 10px;
+    font-size: 13px;
+}
+
+.tip-container.success{
+    color: green;
+}
+
