@@ -40,13 +40,13 @@ riot.tag('paginate', '<div class="paginate"> <li onclick="{ goFirst }">«</li> <
     config.callback(self.currentPage);
 
     self.pages = [];
-    if (self.pageCount < 8) {
+    if (self.pageCount < (self.showNumber + 1)) {
         for (i = 0; i < self.pageCount; i++) {
             self.pages.push({page: i + 1});
         }
     } 
     else {
-        for (i = 0; i < 7; i++) {
+        for (i = 0; i < self.showNumber; i++) {
             self.pages.push({page: i + 1});
         }
         self.pages.push({page: '...'});
@@ -86,15 +86,15 @@ riot.tag('paginate', '<div class="paginate"> <li onclick="{ goFirst }">«</li> <
             self.currentPage = page;
             config.callback(page);
         }
-        if (self.currentPage > 4 && self.pageCount > 7) {
+        if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
             self.pages = [];
             if (self.pageCount - self.currentPage > 2) {
-                var origin = self.currentPage - 4;
-                var last = self.currentPage + 3;
+                var origin = self.currentPage - Math.ceil(self.showNumber/2);
+                var last = self.currentPage + Math.floor(self.showNumber/2);
             }
             else {
                 var last = self.pageCount;
-                var origin = self.pageCount - 7;
+                var origin = self.pageCount - self.showNumber;
             }
             for (i = origin; i < last; i++) {
                 self.pages.push({page: i + 1});
@@ -102,9 +102,9 @@ riot.tag('paginate', '<div class="paginate"> <li onclick="{ goFirst }">«</li> <
             }
             
         }
-        else if (self.currentPage < 5 && self.pageCount > 7){
+        else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
             self.pages = [];
-            for (i = 0; i < 7; i++) {
+            for (i = 0; i < self.showNumber; i++) {
                 self.pages.push({page: i + 1});
             }
             self.pages.push({page: '...'});
@@ -140,18 +140,50 @@ riot.tag('super-div', '<style scope> super-div{ display: block; } </style> <yiel
     
     var self = this;
     var config = self.opts.opts || self.opts;
+    var EL = self.root;
 
     for (i in config) {
         self[i] = config[i];
     }
 
+    EL.loadData = function(newData, colName){
+        colName = colName || 'data';
+        self[colName] = newData
+        self.update()
+    }
+
+
 });
 riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function(opts) {
 
     var self = this;
+    var EL = self.root;
     var config = self.opts.opts || self.opts;
+    var keyWords = ['insertTip', 'ajaxSubmit', 'submit'];   //保留字，不被覆盖
+
+    self.presentWarning = '必填';
+    self.emailWarning = '邮箱格式错误';
+    self.mobileWarning = '手机格式错误';
+    self.urlWarning = '网址格式错误';
+    self.successTips = '通过';
+    self.regWarning = '字段不符合验证规则';
+
+    EL.loadData = function(newData, colName){
+        colName = colName || 'data';
+        self[colName] = newData;
+        self.update();
+    }
+
+    for (i in config) {
+        if (keyWords.indexOf(i) < 0) {
+            self[i] = config[i];
+        }
+    }
     self.data = config.data;
     self.submitingText = config.submitingText || '提交中...';
+    if (config.valid === undefined) {
+        config.valid = true;
+    }
     
     self.maxWarning = config.maxWarning || function(n) {
         return '不得超过' + n + '个字符';
@@ -159,17 +191,41 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     self.minWarning = config.minWarning || function(n) {
         return '不得小于' + n + '个字符';
     }
-    self.presentWarning = '必填';
-    self.emailWarning = '邮箱格式错误';
-    self.mobileWarning = '手机格式错误';
-    self.urlWarning = '网址格式错误';
-    self.successTips = '通过';
-    self.addTips = config.onValidRefuse || function(dom, errorTips) {
 
+    self.removeTips = function() {
+        var root = self.root;
+        var tips = root.getElementsByClassName('tip-container');
+        if (tips && tips.length) {
+            del();
+        }
+
+        function del() {
+            for (i = 0; i < tips.length; i++) {
+                tips[i].parentNode.removeChild(tips[i]);
+                if (tips.length) {
+                    del();
+                }
+            }
+        }
+    }
+    
+    self.insertTip = function(dom, message, className){
+        var tip = dom.nextElementSibling;
+        if (tip && tip.className.match(/tip-container/)) {
+            dom.parentNode.removeChild(tip);
+        }
+        var tipContainer = document.createElement('span');
+        tipContainer.className = className;
+        tipContainer.innerHTML = message;
+        utils.insertAfter(tipContainer, dom);
+    }
+
+    self.onValidRefuse = config.onValidRefuse || function(dom, errorTips) {
+        self.insertTip(dom, errorTips, 'tip-container');
     }
 
     self.onValidPass = config.onValidPass || function(dom, successTips) {
-
+        self.insertTip(dom, successTips, 'tip-container success');
     }
 
     self.ajaxSubmit = function(elems, url) {
@@ -215,6 +271,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 else {
                     config.errCallback(params);
                 }
+                self.removeTips();
                 submitbtn.value = submitText;
                 submitbtn.disabled = false;
             } 
@@ -238,7 +295,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     if (valid === 'email') {
                         if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
                             validArr.push(name);
-                            self.addTips(dom, self.emailWarning);
+                            self.onValidRefuse(dom, self.emailWarning);
                         }
                         else {
                             self.onValidPass(dom, self.successTips); 
@@ -247,7 +304,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     else if (valid === 'mobile') {
                         if (!v.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
                             validArr.push(name);
-                            self.addTips(dom, self.mobileWarning);
+                            self.onValidRefuse(dom, self.mobileWarning);
                         }
                         else {
                             self.onValidPass(dom, self.successTips); 
@@ -256,7 +313,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     else if (valid === 'url') {
                         if (!v.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
                             validArr.push(name);
-                            self.addTips(dom, self.urlWarning);
+                            self.onValidRefuse(dom, self.urlWarning);
                         }
                         else {
                             self.onValidPass(dom, self.successTips); 
@@ -266,10 +323,22 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                         v = v.replace(' ', '');
                         if (!v.length) {
                             validArr.push(name);
-                            self.addTips(dom, self.presentWarning);
+                            self.onValidRefuse(dom, self.presentWarning);
                         }
                         else {
                             self.onValidPass(dom, self.successTips);
+                        }
+                    }
+                    else if (valid.match(/^\/\S+\/$/)) {
+                        valid = valid.replace(/^\//, '');
+                        valid = valid.replace(/\/$/, '');
+                        var reg = new RegExp(valid);
+                        if (reg.test(v)) {
+                            self.onValidPass(dom, self.successTips); 
+                        }
+                        else {
+                            validArr.push(name);
+                            self.onValidRefuse(dom, self.regWarning);
                         }
                     }
                 }
@@ -277,7 +346,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     var max = parseInt(max, 10);
                     if (v.length > max) {
                         validArr.push(name);
-                        self.addTips(dom, self.maxWarning(max));
+                        self.onValidRefuse(dom, self.maxWarning(max));
                     }
                     else {
                         self.onValidPass(dom, self.successTips);
@@ -287,7 +356,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     var min = parseInt(min, 10);
                     if (v.length < min) {
                         validArr.push(name);
-                        self.addTips(dom, self.minWarning(min));
+                        self.onValidRefuse(dom, self.minWarning(min));
                     }
                     else {
                         self.onValidPass(dom, self.successTips);
