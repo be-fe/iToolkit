@@ -92,6 +92,35 @@ $.ajax({
         riot.mount('#tree-wrap tree', {data: data, root: true});
     }
 })</code></pre>
+                    <h4>循环和表达式</h4>
+                    <p>在诸如super-div, super-form, modal等组件中，用户可以在其中填入自己需要的内容，并且可以根据传入的data来进行展示和控制。</p>
+                    <p>目前支持if、show、hide、each四种指令</p>
+                    <h5>example:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<super-div>
+    <div if="{ data.exist }">只有管理员能看</div>
+    <div show="{ data.exist }">想看其实也能看</div>
+    <div hide="{ !data.exist }">你看不见我</div>
+    <table>
+        <tr each="{ data.data }">
+            <td>{ name }</td>
+            <td>{ age }</td>
+            <td>{ score }</td>
+        </tr>
+    </table>
+
+    <div each="{ name, value in obj }">{ name } = { value }</div>
+
+</super-div>
+                    </script></code></pre>
+                    <p>支持绝大多数形式的表达式: </p>
+                     <pre><code class="language-javascript">
+{ title || 'Untitled' }
+{ results ? 'ready' : 'loading' }
+{ new Date() }
+{ message.length > 140 && 'Message is too long' }
+{ Math.round(rating) }
+</code></pre>
                 </section>
 
                 <section id='tree'>
