@@ -442,6 +442,21 @@ var divOpts = {
 }
 riot.mount('.demo super-div', divOpts);
                     </code></pre>
+                     <p>super-div还内置了httpGet和jsonp两种自动映射接口数据的方式：</p>
+                     <h5>HTML:</h5>
+                     <pre><code class="language-markup"><script type="prism-html-markup">
+<div class="demo">
+    <super-div id="http-get" data-get="/data/test.json">
+        <div>{ code }</div>    <!-- 接口里的code字段 -->
+    </super-div>
+    <super-div id="jsonp" data-jsonp="/data/jsonp.json"></super-div>
+</div></script></code></pre>
+                    <h5>JavaScript:</h5>
+                    <pre><code class="language-javascript">
+
+riot.mount('#http-get', {params: {name: "Tom"}}); //params里填写url query参数
+riot.mount('#jsonp', {params: {name: "Tom"}});
+                    </code></pre>
                 </section>
 
                 <section id="tab">

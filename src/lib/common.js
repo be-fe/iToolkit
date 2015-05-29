@@ -2,15 +2,22 @@
  * Utils 函数
  */
 var utils = {
-    httpGet: function(url, callback) {
+    httpGet: function(url, params, callback) {
         var xmlhttp = new XMLHttpRequest();
+        var url = utils.concatParams(url, params);
         xmlhttp.open("GET", url, true);
         xmlhttp.send(null);
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) { 
                 if (xmlhttp.status === 200) {
+                    var body = xmlhttp.responseText;
                     try {
-                        var data = JSON.parse(xmlhttp.responseText)
+                        if (typeof body === 'string') {
+                            var data = JSON.parse(body);
+                        }
+                        else {
+                            var data = body;
+                        }
                     }
                     catch(e) {
                         alert('解析错误');
@@ -33,15 +40,52 @@ var utils = {
                         var data = JSON.parse(xmlhttp.responseText)
                     }
                     catch(e) {
-                        alert('解析错误');
+                        console.log('解析错误');
                     }
                     callback(data);
                 }
                 else {
-                    alert('网络错误');
+                    console.log('网络错误');
                 }
             } 
         };
+    },
+
+    jsonp: function (url, params, callback) {
+        var now = Date.now();
+        var script = document.createElement('script');
+        var head = document.getElementsByTagName('head')[0];
+        var url = utils.concatParams(url, params);
+        if (!params.callback) {
+            if (url.match(/\?/)) {
+                var src = url + '&callback=jsonpCallback' + now;
+            }
+            else {
+                var src = url + '?callback=jsonpCallback' + now;
+            }
+            var funcName = 'jsonpCallback' + now;
+        }
+        else {
+            var src = url;
+            var funcName = params.callback;
+        }
+        script.src = src;
+        head.appendChild(script);
+        window[funcName] = function(data) {
+            if (typeof data === 'string') {
+                try {
+                    data = JSON.parse(data);
+                }
+                catch(e) {}
+            }
+            callback(data);
+        }
+        script.onerror = function() {
+            console.log('jsonp error');
+        };
+        script.onload = function() {
+            head.removeChild(script);
+        }
     },
 
     htmlEncode: function(value){
@@ -50,13 +94,18 @@ var utils = {
         return div.innerText;
     },
 
-    addParams: function(url, str) {
+    concatParams: function(url, params) {
         if (url.match(/\?/)) {
-            return url + '&' + str;
+            var str = '&'
         }
         else {
-            return url + '?' + str;
+            var str = '?'
         }
+        for(i in params) {
+            str = str + i + '=' + params[i] + '&';
+        }
+        str = str.replace(/&$/, '');
+        return url + str;
     },
 
     setCookie: function(key, value, expires, path) {

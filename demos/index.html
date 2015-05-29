@@ -4,9 +4,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
         <link rel="stylesheet" href="../src/css/common.css">
-        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">
-        <link rel="stylesheet" href="prism.css">
-        
+        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">        
         <!-- IE兼容  -->
         <!--[if lt IE 9]>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.5/es5-shim.min.js"></script>
@@ -19,29 +17,46 @@
     </head>
     <body>
         <super-div id="test-div">
-            <h1>成绩公布：</h1>
+            <h3>成绩公布：(使用第三方http工具获取数据)</h3>
             <table class="table">
-                <tr each="{ data.detail }">
+                <tr each="{ data }">
                     <td>{ name }</td>
                     <td>{ score }</td>
                 </tr>
             </table>
         </super-div>
+
+        <super-div id="test-url" data-get="data/test.json">
+            <h3>成绩公布：(使用内置httpGet获取数据)</h3>
+            <table class="table">
+                <tr each="{ data }">
+                    <td>{ name }</td>
+                    <td>{ score }</td>
+                </tr>
+            </table>
+        </super-div>
+
+        <super-div id="test-jsonp" data-jsonp="data/jsonp.json">
+            <h3>成绩公布：(使用内置jsonp获取数据)</h3>
+            <table class="table">
+                <tr each="{ data }">
+                    <td>{ name }</td>
+                    <td>{ score }</td>
+                </tr>
+            </table>
+        </super-div>
+
         <script>
             var opts = {
-                data: {
-                    a: 1,
-                    b: 2,
-                    c: 3,
-                    detail: [
+                data: [
                         {name: '小王', score: 90},
                         {name: '小李', score: 85},
-                        {name: '小刘', score: 95},
+                        {name: '小刘', score: 95}
                     ]
-                }
             }
-            riot.mount('#test-div', opts)
+            riot.mount('#test-div', opts);
+            riot.mount('#test-url', {params: {test: 1, name: 'hehe'}});
+            riot.mount('#test-jsonp', {params: {callback: 'jsonpCallback', name: 'hehe'}});
         </script>
-        <script src="demos/prism.js"></script>
     </body>
 </html>

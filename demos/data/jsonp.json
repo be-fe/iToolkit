@@ -1,0 +1,7 @@
+jsonpCallback({
+    "data": [
+        {"name": "小王", "score": 90},
+        {"name": "小李", "score": 85},
+        {"name": "小刘", "score": 95}
+    ]
+})

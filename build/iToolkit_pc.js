@@ -1284,15 +1284,22 @@ riot.mountTo = riot.mount
  * Utils 函数
  */
 var utils = {
-    httpGet: function(url, callback) {
+    httpGet: function(url, params, callback) {
         var xmlhttp = new XMLHttpRequest();
+        var url = utils.concatParams(url, params);
         xmlhttp.open("GET", url, true);
         xmlhttp.send(null);
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) { 
                 if (xmlhttp.status === 200) {
+                    var body = xmlhttp.responseText;
                     try {
-                        var data = JSON.parse(xmlhttp.responseText)
+                        if (typeof body === 'string') {
+                            var data = JSON.parse(body);
+                        }
+                        else {
+                            var data = body;
+                        }
                     }
                     catch(e) {
                         alert('解析错误');
@@ -1315,15 +1322,52 @@ var utils = {
                         var data = JSON.parse(xmlhttp.responseText)
                     }
                     catch(e) {
-                        alert('解析错误');
+                        console.log('解析错误');
                     }
                     callback(data);
                 }
                 else {
-                    alert('网络错误');
+                    console.log('网络错误');
                 }
             } 
         };
+    },
+
+    jsonp: function (url, params, callback) {
+        var now = Date.now();
+        var script = document.createElement('script');
+        var head = document.getElementsByTagName('head')[0];
+        var url = utils.concatParams(url, params);
+        if (!params.callback) {
+            if (url.match(/\?/)) {
+                var src = url + '&callback=jsonpCallback' + now;
+            }
+            else {
+                var src = url + '?callback=jsonpCallback' + now;
+            }
+            var funcName = 'jsonpCallback' + now;
+        }
+        else {
+            var src = url;
+            var funcName = params.callback;
+        }
+        script.src = src;
+        head.appendChild(script);
+        window[funcName] = function(data) {
+            if (typeof data === 'string') {
+                try {
+                    data = JSON.parse(data);
+                }
+                catch(e) {}
+            }
+            callback(data);
+        }
+        script.onerror = function() {
+            console.log('jsonp error');
+        };
+        script.onload = function() {
+            head.removeChild(script);
+        }
     },
 
     htmlEncode: function(value){
@@ -1332,13 +1376,18 @@ var utils = {
         return div.innerText;
     },
 
-    addParams: function(url, str) {
+    concatParams: function(url, params) {
         if (url.match(/\?/)) {
-            return url + '&' + str;
+            var str = '&'
         }
         else {
-            return url + '?' + str;
+            var str = '?'
         }
+        for(i in params) {
+            str = str + i + '=' + params[i] + '&';
+        }
+        str = str.replace(/&$/, '');
+        return url + str;
     },
 
     setCookie: function(key, value, expires, path) {
@@ -1553,15 +1602,45 @@ riot.tag('super-div', '<style scope> super-div{ display: block; } </style> <yiel
     var self = this;
     var config = self.opts.opts || self.opts;
     var EL = self.root;
+    self.superDivUrl = EL.getAttribute('data-get') || EL.getAttribute('data-jsonp');
 
     for (i in config) {
         self[i] = config[i];
     }
+    
+    self.getData = function(params) {
+        var params = params || {};
+        if (EL.getAttribute('data-get')) {
+            var method = 'httpGet';
+        }
+        else if (EL.getAttribute('data-jsonp')) {
+            var method = 'jsonp';
+        }
+        
+        utils[method](self.superDivUrl, params, function(data) {
+            for (i in data) {
+                self[i] = data[i];
+            }
+            self.update();
+        });
+    }
+
+    self.on('mount', function() {
+        if (self.superDivUrl) {
+            self.getData(config.params);
+        }
+    })
 
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
         self[colName] = newData
         self.update()
+    }
+
+    EL.reload = function() {
+        if (self.superDivUrl) {
+            self.getData(config.params);
+        }
     }
 
 
