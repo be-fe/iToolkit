@@ -1773,7 +1773,6 @@ riot.tag('super-div', '<style scope> super-div{ display: block; } </style> <yiel
         }
         
         utils[method](self.superDivUrl, params, function(data) {
-            console.log(data);
             for (i in data) {
                 self.data = {};
                 self.data[i] = data[i];
