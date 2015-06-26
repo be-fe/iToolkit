@@ -1,7 +1,7 @@
 iToolkit
 ========
 
-iToolkit are some Commonly used tools build on Riot Framework, you can only use data to create view, and have similar way to invoke them.  
+iToolkit are some Commonly used tools build on [Riot](https://muut.com/riotjs/) Framework, you can only use data to create view, and have similar way to invoke them.  
 e.g:  
 
     <div id="test">
@@ -64,7 +64,7 @@ HTML:
         <input name="t2" value="{ data.b }" valid="email">
         <input name="t3" valid="url">
         <input name="t4" value="{ data.b }" max="10">
-        <input type="submit" value="提交">
+        <input type="submit" value="submit">
     </super-form>
 
 JavaScript:
@@ -143,7 +143,7 @@ HTML:
         <p>welcome, king under the montain!</p>
         <p>{ data.desc }</p>
     </modal>
-    <button modal-open-target="modal-demo">打开模态框</button>
+    <button modal-open-target="modal-demo">open modal</button>
 
 JavaScript:
 

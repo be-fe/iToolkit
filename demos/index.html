@@ -2,39 +2,63 @@
     <head>
         <meta charset='utf-8'>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="../src/css/common.css">
+        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">        
         <!-- IE兼容  -->
         <!--[if lt IE 9]>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.5/es5-shim.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
             <script>html5.addElements('test')</script>
         <![endif]-->
-
-        <!-- 基础库  -->
-        <!--<script src="venders/riot.js"></script>-->
-        <script src="venders/superagent.js"></script>
-        <script src="venders/riot.js"></script>
-        
-        <!-- 逻辑 -->
-        <script src="js/pagetore.js"></script>
-
-        <!-- 组件  -->
-        <script src="js/iToolkit_pc.js"></script>
-        <script src="js/iToolkit_mobile.js"></script>
+        <script src="../src/lib/riot2.1.0.js"></script>
+        <script src="../src/lib/common.js"></script>
+        <script src="../src/iToolkit_pc.js"></script>
     </head>
     <body>
-        <tab></tab>
+        <super-div id="test-div">
+            <h3>成绩公布：(使用第三方http工具获取数据)</h3>
+            <table class="table">
+                <tr each="{ data }">
+                    <td>{ name }</td>
+                    <td>{ score }</td>
+                </tr>
+            </table>
+        </super-div>
+
+        <super-div id="test-url" data-get="data/test.json">
+            <h3>成绩公布：(使用内置httpGet获取数据)</h3>
+            <table class="table">
+                <tr each="{ data.data }">
+                    <td>{ name }</td>
+                    <td>{ score }</td>
+                </tr>
+            </table>
+        </super-div>
+
+        <super-div id="test-jsonp" data-jsonp="data/jsonp.json">
+            <h3>成绩公布：(使用内置jsonp获取数据)</h3>
+            <table class="table">
+                <tr each="{ data.data }">
+                    <td>{ name }</td>
+                    <td>{ score }</td>
+                </tr>
+            </table>
+        </super-div>
 
         <script>
-            var tabOpts = {
+            var opts = {
                 data: [
-                   { title: 'tab1', content: '1111'},
-                   { title: 'tab2', content: '2222'},
-                   { title: 'tab3', content: '3333'}
-                ]
+                        {name: '小王', score: 90},
+                        {name: '小李', score: 85},
+                        {name: '小刘', score: 95}
+                    ]
             }
-            riot.tag('tab', { data: tabOpts});
+            riot.mount('#test-div', opts);
+            riot.mount('#test-url', {params: {test: 1, name: 'hehe'}});
+            riot.mount('#test-jsonp', {params: {callback: 'jsonpCallback', name: 'hehe'}});
 
+            // document.querySelector('#test-jsonp').reload();
         </script>
     </body>
 </html>
