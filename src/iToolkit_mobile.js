@@ -21,3 +21,7 @@ riot.tag('load-more', '<div id="loading" show="{ loading }"> <img src="imgs/load
 
 });
 
+riot.tag('slider', '', function(opts) {
+    
+
+});

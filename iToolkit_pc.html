@@ -24,8 +24,15 @@
                 overflow: auto;
                 margin-top: 15px;
             }
-
+            .wrap,
             #tree-wrap {
+                height: 220px;
+                width: 200px;
+                border: 1px solid #e5e5e5;
+                padding: 10px;
+            }
+
+            #loading .demo {
                 height: 220px;
                 width: 200px;
                 border: 1px solid #e5e5e5;
@@ -47,6 +54,8 @@
                     <a href="#modal" class="list-group-item">Modal</a>
                     <a href="#super-form" class="list-group-item">Form</a>
                     <a href="#super-div" class="list-group-item">Div</a>
+                    <a href="#loading" class="list-group-item">Loading</a>
+                    <a href="#goto-top" class="list-group-item">Goto-Top</a>
                 </div>
             </div>
             <div class="col-xs-8">
@@ -123,6 +132,7 @@ $.ajax({
 </code></pre>
                 </section>
 
+<!-- ********************************** Tree Start ************************************** -->
                 <section id='tree'>
                     <h2>Tree</h2><hr>
                     <p>树结构组件可以直接根据数据生成树结构，支持一维数组结构和树状结构的数据，可以配置点击回调。</p>
@@ -162,6 +172,7 @@ riot.mount('.demo tree', treeOpts);
                     </code></pre>
                 </section>
 
+<!-- ********************************** Table Start ************************************** -->
                 <section id="table">
                     <h2>Table</h2><hr>
                     <p>表格组件可以根据数据生成表格，使用rcol标签控制字段的排序、表头名、内容的拼接、列的宽度，使用参数配置表头展示、固定等。</p>
@@ -222,7 +233,8 @@ dom.orderData('city'); //order by 'city'
 dom.reverseData('city'); //reverse by 'city'
                     </code></pre>
                 </section>
-                
+ 
+<!-- ********************************** Paginate Start ************************************** -->               
                 <section id="paginate">
                     <h2>Paginate</h2><hr>
                     <p>分页组件可以由配置数据直接生成，可以配置跳页回调、展示数量等数据</p>
@@ -254,7 +266,7 @@ riot.mount('.demo paginate', pageOpts);
 
                 </section>
 
-
+<!-- ********************************** Modal Start ************************************** -->
                 <section id="modal">
                     <h2>Modal</h2><hr>
                     <p>可以配置模态框的高度、宽度、title; 并且可以将相关的数据带入模板</p>
@@ -293,6 +305,7 @@ riot.mount('.demo modal', modalOpts);
                     </code></pre>
                 </section>
 
+<!-- ********************************** Super-Form Start ************************************** -->
                 <section id="super-form">
                     <h2>Super-form</h2><hr>
                     <p>可以提供ajax提交、防连击保护、表单校验、数据模板、常用指令等五大功能</p>
@@ -399,6 +412,8 @@ riot.mount('.demo super-form', formOpts);
                     </code></pre>
                 </section>
 
+
+<!-- ********************************** Super-Div Start *************************************** -->
                 <section id="super-div">
                     <h2>Super-div</h2><hr>
                     <p>为super-div容器内的元素提供模板和基础指令</p>
@@ -447,7 +462,7 @@ riot.mount('.demo super-div', divOpts);
                      <pre><code class="language-markup"><script type="prism-html-markup">
 <div class="demo">
     <super-div id="http-get" data-get="/data/test.json">
-        <div>{ code }</div>    <!-- 接口里的code字段 -->
+        <div>{ data.code }</div>    <!-- 接口里的code字段 -->
     </super-div>
     <super-div id="jsonp" data-jsonp="/data/jsonp.json"></super-div>
 </div></script></code></pre>
@@ -458,6 +473,8 @@ riot.mount('#http-get', {params: {name: "Tom"}}); //params里填写url query参�
 riot.mount('#jsonp', {params: {name: "Tom"}});
                     </code></pre>
                 </section>
+
+<!-- ********************************** Tab Start *************************************** -->
 
                 <section id="tab">
                     <h2>Tab</h2><hr>
@@ -483,6 +500,57 @@ var tabOpts = {
 riot.mount('.demo tab', tabOpts);
                     </code></pre>
                 </section>
+
+<!-- ********************************** Loading Start *************************************** -->
+
+                <section id="loading">
+                    <h2>Loading</h2><hr>
+                    <p>自动相对父元素居中，默认CSS3 Loading动画, 可自定义loading图片和图片高度(宽度根据高度自适应)</p>
+                    <h5>Example:</h5>
+                    <super-div class="demo" style="float: left;">
+                        <loading></loading>
+                    </super-div>
+
+                    <div class="wrap" style="float: left;">
+                        <loading></loading>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <h5>HTML:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<div class="demo">
+    <loading></loading>
+</div></script></code></pre>
+
+                    <h5>JavaScript:</h5>
+                    <pre><code class="language-javascript">
+riot.mount('.demo loading'); //不写config, 使用默认的CSS 3动画
+
+var loadingOpts = {
+    img: 'img/loading.gif',   //loading图片url
+    imgHeight: '60px';        //图片高度
+}
+riot.mount('.demo loading', loadingOpts);
+                    </code></pre>
+                </section>
+
+<!-- ********************************** Goto-Top Start *************************************** -->
+                <section id="goto-top">
+                    <h2>Goto-Top</h2><hr>
+                    <p>返回顶部，默认CSS3 图标, 可自定义返回顶部的图片和图片高度(宽度根据高度自适应), </p>
+                    <h5>HTML:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<div class="demo">
+    <goto-top></goto-top>
+</div></script></code></pre>
+
+                    <h5>JavaScript:</h5>
+                    <pre><code class="language-javascript">
+riot.mount('.demo goto-top');
+                    </code></pre>
+                </section>
+
+                <goto-top></goto-top>
             </div>
         </div>
 
@@ -641,6 +709,19 @@ riot.mount('.demo tab', tabOpts);
                 }
             }
             riot.mount('.demo super-div', divOpts);
+
+            /*
+             *  loading
+             */
+            
+            riot.mount('super-div.demo');
+
+            riot.mount('.wrap loading', { img: 'http://thinkfuture.com/wp-content/uploads/2013/10/loading_spinner.gif', imgHeight: '70px' });
+
+            /*
+             *  goto-top
+             */
+            riot.mount('goto-top');
 
         </script>
         <script src="demos/prism.js"></script>

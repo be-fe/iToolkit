@@ -1,8 +1,163 @@
 riot.tag('dropdown', '', function(opts) {
 
 });
-riot.tag('file-upload', '', function(opts) {
+riot.tag('file-upload', '<div id="uploader" class="wu-example">  <div id="thelist" class="uploader-list"></div> <div class="btns"> <div id="picker">选择文件</div> <button id="ctlBtn" class="btn btn-default">开始上传</button> </div> </div>', function(opts) {
+    
+    var self = this;
+    var config = self.opts.opts || self.opts;
+    var head = document.getElementsByTagName('head')[0];
+    var webUploadJS = document.createElement('script');
+    webUploadJS.src = config.jsUrl || 'http://cdn.staticfile.org/webuploader/0.1.1/webuploader.js';
+    var jQuerySource = document.createElement('script');
+    jQuerySource.src = 'http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js';
 
+    self.getSource = function() {
+        if (!window.WebUploader) {
+            head.appendChild(webUploadJS);
+
+        }
+    }
+
+    if (!window.jQuery) {
+        head.appendChild(jQuerySource);
+        jQuerySource.onload = self.getSource;
+    }
+    else {
+        self.getSource();
+    }
+
+
+
+    
+    webUploadJS.onload = function() {
+        console.log(WebUploader);
+        var uploader = WebUploader.create({
+
+            swf: '/js/Uploader.swf',
+
+            server: 'http://webuploader.duapp.com/server/fileupload.php',
+
+
+            pick: '#picker',
+
+            resize: false
+        });
+        console.log(uploader);
+
+        uploader.on( 'uploadProgress', function( file, percentage ) {
+            var $li = $( '#'+file.id ),
+                $percent = $li.find('.progress .progress-bar');
+
+            if ( !$percent.length ) {
+                $percent = $('<div class="progress progress-striped active">' +
+                  '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                  '</div>' +
+                '</div>').appendTo( $li ).find('.progress-bar');
+            }
+
+            $li.find('p.state').text('上传中');
+
+            $percent.css( 'width', percentage * 100 + '%' );
+        });
+
+        uploader.on( 'uploadSuccess', function( file ) {
+            $( '#'+file.id ).find('p.state').text('已上传');
+        });
+
+        uploader.on( 'uploadError', function( file ) {
+            $( '#'+file.id ).find('p.state').text('上传出错');
+        });
+
+        uploader.on( 'uploadComplete', function( file ) {
+            $( '#'+file.id ).find('.progress').fadeOut();
+        });
+
+    }
+
+});
+riot.tag('goto-top', '<div class="itoolkit-goto-top" show="{ showGotoTop }" onclick="{ gotoTop }"> <span class="icon" if="{ !config.img }"><span class="icon-arrowUp"></span></span> <img riot-src="{ config.img }" if="{ config.img }"> </div>', 'goto-top .itoolkit-goto-top{ display: block; position: fixed; bottom: 50px; right: 40px; height: 60px; width: 60px; z-index: 10000; text-align: center; opicity: 0.5; cursor: pointer; } goto-top .itoolkit-goto-top .icon{ font-size: 3em; margin: auto; float: none; }', function(opts) {
+
+    var self = this;
+    self.config = self.opts.opts || self.opts;
+    var avalibleHeight = window.screen.availHeight;
+    
+    self.on('mount', function() {
+        window.addEventListener('scroll', self.controlGotoTop);
+    })
+    
+    self.controlGotoTop = function() {
+        var body = document.body;
+        if (body.scrollTop > avalibleHeight && !self.showGotoTop) {
+            self.showGotoTop = true;
+            self.update();
+        }
+        else if (body.scrollTop < avalibleHeight && self.showGotoTop) {
+            self.showGotoTop = false;
+            self.update();
+        }
+    }
+
+    this.gotoTop = function(e) {
+        var length = document.body.scrollTop / 100 * 16;
+        var timer = setInterval(function() {
+            document.body.scrollTop = document.body.scrollTop - length;
+            if (document.body.scrollTop < 10) {
+                clearInterval(timer);
+            }
+        }, 16);
+    }.bind(this);
+    window.test = self;
+
+
+
+
+    
+
+});
+riot.tag('loading', '<div class="{itoolkit-loading: true, default: default}" > <img riot-src="{ img }" if="{ img }" width="{ width }" alt="loading"> </div>', 'loading .itoolkit-loading { text-align: center; }', function(opts) {
+
+    var self = this;
+    var config = self.opts.opts || self.opts;
+    
+    if (!config.img) {
+        self.img = false;
+        self.default = true;
+    }
+    else {
+        self.img = config.img;
+    }
+    
+    self.on('mount', function() {
+        var childDom = self.root.getElementsByClassName('itoolkit-loading')[0];
+
+        var img = childDom.querySelector('loading .itoolkit-loading img');
+        if (img) {
+            img.style.height = config.imgHeight || '50px';
+        }
+
+        var cellHeight = parseInt(window.getComputedStyle(childDom, null).height.replace('px', ''), 10);
+
+        var parentDom = self.root.parentNode;
+        var parentPosition = window.getComputedStyle(parentDom, null).position;
+
+        self.root.style.marginTop = '-' + cellHeight/2 + 'px';
+        if (parentPosition === 'static') {
+            parentDom.style.position = 'relative';
+        }
+    })
+
+    self.root.show = function(newrows){
+        if (childDom) {
+            childDom.style.display = 'block';
+        }
+    }
+
+    self.root.hide = function(newrows){
+        if (childDom) {
+            childDom.style.display = 'none';
+        }
+    }
+    
 
 });
 riot.tag('modal', '<div class="modal-dialog" riot-style="width:{width}px; height:{height}px"> <div class="modal-title"> <span>{ title }</span> <div class="modal-close-wrap" onclick="{ close }"> <div class="modal-close"></div> </div> </div> <div class="modal-container"> <yield> </div> </div>', function(opts) {
@@ -141,11 +296,11 @@ riot.tag('super-div', '<style scope> super-div{ display: block; } </style> <yiel
     var self = this;
     var config = self.opts.opts || self.opts;
     var EL = self.root;
-    self.superDivUrl = EL.getAttribute('data-get') || EL.getAttribute('data-jsonp');
 
     for (i in config) {
         self[i] = config[i];
     }
+    
     
     self.getData = function(params) {
         var params = params || {};
@@ -158,18 +313,21 @@ riot.tag('super-div', '<style scope> super-div{ display: block; } </style> <yiel
         
         utils[method](self.superDivUrl, params, function(data) {
             for (i in data) {
-                self[i] = data[i];
+                self.data = {};
+                self.data[i] = data[i];
             }
             self.update();
         });
     }
 
     self.on('mount', function() {
+        self.superDivUrl = EL.getAttribute('data-get') || EL.getAttribute('data-jsonp');
         if (self.superDivUrl) {
             self.getData(config.params);
         }
     })
-
+    
+    
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
         self[colName] = newData

@@ -29,7 +29,7 @@
         <super-div id="test-url" data-get="data/test.json">
             <h3>成绩公布：(使用内置httpGet获取数据)</h3>
             <table class="table">
-                <tr each="{ data }">
+                <tr each="{ data.data }">
                     <td>{ name }</td>
                     <td>{ score }</td>
                 </tr>
@@ -39,7 +39,7 @@
         <super-div id="test-jsonp" data-jsonp="data/jsonp.json">
             <h3>成绩公布：(使用内置jsonp获取数据)</h3>
             <table class="table">
-                <tr each="{ data }">
+                <tr each="{ data.data }">
                     <td>{ name }</td>
                     <td>{ score }</td>
                 </tr>
@@ -57,6 +57,8 @@
             riot.mount('#test-div', opts);
             riot.mount('#test-url', {params: {test: 1, name: 'hehe'}});
             riot.mount('#test-jsonp', {params: {callback: 'jsonpCallback', name: 'hehe'}});
+
+            // document.querySelector('#test-jsonp').reload();
         </script>
     </body>
 </html>
