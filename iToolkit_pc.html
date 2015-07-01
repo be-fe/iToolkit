@@ -13,7 +13,7 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
             <script>html5.addElements('test')</script>
         <![endif]-->
-        <script src="src/lib/riot2.1.0.js"></script>
+        <script src="src/lib/riot.js"></script>
         <script src="src/lib/common.js"></script>
         <script src="src/iToolkit_pc.js"></script>
         <style>
@@ -56,6 +56,7 @@
                     <a href="#super-div" class="list-group-item">Div</a>
                     <a href="#loading" class="list-group-item">Loading</a>
                     <a href="#goto-top" class="list-group-item">Goto-Top</a>
+                    <a href="#editable-link" class="list-group-item">Editable-link</a>
                 </div>
             </div>
             <div class="col-xs-8">
@@ -425,6 +426,7 @@ riot.mount('.demo super-form', formOpts);
                                 <ul>
                                     <li each="{ data.list }">{ name }</li>
                                 </ul>
+                                <editable-link name="{ data.title }" text="{ data.desc }" action="/change/value"></editable-link>
                             </super-div>
                         </div>
                     </div>
@@ -549,6 +551,26 @@ riot.mount('.demo loading', loadingOpts);
 riot.mount('.demo goto-top');
                     </code></pre>
                 </section>
+
+<!-- ******************************** editable-link Start ********************************** -->
+                <section id="editable-link">
+                    <h2>editable-link</h2><hr>
+                    <p>可以编辑的文字链接</p>
+                    <h5>Example:</h5>
+                    <editable-link text="点击这里修改" name="test" action="/change/value"></editable-link>
+                    
+                    <h5>HTML:</h5>
+                    <pre><code class="language-markup"><script type="prism-html-markup">
+<editable-link text="点击这里修改" name="test" action="/change/value"></editable-link>
+</script></code></pre>
+
+                    <h5>JavaScript:</h5>
+                    <pre><code class="language-javascript">
+riot.mount('editable-link', { errCallback: function(){alert('failed')} });
+                    </code></pre>
+                </section>
+    
+<!-- ****************************** editable-link end *************************************** -->
 
                 <goto-top></goto-top>
             </div>
@@ -721,7 +743,13 @@ riot.mount('.demo goto-top');
             /*
              *  goto-top
              */
-            riot.mount('goto-top');
+            riot.mount('goto-top', {right: '4px'});
+
+            /*
+             * editable-link
+             */
+            
+            riot.mount('editable-link', { errCallback: function(){alert('failed')} });
 
         </script>
         <script src="demos/prism.js"></script>

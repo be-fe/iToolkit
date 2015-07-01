@@ -20,7 +20,7 @@ gulp.task('build', function () {
     gulp.src(['src/css/themes/*.css'])
     .pipe(gulp.dest('build/themes'));
 
-    gulp.src(['src/lib/riot2.1.0.js', 'src/lib/common.js', 'src/iToolkit_pc.js'])
+    gulp.src(['src/lib/riot.js', 'src/lib/common.js', 'src/iToolkit_pc.js'])
     .pipe(concat('iToolkit_pc.js'))
     .pipe(gulp.dest('build'));
     

@@ -134,7 +134,7 @@ JavaScript:
     riot.mount('tree', treeOpts);
 
 ### Modal
-####example code:
+#### example code:
 [Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html#modal)    
 HTML:
     
@@ -157,8 +157,8 @@ JavaScript:
     }
     riot.mount('modal', modalOpts);
 
-###Div
-####example code:
+### Div
+#### example code:
 HTML:
 
     <super-div>
@@ -179,3 +179,28 @@ JavaScript:
         },
     }
     riot.mount('super-div', divOpts);
+
+#### API bind
+HTML:
+
+    <super-div id="jsonp" data-jsonp="/data/data.json">
+        <h4>{ data.title }</h4>
+        <p>{ data.desc }</p>
+        <ul>
+            <li each="{ data.list }">{ name }</li>
+        </ul>
+    </super-div>
+
+    <super-div id="http-get" data-get="/data/data.json">
+        <h4>{ data.title }</h4>
+        <p>{ data.desc }</p>
+        <ul>
+            <li each="{ data.list }">{ name }</li>
+        </ul>
+    </super-div>
+
+JavaScript:
+
+    riot.mount('#jsonp', { params: {callback: 'jsonpcallback'} });
+    riot.mount('#http-get', { params: {test: '1'} });
+

@@ -147,7 +147,7 @@
         return EL;
     }
 
-    drawcell(rowdata, tr,  col) {
+    drawcell(rowdata, td, col) {
         if(col.inner){
             setTimeout(function() {
                 var str = col.inner.replace(/&lt;%=[\s|\w]+%&gt;/g, function(v) {
@@ -156,7 +156,7 @@
                                .replace(/%&gt;/g, '');
                     return rowdata[key];
                 });
-                tr.root.children[col.index].innerHTML = str;
+                td.root.innerHTML = str;
             }, 10);
         }
         else{

@@ -1,6 +1,46 @@
 riot.tag('dropdown', '', function(opts) {
 
 });
+riot.tag('editable-link', '<a href="javascript:void(0);" if="{ !editable }" onclick="{ open }">{ value }</a> <super-form if="{ editable }" action="{ action }" opts="{ formOpts }"> <input type="text" value="{ parent.value }" name="{ parent.name }" class="editable-link-input"> <input type="submit" value="提交"> <button onclick="{ parent.close }">取消</button> </super-form>', function(opts) {
+
+    var self = this;
+    self.editlink = false;
+    var EL = self.root;
+    var config = self.opts.opts || self.opts;
+
+    self.on('mount', function() {
+        self.action = EL.getAttribute('action');
+        self.value = EL.getAttribute('text');
+        self.name = EL.getAttribute('name');
+        self.update();
+    })
+
+    this.open = function(e) {
+        self.editable = true;
+        self.update();
+    }.bind(this);
+
+    this.close = function(e) {
+        self.editable = false;
+        self.update();
+    }.bind(this);
+
+    self.formOpts = {
+        errCallback: function() {
+            config.errCallback();
+            EL.querySelector('.editable-link-input').value = self.value;
+            self.editable = false;
+            self.update();
+        },
+        callback: function(value) {
+            config.callback();
+            self.value = EL.querySelector('.editable-link-input').value;
+            self.editable = false;
+            self.update();
+        }
+    }
+
+});
 riot.tag('file-upload', '<div id="uploader" class="wu-example">  <div id="thelist" class="uploader-list"></div> <div class="btns"> <div id="picker">选择文件</div> <button id="ctlBtn" class="btn btn-default">开始上传</button> </div> </div>', function(opts) {
     
     var self = this;
@@ -82,6 +122,8 @@ riot.tag('goto-top', '<div class="itoolkit-goto-top" show="{ showGotoTop }" oncl
     var avalibleHeight = window.screen.availHeight;
     
     self.on('mount', function() {
+        self.root.querySelector('.itoolkit-goto-top').style.bottom = self.config.bottom;
+        self.root.querySelector('.itoolkit-goto-top').style.right = self.config.right;
         window.addEventListener('scroll', self.controlGotoTop);
     })
     
@@ -435,7 +477,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     params += elems[i].name + "=" + encodeURIComponent(value) + "&";
                 }
             }
-            if (elems[i].type === "submit") {
+            if (elems[i].type === "submit" && elems[i].tagName !== "BUTTON") {
                 var submitbtn = elems[i];
                 var submitText = submitbtn.value || submitbtn.innerText;
                 submitbtn.disabled = 'disabled';
@@ -730,7 +772,7 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
         return EL;
     }
 
-    this.drawcell = function(rowdata, tr,  col) {
+    this.drawcell = function(rowdata, td, col) {
         if(col.inner){
             setTimeout(function() {
                 var str = col.inner.replace(/&lt;%=[\s|\w]+%&gt;/g, function(v) {
@@ -739,7 +781,7 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
                                .replace(/%&gt;/g, '');
                     return rowdata[key];
                 });
-                tr.root.children[col.index].innerHTML = str;
+                td.root.innerHTML = str;
             }, 10);
         }
         else{
