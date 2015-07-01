@@ -1505,8 +1505,7 @@ riot.tag('editable-link', '<a href="javascript:void(0);" if="{ !editable }" oncl
     var self = this;
     self.editlink = false;
     var EL = self.root;
-    var config = self.opts.opts || self.opts
-    if (config.)
+    var config = self.opts.opts || self.opts;
 
     self.on('mount', function() {
         self.action = EL.getAttribute('action');
