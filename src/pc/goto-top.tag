@@ -28,6 +28,8 @@
     var avalibleHeight = window.screen.availHeight;
     
     self.on('mount', function() {
+        self.root.querySelector('.itoolkit-goto-top').style.bottom = self.config.bottom;
+        self.root.querySelector('.itoolkit-goto-top').style.right = self.config.right;
         window.addEventListener('scroll', self.controlGotoTop);
     })
     

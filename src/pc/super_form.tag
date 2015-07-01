@@ -94,7 +94,7 @@
                     params += elems[i].name + "=" + encodeURIComponent(value) + "&";
                 }
             }
-            if (elems[i].type === "submit") {
+            if (elems[i].type === "submit" && elems[i].tagName !== "BUTTON") {
                 var submitbtn = elems[i];
                 var submitText = submitbtn.value || submitbtn.innerText;
                 submitbtn.disabled = 'disabled';
