@@ -45,15 +45,18 @@
     /*
      *  load & reload 数据
      */
-    EL.loadData = function(newData, colName){
+    self.loadData = EL.loadData = function(newData, colName){
         colName = colName || 'data';
         self[colName] = newData
-        self.update()
+        self.update();
     }
 
-    EL.reloadData = function() {
+    self.reload = EL.reload = function() {
         if (self.superDivUrl) {
             self.getData(config.params);
+        }
+        else {
+            self.update();
         }
     }
 

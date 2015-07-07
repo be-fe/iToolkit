@@ -15,6 +15,9 @@
     self.successTips = '通过';
     self.regWarning = '字段不符合验证规则';
 
+    self.passClass = config.passClass || 'valid-pass';
+    self.failedClass = config.failedClass || 'valid-failed';
+
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
         self[colName] = newData;
@@ -38,8 +41,11 @@
     self.minWarning = config.minWarning || function(n) {
         return '不得小于' + n + '个字符';
     }
-
-    self.removeTips = function() {
+    
+    /*
+     * 移除提示
+     */
+    self.removeTips = function(elems) {
         var root = self.root;
         var tips = root.getElementsByClassName('tip-container');
         if (tips && tips.length) {
@@ -48,14 +54,22 @@
 
         function del() {
             for (i = 0; i < tips.length; i++) {
-                tips[i].parentNode.removeChild(tips[i]);
+                tips[i].parentNode.removeChild(tips[i]);                
                 if (tips.length) {
                     del();
                 }
             }
         }
+
+        for (var i = 0; i < elems.length; i++) {
+            utils.removeClass(elems[i], self.passClass);
+            utils.removeClass(elems[i], self.failedClass);
+        }
     }
     
+    /*
+     *  插入提示
+     */
     self.insertTip = function(dom, message, className){
         var tip = dom.nextElementSibling;
         if (tip && tip.className.match(/tip-container/)) {
@@ -69,12 +83,20 @@
 
     self.onValidRefuse = config.onValidRefuse || function(dom, errorTips) {
         self.insertTip(dom, errorTips, 'tip-container');
+        utils.removeClass(dom, self.passClass);
+        utils.addClass(dom, self.failedClass);
     }
 
     self.onValidPass = config.onValidPass || function(dom, successTips) {
         self.insertTip(dom, successTips, 'tip-container success');
+        utils.removeClass(dom, self.failedClass);
+        utils.addClass(dom, self.passClass);
     }
+    
 
+    /*
+     * ajax提交
+     */
     self.ajaxSubmit = function(elems, url) {
         var params = '';
         for (var i = 0; i < elems.length; i++) {
@@ -118,13 +140,16 @@
                 else {
                     config.errCallback(params);
                 }
-                self.removeTips();
+                self.removeTips(elems);
                 submitbtn.value = submitText;
                 submitbtn.disabled = false;
             } 
         };
     }
-
+    
+    /*
+     * 提交动作，校验流程
+     */
     submit(e) {
         var validArr = [];
         var elems = self.root.getElementsByTagName('form')[0].elements;
