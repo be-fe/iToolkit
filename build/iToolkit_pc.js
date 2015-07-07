@@ -1505,8 +1505,7 @@ riot.tag('editable-link', '<a href="javascript:void(0);" if="{ !editable }" oncl
     var self = this;
     self.editlink = false;
     var EL = self.root;
-    var config = self.opts.opts || self.opts
-    if (config.)
+    var config = self.opts.opts || self.opts;
 
     self.on('mount', function() {
         self.action = EL.getAttribute('action');
@@ -1723,7 +1722,7 @@ riot.tag('modal', '<div class="modal-dialog" riot-style="width:{width}px; height
 
 
 });
-riot.tag('paginate', '<div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate" if="{ pageCount > 1 }"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div>', function(opts) {
+riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate" if="{ pageCount > 1 }"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" type="number" style="width: 40px;">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
     
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -1734,6 +1733,11 @@ riot.tag('paginate', '<div class="paginate"> <li onclick="{ goFirst }">«</li> <
     self.currentPage = config.currentPage || 1;
     self.url = config.url || '';
     self.showNumber = config.showNumber || 5;
+
+    self.redirect = config.redirect || true;
+    self.showPageCount = config.showPageCount || true;
+    self.showItemCount = config.showItemCount || true;
+
     config.callback(self.currentPage);
 
     self.pages = [];
@@ -1751,31 +1755,30 @@ riot.tag('paginate', '<div class="paginate"> <li onclick="{ goFirst }">«</li> <
     self.update();
 
     this.goFirst = function(e) {
-        config.callback(1);
-        self.currentPage = 1;
-        self.pageChange(self.currentPage);
+        self.pageChange(1);
     }.bind(this);
 
     this.goPrev = function(e) {
         if (self.currentPage > 1) {
-            config.callback(self.currentPage - 1);
-            self.currentPage = self.currentPage - 1;
-            self.pageChange(self.currentPage);
+            self.pageChange(self.currentPage - 1);
         }
     }.bind(this);
 
     this.goNext = function(e) {
         if (self.currentPage < self.pageCount) {
-            config.callback(self.currentPage + 1);
-            self.currentPage = self.currentPage + 1;
-            self.pageChange(self.currentPage);
+            self.pageChange(self.currentPage + 1);
         }
     }.bind(this);
     
     this.goLast = function(e) {
-        config.callback(self.pageCount);
-        self.currentPage = self.pageCount;
-        self.pageChange(self.currentPage);
+        self.pageChange(self.pageCount);
+    }.bind(this);
+
+    this.redirect = function(e) {
+        var index = self.page.value;
+        if (parseInt(index, 10) && parseInt(index, 10) < (self.pageCount + 1)) {
+            self.pageChange(parseInt(index, 10));
+        }
     }.bind(this);
 
     self.pageChange = function(page) {
@@ -1870,15 +1873,18 @@ riot.tag('super-div', '<style scope> super-div{ display: block; } </style> <yiel
     })
     
     
-    EL.loadData = function(newData, colName){
+    self.loadData = EL.loadData = function(newData, colName){
         colName = colName || 'data';
         self[colName] = newData
-        self.update()
+        self.update();
     }
 
-    EL.reloadData = function() {
+    self.reload = EL.reload = function() {
         if (self.superDivUrl) {
             self.getData(config.params);
+        }
+        else {
+            self.update();
         }
     }
 
@@ -1897,6 +1903,9 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     self.urlWarning = '网址格式错误';
     self.successTips = '通过';
     self.regWarning = '字段不符合验证规则';
+
+    self.passClass = config.passClass || 'valid-pass';
+    self.failedClass = config.failedClass || 'valid-failed';
 
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
@@ -1921,8 +1930,9 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     self.minWarning = config.minWarning || function(n) {
         return '不得小于' + n + '个字符';
     }
-
-    self.removeTips = function() {
+    
+    
+    self.removeTips = function(elems) {
         var root = self.root;
         var tips = root.getElementsByClassName('tip-container');
         if (tips && tips.length) {
@@ -1931,13 +1941,19 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
         function del() {
             for (i = 0; i < tips.length; i++) {
-                tips[i].parentNode.removeChild(tips[i]);
+                tips[i].parentNode.removeChild(tips[i]);                
                 if (tips.length) {
                     del();
                 }
             }
         }
+
+        for (var i = 0; i < elems.length; i++) {
+            utils.removeClass(elems[i], self.passClass);
+            utils.removeClass(elems[i], self.failedClass);
+        }
     }
+    
     
     self.insertTip = function(dom, message, className){
         var tip = dom.nextElementSibling;
@@ -1952,12 +1968,18 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
     self.onValidRefuse = config.onValidRefuse || function(dom, errorTips) {
         self.insertTip(dom, errorTips, 'tip-container');
+        utils.removeClass(dom, self.passClass);
+        utils.addClass(dom, self.failedClass);
     }
 
     self.onValidPass = config.onValidPass || function(dom, successTips) {
         self.insertTip(dom, successTips, 'tip-container success');
+        utils.removeClass(dom, self.failedClass);
+        utils.addClass(dom, self.passClass);
     }
+    
 
+    
     self.ajaxSubmit = function(elems, url) {
         var params = '';
         for (var i = 0; i < elems.length; i++) {
@@ -2001,13 +2023,14 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 else {
                     config.errCallback(params);
                 }
-                self.removeTips();
+                self.removeTips(elems);
                 submitbtn.value = submitText;
                 submitbtn.disabled = false;
             } 
         };
     }
-
+    
+    
     this.submit = function(e) {
         var validArr = [];
         var elems = self.root.getElementsByTagName('form')[0].elements;

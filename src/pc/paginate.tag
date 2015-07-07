@@ -1,14 +1,24 @@
 <paginate>
-    <div class="paginate">
-        <li onclick={ goFirst }>«</li>
-        <li onclick={ goPrev }>‹</li>
-    </div>
-    <ul class="paginate" if={ pageCount > 1 }>
-        <li each={ pages } onclick={ parent.changePage } class={ active: parent.currentPage == page }>{ page }</li>
-    </ul>
-    <div class="paginate">
-        <li onclick={ goNext }>›</li>
-        <li onclick={ goLast }>»</li>
+    <div onselectstart="return false" ondragstart="return false">
+        <div class="paginate">
+            <li onclick={ goFirst }>«</li>
+            <li onclick={ goPrev }>‹</li>
+        </div>
+        <ul class="paginate" if={ pageCount > 1 }>
+            <li each={ pages } onclick={ parent.changePage } class={ active: parent.currentPage == page }>{ page }</li>
+        </ul>
+        <div class="paginate">
+            <li onclick={ goNext }>›</li>
+            <li onclick={ goLast }>»</li>
+        </div>
+        <div class="paginate">
+            <form onsubmit={ redirect }>
+                <span class="redirect" if={ redirect }>跳转到<input name="page" type="number" style="width: 40px;">页 </span>
+                <span class="page-sum" if={ showPageCount }> 共<em>{ pageCount }</em>页 </span>
+                <span class="item-sum" if={ showItemCount }> <em>{ count }</em>条 </span>
+                <input type="submit" style="display: none;">
+            </form>
+        </div>
     </div>
     
     var self = this;
@@ -20,6 +30,11 @@
     self.currentPage = config.currentPage || 1;
     self.url = config.url || '';
     self.showNumber = config.showNumber || 5;
+
+    self.redirect = config.redirect || true;
+    self.showPageCount = config.showPageCount || true;
+    self.showItemCount = config.showItemCount || true;
+
     config.callback(self.currentPage);
 
     self.pages = [];
@@ -37,31 +52,30 @@
     self.update();
 
     goFirst(e) {
-        config.callback(1);
-        self.currentPage = 1;
-        self.pageChange(self.currentPage);
+        self.pageChange(1);
     }
 
     goPrev(e) {
         if (self.currentPage > 1) {
-            config.callback(self.currentPage - 1);
-            self.currentPage = self.currentPage - 1;
-            self.pageChange(self.currentPage);
+            self.pageChange(self.currentPage - 1);
         }
     }
 
     goNext(e) {
         if (self.currentPage < self.pageCount) {
-            config.callback(self.currentPage + 1);
-            self.currentPage = self.currentPage + 1;
-            self.pageChange(self.currentPage);
+            self.pageChange(self.currentPage + 1);
         }
     }
     
     goLast(e) {
-        config.callback(self.pageCount);
-        self.currentPage = self.pageCount;
-        self.pageChange(self.currentPage);
+        self.pageChange(self.pageCount);
+    }
+
+    redirect(e) {
+        var index = self.page.value;
+        if (parseInt(index, 10) && parseInt(index, 10) < (self.pageCount + 1)) {
+            self.pageChange(parseInt(index, 10));
+        }
     }
 
     self.pageChange = function(page) {

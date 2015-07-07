@@ -183,6 +183,7 @@ riot.mount('.demo tree', treeOpts);
                     <div class="demo">
                         <table-view>
                             <rcol name="city" width="200px"><a href="<%= desc%>"><%= city%></a></rcol>
+                            <rcol name="city" if="{ show }" width="200px"><editable-link text="<%= desc%>" name="bbb"></editable-link></rcol>
                             <rcol name="desc" width="200px"></rcol>
                             <rcol name="name" alias="姓名"></rcol>
                         </table-view>
@@ -398,16 +399,18 @@ var formOpts = {
     errCallback: function(params) {   //提交失败的回调
         alert("error, params:" + params);
     },
-    normalSubmit: false,             //是否为ajax提交
+    normalSubmit: false,             //是否为ajax提交, 默认为true
     onValidRefuse: function(dom, message) {        //验证失败的回调函数,非必需,组件提供了默认动作
        alert(message);  //覆盖默认动作
     },
 
     onValidPass: function(dom, message) {    //验证成功的回调函数,非必需,组件提供了默认动作
         alert(message);
-    }
+    },
 
-    submitingText: 'submiting...'   //提交中状态文字，默认为“提交中...”
+    submitingText: 'submiting...',   //提交中状态文字，默认为“提交中...”
+    passClass: 'pass',          //验证通过时为input添加的class， 默认为valid-pass
+    failedClass: 'failed'         //验证失败时为input添加的class，默认为valid-failed
 }
 riot.mount('.demo super-form', formOpts);
                     </code></pre>
@@ -424,7 +427,7 @@ riot.mount('.demo super-form', formOpts);
                                 <h4 onclick="{ warning }" style="cursor: pointer;">{ data.title }</h4>
                                 <p>{ data.desc }</p>
                                 <ul>
-                                    <li each="{ data.list }">{ name }</li>
+                                    <li each="{ data.list }" onclick="{ parent.changeItem }">{ name }</li>
                                 </ul>
                                 <editable-link name="{ data.title }" text="{ data.desc }" action="/change/value"></editable-link>
                             </super-div>
@@ -438,7 +441,7 @@ riot.mount('.demo super-form', formOpts);
         <h4 onclick="{ warning }">{ data.title }</h4>
         <p>{ data.desc }</p>
         <ul>
-            <li each="{ data.list }">{ name }</li>
+            <li each="{ data.list }" onclick="{ parent.changeItem }">{ name }</li>
         </ul>
     </super-div>
 </div></script></code></pre>
@@ -453,11 +456,25 @@ var divOpts = {
     },
 
     warning: function(e) {     //可以定义函数，供事件调用
-        console.log(e.target);
+        console.log(e.target);  //对应的dom元素
+        console.log(e.item);    //each情况下数组对应的数据
         alert('test');
+    },
+
+    changeItem: function(e) {     //可以定义函数，供事件调用
+        console.log(e.item);    //each情况下数组对应的数据
+        e.item.name="test";
     }
 }
 riot.mount('.demo super-div', divOpts);
+
+var dom = document.querySelector('.demo super-div');
+dom.reload(); //重新渲染数据，如果有data-get或data-jsonp则会重新请求
+dom.loadData({
+    title: '复仇者联盟2',
+    desc: '讲述了超级英雄拯救世界的故事2。',
+    list: [{name: "钢铁侠"},{name: "绿巨人"},{name: "美国队长"},{name: "黑寡妇"},{name:"鹰眼"}]
+}, 'data')  //第一个参数为新的数据，第二个参数为数据的字段名，默认为data
                     </code></pre>
                      <p>super-div还内置了httpGet和jsonp两种自动映射接口数据的方式：</p>
                      <h5>HTML:</h5>
@@ -728,9 +745,21 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                 warning: function(e) {
                     console.log(e.target);
                     alert('test');
+                },
+
+                changeItem: function(e) {
+                    console.log(e.item);
+                    e.item.name = 'test';
                 }
             }
             riot.mount('.demo super-div', divOpts);
+
+            var dom = document.querySelector('.demo super-div');
+            dom.loadData({
+                title: '复仇者联盟2',
+                desc: '讲述了超级英雄拯救世界的故事2。',
+                list: [{name: "钢铁侠"},{name: "绿巨人"},{name: "美国队长"},{name: "黑寡妇"},{name:"鹰眼"}]
+            }, 'data')  //第一个参数为新的数据，第二个参数为数据的字段名，默认为data
 
             /*
              *  loading
