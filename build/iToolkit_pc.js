@@ -1701,7 +1701,7 @@ riot.tag('loading', '<div class="{itoolkit-loading: true, default: default}" > <
     
 
 });
-riot.tag('modal', '<div class="modal-dialog" riot-style="width:{width}px; height:{height}px"> <div class="modal-title"> <span>{ title }</span> <div class="modal-close-wrap" onclick="{ close }"> <div class="modal-close"></div> </div> </div> <div class="modal-container"> <yield> </div> </div>', function(opts) {
+riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width}px; height:{height}px"> <div class="itoolkit-modal-title"> <span>{ title }</span> <div class="itoolkit-modal-close-wrap" onclick="{ close }"> <div class="itoolkit-modal-close"></div> </div> </div> <div class="itoolkit-modal-container"> <yield> </div> </div>', function(opts) {
 
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -1722,7 +1722,7 @@ riot.tag('modal', '<div class="modal-dialog" riot-style="width:{width}px; height
 
 
 });
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate" if="{ pageCount > 1 }"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" type="number" style="width: 40px;">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
+riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" type="number" style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
     
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -1737,8 +1737,11 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
     self.redirect = config.redirect || true;
     self.showPageCount = config.showPageCount || true;
     self.showItemCount = config.showItemCount || true;
-
-    config.callback(self.currentPage);
+    self.needInit = config.needInit || false;
+    
+    if (self.needInit) {
+        config.callback(self.currentPage);
+    }
 
     self.pages = [];
     if (self.pageCount < (self.showNumber + 1)) {
@@ -2157,7 +2160,7 @@ riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ a
     }.bind(this);
 
 });
-riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ showHeader }"> <th each="{ cols }" riot-style="{ style }">{ alias || name }</th> </tr> <tr each="{ row in rows }" > <td each="{ colkey, colval in parent.cols }" class="{ newline: parent.parent.config.newline, cut: parent.parent.config.cut }" title="{ parent.row[colkey.name] }"> { parent.parent.drawcell(parent.row, this, colkey) } </td> </tr> </table>', function(opts) {
+riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ showHeader }"> <th each="{ cols }" riot-style="{ style }" hide="{ hide }">{ alias || name }</th> </tr> <tr each="{ row in rows }" > <td each="{ colkey, colval in parent.cols }" class="{ newline: parent.parent.config.newline, cut: parent.parent.config.cut }" title="{ parent.row[colkey.name] }" hide="{ colkey.hide }"> { parent.parent.drawcell(parent.row, this, colkey) } </td> </tr> </table>', function(opts) {
 
     var self = this;
     var EL = self.root;
@@ -2184,11 +2187,14 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
                     }
 
                     var col = {
-                        name: child.attributes['name'].value,
                         inner: child.innerHTML,
                         style: col_style,
-                        index: i
+                        index: i,
+                        attrs: child.attributes,
+                        hide: false
                     }
+
+                    col.name = child.attributes['name'] ? child.attributes['name'].value : '';
                     if (child.attributes['alias']) {
                         col.alias = child.attributes['alias'].value || ''
                     }
@@ -2295,13 +2301,38 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
         return EL;
     }
 
+    EL.hide = function(keyName) {
+        for(i = 0; i < self.cols.length; i++) {
+            if (self.cols[i].name === keyName) {
+                self.cols[i].hide = true
+                break
+            }
+        }
+        self.update();
+    }
+
     this.drawcell = function(rowdata, td, col) {
+        if (col.attrs.length) {
+            for (i in col.attrs) {
+                if (typeof col.attrs[i] !== 'function') {
+                    if (col.attrs[i]['name'] && col.attrs[i]['name']!=='name'&& col.attrs[i]['name']!=='alias' && col.attrs[i]['name']!=='class') {
+                        td.root.setAttribute(col.attrs[i]['name'], col.attrs[i]['value']);
+                    }
+                    else if (col.attrs[i]['name'] && col.attrs[i]['name']=='class') {
+                        td.root.className += (' ' + col.attrs[i]['value']);
+                    }
+                }
+            }
+        } //将rcol的属性挪到td上，class需特殊处理，name和alias不动
+        
         if(col.inner){
             setTimeout(function() {
-                var str = col.inner.replace(/&lt;%=[\s|\w]+%&gt;/g, function(v) {
+                var str = col.inner.replace(/&lt;%=[\s|\w]+%&gt;|<%=[\s|\w]+%>/g, function(v) {
                     var key = v.replace(/&lt;%=/g, '')
                                .replace(/\s/g, '')
-                               .replace(/%&gt;/g, '');
+                               .replace(/%&gt;/g, '')
+                               .replace(/%>/g, '')
+                               .replace(/<%=/g, '');
                     return rowdata[key];
                 });
                 td.root.innerHTML = str;

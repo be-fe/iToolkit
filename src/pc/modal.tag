@@ -1,12 +1,12 @@
 <modal>
-    <div class="modal-dialog" style='width:{width}px; height:{height}px'>
-        <div class="modal-title">
+    <div class="itoolkit-modal-dialog" style='width:{width}px; height:{height}px'>
+        <div class="itoolkit-modal-title">
             <span>{ title }</span>
-            <div class="modal-close-wrap" onclick={ close }>
-                <div class="modal-close"></div>
+            <div class="itoolkit-modal-close-wrap" onclick={ close }>
+                <div class="itoolkit-modal-close"></div>
             </div>
         </div>
-        <div class="modal-container">
+        <div class="itoolkit-modal-container">
            <yield>
         </div>
     </div>

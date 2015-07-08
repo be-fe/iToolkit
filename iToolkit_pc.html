@@ -182,10 +182,10 @@ riot.mount('.demo tree', treeOpts);
                     <h5>实例:</h5>
                     <div class="demo">
                         <table-view>
-                            <rcol name="city" width="200px"><a href="<%= desc%>"><%= city%></a></rcol>
-                            <rcol name="city" if="{ show }" width="200px"><editable-link text="<%= desc%>" name="bbb"></editable-link></rcol>
+                            <rcol name="city" width="200px" class="test test1"><a href="<%= desc%>" onclick="Test.test('<%= desc%>')"><%= city%></a></rcol>
                             <rcol name="desc" width="200px"></rcol>
                             <rcol name="name" alias="姓名"></rcol>
+                            <rcol alias="测试"><button class="btn btn-primary">测试</button></rcol>
                         </table-view>
                     </div>
                     <button class="btn btn-default" onclick="recoverTable()">恢复初始值</button>
@@ -195,6 +195,7 @@ riot.mount('.demo tree', treeOpts);
                     <button class="btn btn-default" onclick="clearCell()">清空数据</button>
                     <button class="btn btn-default" onclick="orderCell()">指定字段排序</button>
                     <button class="btn btn-default" onclick="reverseCell()">指定字段倒序</button>
+                    <button class="btn btn-default" onclick="hideCell()">指定字段隐藏</button>
 
                     <h5>HTML:</h5>
                     <pre><code class="language-markup"><script type="prism-html-markup">
@@ -203,6 +204,7 @@ riot.mount('.demo tree', treeOpts);
         <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
         <rcol name="desc" width="200px"></rcol>
         <rcol name="name" alias="姓名"></rcol>
+        <rcol alias="测试"><button class="btn btn-primary">测试</button></rcol> <!-- 不对应任何字段的情况-->
     </table-view>
 </div></script></code></pre>
 
@@ -233,6 +235,7 @@ dom.deleteData('city', 'LuoYang'); //delete data
 dom.clearData();  //clear data
 dom.orderData('city'); //order by 'city'
 dom.reverseData('city'); //reverse by 'city'
+dom.hide('city'); //hide by 'city'
                     </code></pre>
                 </section>
  
@@ -259,6 +262,7 @@ var pageOpts = {
     pagesize: 10,   //每页的条目数
     pageCount: 12,  //页数，非必须，会覆盖总条数/每页条数的计算结果
     showNumber: 5,  //分页格的最大数量
+    needInit: true,  //初始化时是否执行callback，默认false
     callback: function(index) {
         document.getElementById('page-number').innerHTML = index;
     }               //页数变化时的回调，会将跳转页码作为参数传入
@@ -665,6 +669,11 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                 dom = document.querySelector('table-view');
                 dom.reverseData('city');
             }
+
+            function hideCell() {
+                dom = document.querySelector('table-view');
+                dom.hide('city');
+            }
             /*
              *  分页
              */
@@ -672,6 +681,7 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                 count: 120,
                 pagesize: 10,
                 showNumber: 5,
+                needInit: true,
                 callback: function(index) {
                     document.getElementById('page-number').innerHTML = index;
                 }
