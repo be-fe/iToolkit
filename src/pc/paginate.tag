@@ -4,7 +4,7 @@
             <li onclick={ goFirst }>«</li>
             <li onclick={ goPrev }>‹</li>
         </div>
-        <ul class="paginate" if={ pageCount > 1 }>
+        <ul class="paginate">
             <li each={ pages } onclick={ parent.changePage } class={ active: parent.currentPage == page }>{ page }</li>
         </ul>
         <div class="paginate">
@@ -13,7 +13,7 @@
         </div>
         <div class="paginate">
             <form onsubmit={ redirect }>
-                <span class="redirect" if={ redirect }>跳转到<input name="page" type="number" style="width: 40px;">页 </span>
+                <span class="redirect" if={ redirect }>跳转到<input name="page" type="number" style="width: 40px;" min="1" max={ pageCount }>页 </span>
                 <span class="page-sum" if={ showPageCount }> 共<em>{ pageCount }</em>页 </span>
                 <span class="item-sum" if={ showItemCount }> <em>{ count }</em>条 </span>
                 <input type="submit" style="display: none;">
@@ -34,8 +34,11 @@
     self.redirect = config.redirect || true;
     self.showPageCount = config.showPageCount || true;
     self.showItemCount = config.showItemCount || true;
-
-    config.callback(self.currentPage);
+    self.needInit = config.needInit || false;
+    
+    if (self.needInit) {
+        config.callback(self.currentPage);
+    }
 
     self.pages = [];
     if (self.pageCount < (self.showNumber + 1)) {

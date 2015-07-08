@@ -2,10 +2,10 @@
     <yield>
     <table class={ config.class }> 
         <tr show={ showHeader }>
-            <th each={ cols } style={ style }>{ alias || name }</th>
+            <th each={ cols } style={ style } hide={ hide }>{ alias || name }</th>
         </tr>
         <tr each={ row in rows } > 
-            <td each={ colkey, colval in parent.cols } class={ newline: parent.parent.config.newline, cut: parent.parent.config.cut } title={ parent.row[colkey.name] }>
+            <td each={ colkey, colval in parent.cols } class={ newline: parent.parent.config.newline, cut: parent.parent.config.cut } title={ parent.row[colkey.name] } hide={ colkey.hide }>
                 { parent.parent.drawcell(parent.row, this, colkey) }
             </td>
         </tr>
@@ -36,11 +36,14 @@
                     }
 
                     var col = {
-                        name: child.attributes['name'].value,
                         inner: child.innerHTML,
                         style: col_style,
-                        index: i
+                        index: i,
+                        attrs: child.attributes,
+                        hide: false
                     }
+                    //name属性不存在也不报错
+                    col.name = child.attributes['name'] ? child.attributes['name'].value : '';
                     if (child.attributes['alias']) {
                         col.alias = child.attributes['alias'].value || ''
                     }
@@ -147,13 +150,38 @@
         return EL;
     }
 
+    EL.hide = function(keyName) {
+        for(i = 0; i < self.cols.length; i++) {
+            if (self.cols[i].name === keyName) {
+                self.cols[i].hide = true
+                break
+            }
+        }
+        self.update();
+    }
+
     drawcell(rowdata, td, col) {
+        if (col.attrs.length) {
+            for (i in col.attrs) {
+                if (typeof col.attrs[i] !== 'function') {
+                    if (col.attrs[i]['name'] && col.attrs[i]['name']!=='name'&& col.attrs[i]['name']!=='alias' && col.attrs[i]['name']!=='class') {
+                        td.root.setAttribute(col.attrs[i]['name'], col.attrs[i]['value']);
+                    }
+                    else if (col.attrs[i]['name'] && col.attrs[i]['name']=='class') {
+                        td.root.className += (' ' + col.attrs[i]['value']);
+                    }
+                }
+            }
+        } //将rcol的属性挪到td上，class需特殊处理，name和alias不动
+        
         if(col.inner){
             setTimeout(function() {
-                var str = col.inner.replace(/&lt;%=[\s|\w]+%&gt;/g, function(v) {
+                var str = col.inner.replace(/&lt;%=[\s|\w]+%&gt;|<%=[\s|\w]+%>/g, function(v) {
                     var key = v.replace(/&lt;%=/g, '')
                                .replace(/\s/g, '')
-                               .replace(/%&gt;/g, '');
+                               .replace(/%&gt;/g, '')
+                               .replace(/%>/g, '')
+                               .replace(/<%=/g, '');
                     return rowdata[key];
                 });
                 td.root.innerHTML = str;

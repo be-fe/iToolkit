@@ -71,7 +71,7 @@ modal {
     outline: 0;
 }
 
-.modal-dialog {
+.itoolkit-modal-dialog {
     width: 650px;
     margin: 50px auto;
     background: #fff;
@@ -81,7 +81,7 @@ modal {
     outline: 0;
 }
 
-.modal-title {
+.itoolkit-modal-title {
     width: 100%;
     position: relative;
     height: 43px;
@@ -93,18 +93,18 @@ modal {
     background: #f0f1f6;
 }
 
-.modal-title > span {
+.itoolkit-modal-title > span {
     padding-left: 16px;
 }
 
-.modal-title .modal-close-wrap {
+.itoolkit-modal-title .itoolkit-modal-close-wrap {
     position: absolute;
     right: 0;
     top: 0;
     height: 30px;
     cursor: pointer;
 }
-.modal-title .modal-close {
+.itoolkit-modal-title .itoolkit-modal-close {
     margin: 20px 10px 0 0;
     display:inline-block; 
     width:12px; 
@@ -119,7 +119,7 @@ modal {
     cursor: pointer;
 }
 
-.modal-title .modal-close:after { 
+.itoolkit-modal-title .itoolkit-modal-close:after { 
     content:'.'; 
     display:block; 
     width:12px; 
@@ -130,7 +130,7 @@ modal {
     transform: rotate(-90deg);
 }
 
-.modal-container {
+.itoolkit-modal-container {
     padding: 10px 20px;
 }
 
