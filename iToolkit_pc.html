@@ -196,6 +196,7 @@ riot.mount('.demo tree', treeOpts);
                     <button class="btn btn-default" onclick="orderCell()">指定字段排序</button>
                     <button class="btn btn-default" onclick="reverseCell()">指定字段倒序</button>
                     <button class="btn btn-default" onclick="hideCell()">指定字段隐藏</button>
+                    <button class="btn btn-default" onclick="showCell()">指定字段展示</button>
 
                     <h5>HTML:</h5>
                     <pre><code class="language-markup"><script type="prism-html-markup">
@@ -235,7 +236,8 @@ dom.deleteData('city', 'LuoYang'); //delete data
 dom.clearData();  //clear data
 dom.orderData('city'); //order by 'city'
 dom.reverseData('city'); //reverse by 'city'
-dom.hide('city'); //hide by 'city'
+dom.hide('city'); //hide 'city' col
+dom.show('city'); //show 'city' col
                     </code></pre>
                 </section>
  
@@ -673,6 +675,11 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
             function hideCell() {
                 dom = document.querySelector('table-view');
                 dom.hide('city');
+            }
+
+            function showCell() {
+                dom = document.querySelector('table-view');
+                dom.show('city');
             }
             /*
              *  分页

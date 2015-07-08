@@ -812,6 +812,16 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
         self.update();
     }
 
+    EL.show = function(keyName) {
+        for(i = 0; i < self.cols.length; i++) {
+            if (self.cols[i].name === keyName) {
+                self.cols[i].hide = false
+                break
+            }
+        }
+        self.update();
+    }
+
     this.drawcell = function(rowdata, td, col) {
         if (col.attrs.length) {
             for (i in col.attrs) {
