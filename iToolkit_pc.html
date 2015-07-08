@@ -310,6 +310,8 @@ var modalOpts = {
     }
 }
 riot.mount('.demo modal', modalOpts);
+document.querySelector('#modal-demo').open();  //JS控制模态框打开
+document.querySelector('#modal-demo').close(); //JS控制模态框关闭
                     </code></pre>
                 </section>
 
@@ -708,6 +710,8 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                 }
             }
             riot.mount('.demo modal', modalOpts);
+            document.querySelector('#modal-demo').open();
+            document.querySelector('#modal-demo').close();
 
             /*
              *  树结构
