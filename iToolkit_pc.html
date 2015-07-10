@@ -359,6 +359,14 @@ document.querySelector('#modal-demo').close(); //JS控制模态框关闭
                                 <input type="text" name="t4" value="good! There it is!" max="9">
                             </label><br>
 
+                            <label>
+                                select:
+                                <select>
+                                    <option value="{ data.a }">{ data.a }</option>
+                                    <option value="{ data.b }">{ data.b }</option>
+                                </select>
+                            </label><br>
+
                             <input type="submit" class="btn btn-primary" value="提交">
                         </super-form>
                     </div>
@@ -388,6 +396,13 @@ document.querySelector('#modal-demo').close(); //JS控制模态框关闭
         </label><br>
         <label>
             text less than 9: <input type="text" name="t4" value="good! There it is!" max="9">
+        </label><br>
+        <label>
+            select:
+            <select>
+                <option value="{ data.a }">{ data.a }</option>
+                <option value="{ data.a }">{ data.b }</option>
+            </select>
         </label><br>
         <input type="submit" class="btn btn-primary" value="提交">
     </super-form>

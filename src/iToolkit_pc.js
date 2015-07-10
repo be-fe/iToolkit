@@ -834,7 +834,7 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
         if (col.attrs.length) {
             for (i in col.attrs) {
                 if (typeof col.attrs[i] !== 'function') {
-                    if (col.attrs[i]['name'] && col.attrs[i]['name']!=='name'&& col.attrs[i]['name']!=='alias' && col.attrs[i]['name']!=='class') {
+                    if (col.attrs[i]['name'] && col.attrs[i]['name']!=='class') {
                         td.root.setAttribute(col.attrs[i]['name'], col.attrs[i]['value']);
                     }
                     else if (col.attrs[i]['name'] && col.attrs[i]['name']=='class') {
