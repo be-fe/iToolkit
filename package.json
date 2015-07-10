@@ -11,7 +11,10 @@
     "gulp-riot": "x",
     "http-proxy": "^1.8.1",
     "proxy-middleware": "^0.11.0",
-    "url": "^0.10.3"
+    "url": "^0.10.3",
+    "gulp-rename": "x",
+    "gulp-minify-css": "x",
+    "gulp-uglify": "x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

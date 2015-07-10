@@ -13,3 +13,4 @@ Makefile.in
 /missing
 /stamp-h1
 /old
+node_modules

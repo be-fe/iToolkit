@@ -81,6 +81,16 @@
         }
     }
 
+    changePage(e) {
+        var page = e.item.page
+        if (typeof(page) === 'string') {
+            return false;
+        }
+        else {
+            self.pageChange(page);
+        }
+    }
+
     self.pageChange = function(page) {
         if (self.currentPage != page) {
             self.currentPage = page;
@@ -108,16 +118,6 @@
                 self.pages.push({page: i + 1});
             }
             self.pages.push({page: '...'});
-        }
-    }
-
-    changePage(e) {
-        var page = e.item.page
-        if (typeof(page) === 'string') {
-            return false;
-        }
-        else {
-            self.pageChange(page);
         }
     }
 

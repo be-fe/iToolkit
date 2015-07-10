@@ -293,6 +293,16 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
         }
     }.bind(this);
 
+    this.changePage = function(e) {
+        var page = e.item.page
+        if (typeof(page) === 'string') {
+            return false;
+        }
+        else {
+            self.pageChange(page);
+        }
+    }.bind(this);
+
     self.pageChange = function(page) {
         if (self.currentPage != page) {
             self.currentPage = page;
@@ -322,16 +332,6 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
             self.pages.push({page: '...'});
         }
     }
-
-    this.changePage = function(e) {
-        var page = e.item.page
-        if (typeof(page) === 'string') {
-            return false;
-        }
-        else {
-            self.pageChange(page);
-        }
-    }.bind(this);
 
 
 
