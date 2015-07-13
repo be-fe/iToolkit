@@ -1322,13 +1322,16 @@ riot.mountTo = riot.mount
  * Utils 函数
  */
 var utils = {
-    httpGet: function(url, params, callback) {
+    httpGet: function(url, params, callback, complete) {
         var xmlhttp = new XMLHttpRequest();
         var url = utils.concatParams(url, params);
         xmlhttp.open("GET", url, true);
         xmlhttp.send(null);
         xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4) { 
+            if (xmlhttp.readyState === 4) {
+                if (complete && typeof complete === 'function') {
+                    complete();
+                }
                 if (xmlhttp.status === 200) {
                     var body = xmlhttp.responseText;
                     try {
@@ -1348,13 +1351,16 @@ var utils = {
         }
     },
 
-    httpPost: function(url, params, callback, type) {
+    httpPost: function(url, params, callback, complete) {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.open("POST", url, true);
         xmlhttp.setRequestHeader("Content-type", "application/json");
         xmlhttp.send(params);
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) { 
+                if (complete && typeof complete === 'function') {
+                    complete();
+                }
                 if (xmlhttp.status === 200) {
                     try {
                         var data = JSON.parse(xmlhttp.responseText)
@@ -2022,7 +2028,10 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xmlhttp.send(params);
         xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4) { 
+            if (xmlhttp.readyState === 4) {
+                if (config.complete && typeof config.complete === 'function') {
+                    config.complete();
+                }
                 if (xmlhttp.status === 200) {
                     try {
                         var result = JSON.parse(xmlhttp.responseText);

@@ -128,7 +128,10 @@
         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xmlhttp.send(params);
         xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4) { 
+            if (xmlhttp.readyState === 4) {
+                if (config.complete && typeof config.complete === 'function') {
+                    config.complete();
+                }
                 if (xmlhttp.status === 200) {
                     try {
                         var result = JSON.parse(xmlhttp.responseText);
