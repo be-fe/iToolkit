@@ -1942,6 +1942,54 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         self.update();
     }
 
+    self.getData = EL.getData = function(){
+        var elems = self.root.getElementsByTagName('form')[0].elements;
+        var params = {};
+        for (var i = 0; i < elems.length; i++) {
+            if (elems[i].name) {
+                if (elems[i].tagName === "SELECT") {
+                    value = elems[i].options[elems[i].selectedIndex].value;
+                    params[elems[i].name] = encodeURIComponent(value);
+                } 
+                else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
+                    if (elems[i].checked) {
+                        value = elems[i].value;
+                        params[elems[i].name] = encodeURIComponent(value);
+                    }
+                }
+                else {
+                    value = elems[i].value;
+                    params[elems[i].name] = encodeURIComponent(value);
+                }
+            }
+        }
+        return params;
+    }
+
+    self.getQuery = EL.getQuery = function(){
+        var elems = self.root.getElementsByTagName('form')[0].elements;
+        var params = {};
+        for (var i = 0; i < elems.length; i++) {
+            if (elems[i].name) {
+                if (elems[i].tagName === "SELECT") {
+                    value = elems[i].options[elems[i].selectedIndex].value;
+                    params[elems[i].name] = encodeURIComponent(value);
+                } 
+                else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
+                    if (elems[i].checked) {
+                        value = elems[i].value;
+                        params[elems[i].name] = encodeURIComponent(value);
+                    }
+                }
+                else {
+                    value = elems[i].value;
+                    params[elems[i].name] = encodeURIComponent(value);
+                }
+            }
+        }
+        return params
+    }
+
     for (i in config) {
         if (keyWords.indexOf(i) < 0) {
             self[i] = config[i];
