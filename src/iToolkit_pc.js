@@ -202,7 +202,7 @@ riot.tag('loading', '<div class="{itoolkit-loading: true, default: default}" > <
     
 
 });
-riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width}px; height:{height}px"> <div class="itoolkit-modal-title"> <span>{ title }</span> <div class="itoolkit-modal-close-wrap" onclick="{ close }"> <div class="itoolkit-modal-close"></div> </div> </div> <div class="itoolkit-modal-container"> <yield> </div> </div>', function(opts) {
+riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itoolkit-modal-title"> <span>{ title }</span> <div class="itoolkit-modal-close-wrap" onclick="{ close }"> <div class="itoolkit-modal-close"></div> </div> </div> <div class="itoolkit-modal-container"> <yield> </div> </div>', function(opts) {
 
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -210,13 +210,25 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width}p
         self[i] = config[i];
     }
     self.width = config.width || 600;
-    self.height = config.height || 300;
+    self.height = config.height || 'auto';
+
+    self.on('mount', function() {
+        var container = self.root.querySelector('.itoolkit-modal-container');
+        var head = self.root.querySelector('.itoolkit-modal-title');
+        var headHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
+        if (config.height) {
+            container.style.height = (self.height - headHeight - 2) + 'px';
+        }
+
+    })
 
     this.close = function(e) {
         self.root.style.display = 'none';
     }.bind(this);
-    document.querySelector("[modal-open-target='" + self.root.id + "']").onclick = function() {
-        self.root.style.display = 'block';
+    if (document.querySelector("[modal-open-target='" + self.root.id + "']")) {
+        document.querySelector("[modal-open-target='" + self.root.id + "']").onclick = function() {
+            self.root.style.display = 'block';
+        }
     }
 
     self.root.open = function() {
@@ -867,7 +879,7 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
 
 
 });
-riot.tag('tree', '<div class="tree-item-wrap" each="{ data }"> <i class="{ tree-item-arrow: true, open: opened, empty: !children }" onclick="{ parent.toggle }"></i> <i class="tree-item-icon"></i> <div onclick="{ parent.leftClick }" class="{ tree-item-name : true }" title="{ name }">{ name }</div>  <ul class="tree-child-wrap" if="{ children }"> <tree data="{ children }" if="{ children }"></tree> </ul> </div>', function(opts) {
+riot.tag('tree', '<div class="tree-item-wrap" each="{ data }" onselectstart="return false" ondragstart="return false"> <input type="checkbox" onchange="{ parent.checkHandle }" if="{ parent.rootConfig.showCheck }"> <i class="{ tree-item-arrow: true, open: opened, empty: !children }" onclick="{ parent.toggle }"></i> <i class="tree-item-icon"></i> <div onclick="{ parent.leftClick }" class="{ tree-item-name : true }" title="{ name }">{ name }</div>  <ul class="tree-child-wrap" if="{ children }"> <tree data="{ children }" if="{ children }"></tree> </ul> </div>', function(opts) {
 
     var self = this;
     self.config = self.opts.opts || self.opts;
@@ -926,6 +938,19 @@ riot.tag('tree', '<div class="tree-item-wrap" each="{ data }"> <i class="{ tree-
             leftClick(e.item, e.target);
         }
     }.bind(this);
+
+    
+    this.checkHandle = function(e) {
+        var checkItem = self.rootConfig.onCheck;
+        var uncheckItem = self.rootConfig.onUnCheck;
+        if (checkItem && e.target.checked) {
+            checkItem(e.item, e.target);
+        }
+        if (uncheckItem && !e.target.checked) {
+            uncheckItem(e.item, e.target);
+        }
+    }.bind(this);
+
     
     
     this.toggle = function(e) {

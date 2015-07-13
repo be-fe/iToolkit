@@ -101,8 +101,9 @@ modal {
     position: absolute;
     right: 0;
     top: 0;
-    height: 30px;
+    height: 43px;
     cursor: pointer;
+    padding-left: 10px;
 }
 .itoolkit-modal-title .itoolkit-modal-close {
     margin: 20px 10px 0 0;
@@ -132,6 +133,11 @@ modal {
 
 .itoolkit-modal-container {
     padding: 10px 20px;
+    overflow-y: auto;
+}
+.itoolkit-modal-container *{
+    white-space: pre-line;
+    word-wrap: break-word;
 }
 
 
@@ -148,6 +154,10 @@ modal {
     background: url(../imgs/icons.png) no-repeat;
     background-position: -256px -64px; */ 
     cursor: pointer;
+}
+
+.tree-item-wrap input {
+  vertical-align: top;
 }
 
 .tree-item-name {
