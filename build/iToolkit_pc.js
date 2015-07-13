@@ -2030,7 +2030,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
                 if (config.complete && typeof config.complete === 'function') {
-                    complete();
+                    config.complete();
                 }
                 if (xmlhttp.status === 200) {
                     try {
