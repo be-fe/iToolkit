@@ -416,6 +416,9 @@ var formOpts = {
         b: 'he'
     },
     valid: true,                //是否执行校验
+    complete: function() {      //提交完成的回调，可不填
+        alert('complete');
+    },
     callback: function() {      //提交成功的回调
         alert('success');      
     },
@@ -759,6 +762,9 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                     b: 'he'
                 },
                 valid: true,       //是否执行校验
+                complete: function() {
+                    alert('complete');
+                },
                 callback: function() {
                     alert('success');
                 },
