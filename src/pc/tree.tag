@@ -1,5 +1,6 @@
 <tree>
-    <div class="tree-item-wrap" each={ data }>
+    <div class="tree-item-wrap" each={ data } onselectstart="return false" ondragstart="return false">
+        <input type="checkbox" onchange={ parent.checkHandle } if={ parent.rootConfig.showCheck }>
         <i class={ tree-item-arrow: true, open: opened, empty: !children } onclick={ parent.toggle }></i>
         <i class="tree-item-icon"></i>
         <div onclick={ parent.leftClick } class={ tree-item-name : true } title={ name }>{ name }</div>
@@ -74,6 +75,21 @@
             leftClick(e.item, e.target);
         }
     }
+
+    /*
+     * checkbox选中回调
+     */
+    checkHandle(e) {
+        var checkItem = self.rootConfig.onCheck;
+        var uncheckItem = self.rootConfig.onUnCheck;
+        if (checkItem && e.target.checked) {
+            checkItem(e.item, e.target);
+        }
+        if (uncheckItem && !e.target.checked) {
+            uncheckItem(e.item, e.target);
+        }
+    }
+
     
     /*
      * 展开收起

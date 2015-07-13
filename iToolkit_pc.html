@@ -168,6 +168,13 @@ var treeOpts = {
         alert('This item\'s id is: ' + item.id);
     }
     //左键点击的回调。第一个参数为对应的数据item, 第二个参数为对应的dom
+    showCheck: true,   //是否展示checkbox, 默认为false;
+    onCheck: function(item, target) {
+        alert(item.id + 'checked');
+    },  //checkbox选中时的回调
+    onUnCheck: function(item, target) {
+        alert(item.id + 'unchecked');
+    }  //checkbox取消时的回调
 }
 riot.mount('.demo tree', treeOpts);
                     </code></pre>
@@ -303,7 +310,7 @@ riot.mount('.demo paginate', pageOpts);
                     <h5>JavaScript:</h5>
                     <pre><code class="language-javascript">
 var modalOpts = {
-    height: 300,
+    height: 300,  //如果不填，height为auto;
     width: 300,
     title: 'Modal demo',
     data: {
@@ -721,7 +728,7 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
              *  模态弹出框
              */
             var modalOpts = {
-                height: 300,
+                height: 300,  //如果不填，height为auto;
                 width: 300,
                 title: 'Modal demo',
                 data: {
@@ -748,8 +755,15 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                 root: true,
                 handleData: true,
                 name: 'title',
+                showCheck: true,
                 onLeftClick: function(item, target) {
                     alert('This item\'s id is: ' + item.id);
+                },
+                onCheck: function(item, target) {
+                    alert(item.id + 'checked');
+                },
+                onUnCheck: function(item, target) {
+                    alert(item.id + 'unchecked');
                 }
             }
             riot.mount('.demo tree', treeOpts);
