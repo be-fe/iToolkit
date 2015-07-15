@@ -230,12 +230,12 @@ var tableOpts = {
     cut: true,         //内容超长是否省略
     newline: false,    //内容超长是否换行
 }
-riot.mount('.demo  table-view', tableOpts);
-riot.mount('rcol');
-
 iToolkit.tableExtend.testMethod = function(str) {
     return str + 'aaaa';
-}  //table cell内的方法需要在该命名空间下注册，以处理相应列的数据。
+}  //table cell内的方法需要在该命名空间下注册，以处理相应列的数据,方法注册要在mount动作之前。
+
+riot.mount('.demo  table-view', tableOpts);
+riot.mount('rcol');
                     </code></pre>
 
                     <h5>Handle The Table:</h5>
