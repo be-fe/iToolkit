@@ -271,10 +271,10 @@
                             validArr.push(name);
                             self.onValidRefuse(dom, self.presentWarning);
                         }
-                        else if (max){
+                        else if (max && type!== 'number'){
                             validMax();
                         }
-                        else if (min){
+                        else if (min && type!== 'number'){
                             validMin();
                         }
                         else {
