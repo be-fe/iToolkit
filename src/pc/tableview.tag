@@ -210,7 +210,12 @@
                                .replace(/%>/g, '}')
                                .replace(/<%=/g, '{');
             for (i in iToolkit.tableExtend) {
-                rowdata[i] = iToolkit.tableExtend[i];
+                if (typeof iToolkit.tableExtend[i] === 'function') {
+                    rowdata[i] = iToolkit.tableExtend[i].bind(rowdata);
+                }
+                else {
+                    rowdata[i] = iToolkit.tableExtend[i]
+                }
             }
             td.root.innerHTML = riot.util.tmpl(str, rowdata);
             self.findNodes(td.root);
