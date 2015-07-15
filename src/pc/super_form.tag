@@ -212,9 +212,31 @@
                 var valid = elems[i].getAttribute('valid');
                 var max = elems[i].getAttribute('max');
                 var min = elems[i].getAttribute('min');
+                var type = elems[i].getAttribute('type');
                 var v = elems[i].value; 
                 var name = elems[i].name;
                 var dom = elems[i];
+                var validMin = function() {
+                    min = parseInt(min, 10);
+                    if (v.length < min) {
+                        validArr.push(name);
+                        self.onValidRefuse(dom, self.minWarning(min));
+                    }
+                    else {
+                        self.onValidPass(dom, self.successTips);
+                    }
+                }
+
+                var validMax = function() {
+                    max = parseInt(max, 10);
+                    if (v.length > max) {
+                        validArr.push(name);
+                        self.onValidRefuse(dom, self.maxWarning(max));
+                    }
+                    else {
+                        self.onValidPass(dom, self.successTips);
+                    }
+                }
                 if (name && valid) {
                     if (valid === 'email') {
                         if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
@@ -249,6 +271,12 @@
                             validArr.push(name);
                             self.onValidRefuse(dom, self.presentWarning);
                         }
+                        else if (max){
+                            validMax();
+                        }
+                        else if (min){
+                            validMin();
+                        }
                         else {
                             self.onValidPass(dom, self.successTips);
                         }
@@ -266,25 +294,11 @@
                         }
                     }
                 }
-                else if (name && max) {
-                    var max = parseInt(max, 10);
-                    if (v.length > max) {
-                        validArr.push(name);
-                        self.onValidRefuse(dom, self.maxWarning(max));
-                    }
-                    else {
-                        self.onValidPass(dom, self.successTips);
-                    }
+                else if (name && max && type!== 'number') {
+                    validMax();
                 }
-                else if (name && min) {
-                    var min = parseInt(min, 10);
-                    if (v.length < min) {
-                        validArr.push(name);
-                        self.onValidRefuse(dom, self.minWarning(min));
-                    }
-                    else {
-                        self.onValidPass(dom, self.successTips);
-                    }
+                else if (name && min && type!== 'number') {
+                    validMin();
                 }
             }
         }

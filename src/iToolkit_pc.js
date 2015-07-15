@@ -616,9 +616,31 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 var valid = elems[i].getAttribute('valid');
                 var max = elems[i].getAttribute('max');
                 var min = elems[i].getAttribute('min');
+                var type = elems[i].getAttribute('type');
                 var v = elems[i].value; 
                 var name = elems[i].name;
                 var dom = elems[i];
+                var validMin = function() {
+                    min = parseInt(min, 10);
+                    if (v.length < min) {
+                        validArr.push(name);
+                        self.onValidRefuse(dom, self.minWarning(min));
+                    }
+                    else {
+                        self.onValidPass(dom, self.successTips);
+                    }
+                }
+
+                var validMax = function() {
+                    max = parseInt(max, 10);
+                    if (v.length > max) {
+                        validArr.push(name);
+                        self.onValidRefuse(dom, self.maxWarning(max));
+                    }
+                    else {
+                        self.onValidPass(dom, self.successTips);
+                    }
+                }
                 if (name && valid) {
                     if (valid === 'email') {
                         if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
@@ -653,6 +675,12 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                             validArr.push(name);
                             self.onValidRefuse(dom, self.presentWarning);
                         }
+                        else if (max){
+                            validMax();
+                        }
+                        else if (min){
+                            validMin();
+                        }
                         else {
                             self.onValidPass(dom, self.successTips);
                         }
@@ -670,25 +698,11 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                         }
                     }
                 }
-                else if (name && max) {
-                    var max = parseInt(max, 10);
-                    if (v.length > max) {
-                        validArr.push(name);
-                        self.onValidRefuse(dom, self.maxWarning(max));
-                    }
-                    else {
-                        self.onValidPass(dom, self.successTips);
-                    }
+                else if (name && max && type!== 'number') {
+                    validMax();
                 }
-                else if (name && min) {
-                    var min = parseInt(min, 10);
-                    if (v.length < min) {
-                        validArr.push(name);
-                        self.onValidRefuse(dom, self.minWarning(min));
-                    }
-                    else {
-                        self.onValidPass(dom, self.successTips);
-                    }
+                else if (name && min && type!== 'number') {
+                    validMin();
                 }
             }
         }
@@ -909,15 +923,11 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
         
         if(col.inner){
             setTimeout(function() {
-                var str = col.inner.replace(/&lt;%=[\s|\w]+%&gt;|<%=[\s|\w]+%>/g, function(v) {
-                    var key = v.replace(/&lt;%=/g, '')
-                               .replace(/\s/g, '')
-                               .replace(/%&gt;/g, '')
-                               .replace(/%>/g, '')
-                               .replace(/<%=/g, '');
-                    return rowdata[key];
-                });
-                td.root.innerHTML = str;
+                var str = col.inner.replace(/&lt;%=/g, '{')
+                                   .replace(/%&gt;/g, '}')
+                                   .replace(/%>/g, '}')
+                                   .replace(/<%=/g, '{');
+                td.root.innerHTML = riot.util.tmpl(str, rowdata);
             }, 10);
         }
         else{
