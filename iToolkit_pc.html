@@ -189,7 +189,7 @@ riot.mount('.demo tree', treeOpts);
                     <h5>实例:</h5>
                     <div class="demo">
                         <table-view>
-                            <rcol name="city" width="200px" class="test test1"><a href="<%= desc%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a></rcol>
+                            <rcol name="city" width="200px" class="test test1"><a href="<%= testMethod(desc) %>" hide="<%= status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a></rcol>
                             <rcol name="desc" width="200px"></rcol>
                             <rcol name="name" alias="姓名"></rcol>
                             <rcol alias="测试"><button class="btn btn-primary">测试</button></rcol>
@@ -209,7 +209,7 @@ riot.mount('.demo tree', treeOpts);
                     <pre><code class="language-markup"><script type="prism-html-markup">
 <div class="demo">
     <table-view>
-        <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
+        <rcol name="city"><a href="<%= testMethod(desc)%>" hide="<%= status==1%>"><%= city%></a></rcol>
         <rcol name="desc" width="200px"></rcol>
         <rcol name="name" alias="姓名"></rcol>
         <rcol alias="测试"><button class="btn btn-primary">测试</button></rcol> <!-- 不对应任何字段的情况-->
@@ -232,6 +232,10 @@ var tableOpts = {
 }
 riot.mount('.demo  table-view', tableOpts);
 riot.mount('rcol');
+
+iToolkit.tableExtend.testMethod = function(str) {
+    return str + 'aaaa';
+}  //table cell内的方法需要在该命名空间下注册，以处理相应列的数据。
                     </code></pre>
 
                     <h5>Handle The Table:</h5>
@@ -664,6 +668,11 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                 cut: true,
                 newline: false
             }
+
+            iToolkit.tableExtend.testMethod = function(str) {
+                return str + 'aaaa';
+            }
+            
             riot.mount('.demo  table-view', tableOpts);
             riot.mount('rcol');
 
@@ -715,6 +724,7 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                 dom = document.querySelector('table-view');
                 dom.show('city');
             }
+
             /*
              *  分页
              */

@@ -188,3 +188,9 @@ var utils = {
  * 全局事件监控
  */
 var EventCtrl = EC = riot.observable();
+
+/*
+ * 外部方法传入
+ */
+var iToolkit = {};
+iToolkit.tableExtend = {};

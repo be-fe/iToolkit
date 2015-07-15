@@ -1508,6 +1508,17 @@ var utils = {
  * 全局事件监控
  */
 var EventCtrl = EC = riot.observable();
+
+/*
+ * 外部方法传入
+ */
+var iToolkit = {};
+iToolkit.tableExtend = {
+    testMethod: function(str) {
+        return str + 'aaaa';
+    }
+};
+
 riot.tag('dropdown', '', function(opts) {
 
 });
@@ -2094,6 +2105,9 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         xmlhttp.send(params);
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
+                self.removeTips(elems);
+                submitbtn.value = submitText;
+                submitbtn.disabled = false;
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
                 }
@@ -2110,9 +2124,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     config.errCallback(params);
                     EC.trigger('submit_error', params);
                 }
-                self.removeTips(elems);
-                submitbtn.value = submitText;
-                submitbtn.disabled = false;
             } 
         };
     }
@@ -2418,6 +2429,26 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
         }
         self.update();
     }
+    
+    self.findNodes = function(node) {
+        for(var i = 0;i < node.attributes.length; i++){
+            var attrName = node.attributes[i]['name'];
+            var attrValue = node.attributes[i]['value'];
+            if (attrName === 'if' || attrName === 'show' || attrName === 'hide') {
+                if (attrName == 'hide') attrValue = !attrValue;
+                node.style.display = attrValue ? '' : 'none';
+                break;
+            }
+        }
+        if (node.hasChildNodes()) {
+            var children = node.childNodes;  
+            for (var i = 0; i < children.length; i++) {  
+                var child = children.item(i);
+                self.findNodes(child);  
+            }  
+        }
+        
+    }
 
     this.drawcell = function(rowdata, td, col) {
         if (col.attrs.length) {
@@ -2427,20 +2458,22 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
                         td.root.setAttribute(col.attrs[i]['name'], col.attrs[i]['value']);
                     }
                     else if (col.attrs[i]['name'] && col.attrs[i]['name']=='class') {
-                        td.root.className += (' ' + col.attrs[i]['value']);
+                        utils.addClass(td.root, col.attrs[i]['value']);
                     }
                 }
             }
         } //将rcol的属性挪到td上，class需特殊处理，name和alias不动
         
         if(col.inner){
-            setTimeout(function() {
-                var str = col.inner.replace(/&lt;%=/g, '{')
-                                   .replace(/%&gt;/g, '}')
-                                   .replace(/%>/g, '}')
-                                   .replace(/<%=/g, '{');
-                td.root.innerHTML = riot.util.tmpl(str, rowdata);
-            }, 10);
+            var str = col.inner.replace(/&lt;%=/g, '{')
+                               .replace(/%&gt;/g, '}')
+                               .replace(/%>/g, '}')
+                               .replace(/<%=/g, '{');
+            for (i in iToolkit.tableExtend) {
+                rowdata[i] = iToolkit.tableExtend[i];
+            }
+            td.root.innerHTML = riot.util.tmpl(str, rowdata);
+            self.findNodes(td.root);
         }
         else{
             return rowdata[col.name];

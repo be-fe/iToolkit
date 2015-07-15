@@ -169,6 +169,26 @@
         }
         self.update();
     }
+    
+    self.findNodes = function(node) {
+        for(var i = 0;i < node.attributes.length; i++){
+            var attrName = node.attributes[i]['name'];
+            var attrValue = node.attributes[i]['value'];
+            if (attrName === 'if' || attrName === 'show' || attrName === 'hide') {
+                if (attrName == 'hide') attrValue = !attrValue;
+                node.style.display = attrValue ? '' : 'none';
+                break;
+            }
+        }
+        if (node.hasChildNodes()) {
+            var children = node.childNodes;  
+            for (var i = 0; i < children.length; i++) {  
+                var child = children.item(i);
+                self.findNodes(child);  
+            }  
+        }
+        
+    }
 
     drawcell(rowdata, td, col) {
         if (col.attrs.length) {
@@ -178,20 +198,22 @@
                         td.root.setAttribute(col.attrs[i]['name'], col.attrs[i]['value']);
                     }
                     else if (col.attrs[i]['name'] && col.attrs[i]['name']=='class') {
-                        td.root.className += (' ' + col.attrs[i]['value']);
+                        utils.addClass(td.root, col.attrs[i]['value']);
                     }
                 }
             }
         } //将rcol的属性挪到td上，class需特殊处理，name和alias不动
         
         if(col.inner){
-            setTimeout(function() {
-                var str = col.inner.replace(/&lt;%=/g, '{')
-                                   .replace(/%&gt;/g, '}')
-                                   .replace(/%>/g, '}')
-                                   .replace(/<%=/g, '{');
-                td.root.innerHTML = riot.util.tmpl(str, rowdata);
-            }, 10);
+            var str = col.inner.replace(/&lt;%=/g, '{')
+                               .replace(/%&gt;/g, '}')
+                               .replace(/%>/g, '}')
+                               .replace(/<%=/g, '{');
+            for (i in iToolkit.tableExtend) {
+                rowdata[i] = iToolkit.tableExtend[i];
+            }
+            td.root.innerHTML = riot.util.tmpl(str, rowdata);
+            self.findNodes(td.root);
         }
         else{
             return rowdata[col.name];
