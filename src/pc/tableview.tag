@@ -186,15 +186,11 @@
         
         if(col.inner){
             setTimeout(function() {
-                var str = col.inner.replace(/&lt;%=[\s|\w]+%&gt;|<%=[\s|\w]+%>/g, function(v) {
-                    var key = v.replace(/&lt;%=/g, '')
-                               .replace(/\s/g, '')
-                               .replace(/%&gt;/g, '')
-                               .replace(/%>/g, '')
-                               .replace(/<%=/g, '');
-                    return rowdata[key];
-                });
-                td.root.innerHTML = str;
+                var str = col.inner.replace(/&lt;%=/g, '{')
+                                   .replace(/%&gt;/g, '}')
+                                   .replace(/%>/g, '}')
+                                   .replace(/<%=/g, '{');
+                td.root.innerHTML = riot.util.tmpl(str, rowdata);
             }, 10);
         }
         else{
