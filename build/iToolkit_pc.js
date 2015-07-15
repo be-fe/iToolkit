@@ -2207,7 +2207,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     validMax();
                 }
                 else if (name && min && type!== 'number') {
-                    validMin()
+                    validMin();
                 }
             }
         }
