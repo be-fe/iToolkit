@@ -584,6 +584,9 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         xmlhttp.send(params);
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
+                self.removeTips(elems);
+                submitbtn.value = submitText;
+                submitbtn.disabled = false;
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
                 }
@@ -600,9 +603,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     config.errCallback(params);
                     EC.trigger('submit_error', params);
                 }
-                self.removeTips(elems);
-                submitbtn.value = submitText;
-                submitbtn.disabled = false;
             } 
         };
     }
