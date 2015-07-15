@@ -1503,6 +1503,11 @@ var utils = {
         }
     }
 }
+
+/*
+ * 全局事件监控
+ */
+var EventCtrl = EC = riot.observable();
 riot.tag('dropdown', '', function(opts) {
 
 });
@@ -2096,12 +2101,14 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     try {
                         var result = JSON.parse(xmlhttp.responseText);
                         config.callback(result);
+                        EC.trigger('submit_success', result);
                     }catch(e){
                         console.log(e);
                     }
                 }
                 else {
                     config.errCallback(params);
+                    EC.trigger('submit_error', params);
                 }
                 self.removeTips(elems);
                 submitbtn.value = submitText;

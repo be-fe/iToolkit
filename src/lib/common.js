@@ -183,3 +183,8 @@ var utils = {
         }
     }
 }
+
+/*
+ * 全局事件监控
+ */
+var EventCtrl = EC = riot.observable();

@@ -591,12 +591,14 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     try {
                         var result = JSON.parse(xmlhttp.responseText);
                         config.callback(result);
+                        EC.trigger('submit_success', result);
                     }catch(e){
                         console.log(e);
                     }
                 }
                 else {
                     config.errCallback(params);
+                    EC.trigger('submit_error', params);
                 }
                 self.removeTips(elems);
                 submitbtn.value = submitText;

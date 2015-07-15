@@ -23,7 +23,7 @@
         self[colName] = newData;
         self.update();
     }
-    
+
     //获取表单的obj
     self.getData = EL.getData = function(){
         var elems = self.root.getElementsByTagName('form')[0].elements;
@@ -185,12 +185,14 @@
                     try {
                         var result = JSON.parse(xmlhttp.responseText);
                         config.callback(result);
+                        EC.trigger('submit_success', result);
                     }catch(e){
                         console.log(e);
                     }
                 }
                 else {
                     config.errCallback(params);
+                    EC.trigger('submit_error', params);
                 }
                 self.removeTips(elems);
                 submitbtn.value = submitText;
