@@ -1513,11 +1513,7 @@ var EventCtrl = EC = riot.observable();
  * 外部方法传入
  */
 var iToolkit = {};
-iToolkit.tableExtend = {
-    testMethod: function(str) {
-        return str + 'aaaa';
-    }
-};
+iToolkit.tableExtend = {};
 
 riot.tag('dropdown', '', function(opts) {
 
