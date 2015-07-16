@@ -1733,12 +1733,6 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
     self.width = config.width || 600;
     self.height = config.height || 'auto';
 
-    EL.loadData = function(newData, colName){
-        colName = colName || 'data';
-        self[colName] = newData
-        self.update();
-    }
-
     self.on('mount', function() {
         var container = self.root.querySelector('.itoolkit-modal-container');
         var head = self.root.querySelector('.itoolkit-modal-title');
@@ -1764,6 +1758,12 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
     self.root.close = function() {
         self.root.style.display = 'none';
+    }
+
+    self.root.loadData = function(newData, colName){
+        colName = colName || 'data';
+        self[colName] = newData
+        self.update();
     }
 
 

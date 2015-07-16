@@ -335,6 +335,7 @@ var modalOpts = {
 riot.mount('.demo modal', modalOpts);
 document.querySelector('#modal-demo').open();  //JS控制模态框打开
 document.querySelector('#modal-demo').close(); //JS控制模态框关闭
+document.querySelector('#modal-demo').loadData(newData, colname); //更新数据，colname不填默认更新data;
                     </code></pre>
                 </section>
 
@@ -384,7 +385,7 @@ document.querySelector('#modal-demo').close(); //JS控制模态框关闭
 
                             <label>
                                 select:
-                                <select name="select" multiple="multiple">
+                                <select name="select">
                                     <option value="{ data.a }">{ data.a }</option>
                                     <option value="{ data.b }">{ data.b }</option>
                                     <option value="1">1</option>
