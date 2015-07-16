@@ -175,13 +175,15 @@
             var attrName = node.attributes[i]['name'];
             var attrValue = node.attributes[i]['value'];
             if (attrName === 'if' || attrName === 'show' || attrName === 'hide') {
-                if (attrName == 'hide') attrValue = !attrValue;
+                if (attrName == 'hide') {
+                    attrValue = !attrValue;
+                }
+                
                 node.style.display = attrValue ? '' : 'none';
-                break;
             }
         }
         if (node.hasChildNodes()) {
-            var children = node.childNodes;  
+            var children = node.children;
             for (var i = 0; i < children.length; i++) {  
                 var child = children.item(i);
                 self.findNodes(child);  

@@ -1501,6 +1501,9 @@ var utils = {
         else {
             parent.insertBefore(newElement, targetElement.nextSibling);
         }
+    },
+    isArray: function(value) {
+        return toString.call(value) === '[object Array]';
     }
 }
 
@@ -1723,11 +1726,18 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
     var self = this;
     var config = self.opts.opts || self.opts;
+    var EL = self.root;
     for (i in config) {
         self[i] = config[i];
     }
     self.width = config.width || 600;
     self.height = config.height || 'auto';
+
+    EL.loadData = function(newData, colName){
+        colName = colName || 'data';
+        self[colName] = newData
+        self.update();
+    }
 
     self.on('mount', function() {
         var container = self.root.querySelector('.itoolkit-modal-container');
@@ -1954,52 +1964,48 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         self.update();
     }
 
+    self.checkExistKey = function(obj, key, value) {
+        if (obj.hasOwnProperty(key)) {
+            if (utils.isArray(obj[key])) {
+                obj[key].push(value);
+            }
+            else {
+                var arr = [];
+                arr.push(obj[key]);
+                arr.push(value)
+                obj[key] = arr;
+            }                  
+        }
+        else {
+            obj[key] = value;
+        }
+    }
+
     self.getData = EL.getData = function(){
         var elems = self.root.getElementsByTagName('form')[0].elements;
         var params = {};
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
                 if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params[elems[i].name] = encodeURIComponent(value);
+                    var selected = elems[i].selectedOptions;
+                    for (j = 0; j < selected.length; j++) {
+                        value = selected[j].value;
+                        self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
+                    }
                 } 
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
                         value = elems[i].value;
-                        params[elems[i].name] = encodeURIComponent(value);
+                        self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
                     }
                 }
                 else {
                     value = elems[i].value;
-                    params[elems[i].name] = encodeURIComponent(value);
+                    self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
                 }
             }
         }
         return params;
-    }
-
-    self.getQuery = EL.getQuery = function(){
-        var elems = self.root.getElementsByTagName('form')[0].elements;
-        var params = {};
-        for (var i = 0; i < elems.length; i++) {
-            if (elems[i].name) {
-                if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params[elems[i].name] = encodeURIComponent(value);
-                } 
-                else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
-                    if (elems[i].checked) {
-                        value = elems[i].value;
-                        params[elems[i].name] = encodeURIComponent(value);
-                    }
-                }
-                else {
-                    value = elems[i].value;
-                    params[elems[i].name] = encodeURIComponent(value);
-                }
-            }
-        }
-        return params
     }
 
     for (i in config) {
@@ -2074,8 +2080,11 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
                 if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    var selected = elems[i].selectedOptions;
+                    for (j = 0; j < selected.length; j++) {
+                        value = selected[j].value;
+                        params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    }
                 } 
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
@@ -2431,13 +2440,15 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
             var attrName = node.attributes[i]['name'];
             var attrValue = node.attributes[i]['value'];
             if (attrName === 'if' || attrName === 'show' || attrName === 'hide') {
-                if (attrName == 'hide') attrValue = !attrValue;
+                if (attrName == 'hide') {
+                    attrValue = !attrValue;
+                }
+                
                 node.style.display = attrValue ? '' : 'none';
-                break;
             }
         }
         if (node.hasChildNodes()) {
-            var children = node.childNodes;  
+            var children = node.children;
             for (var i = 0; i < children.length; i++) {  
                 var child = children.item(i);
                 self.findNodes(child);  
