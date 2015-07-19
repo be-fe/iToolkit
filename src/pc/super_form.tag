@@ -221,7 +221,7 @@
         if (config.valid) {
             for (var i = 0; i < elems.length; i++) {
                 var valid = elems[i].getAttribute('valid');
-                var validRegExp = elems[i].getAttribute('validRegExp');
+                var customValid = elems[i].getAttribute('customValid');
                 var max = elems[i].getAttribute('max');
                 var min = elems[i].getAttribute('min');
                 var type = elems[i].getAttribute('type');
@@ -312,14 +312,17 @@
                 else if (name && min && type!== 'number') {
                     validMin();
                 }
-                else if (name && validRegExp) {
-                    var reg = self[validRegExp] || window[validRegExp]
-                    if (reg && reg.test(v)) {
-                        self.onValidPass(dom, self.successTips); 
-                    }
-                    else {
-                        validArr.push(name);
-                        self.onValidRefuse(dom, self.regWarning);
+                else if (name && customValid) {
+                    if (window[customValid]) {
+                        var reg = window[customValid].regExp;
+                        var tips = window[customValid].message || self.regWarning;
+                        if (reg && reg.test(v)) {
+                            self.onValidPass(dom, self.successTips); 
+                        }
+                        else {
+                            validArr.push(name);
+                            self.onValidRefuse(dom, tips);
+                        }
                     }
                 }
             }

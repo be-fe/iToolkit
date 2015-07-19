@@ -200,7 +200,7 @@ riot.mount('.demo tree', treeOpts);
                             <rcol name="name" alias="姓名"></rcol>
                             <rcol alias="测试"><button class="btn btn-primary">测试</button></rcol>
                             <rcol name="list" alias="列表">
-                                <ul>
+                                <ul if="<%=list%>">
                                     <li each="<%=list%>"><%=a%></li>
                                 </ul>
                             </rcol>
@@ -229,6 +229,11 @@ riot.mount('.demo tree', treeOpts);
         <rcol name="desc" width="200px"></rcol>
         <rcol name="name" alias="姓名"></rcol>
         <rcol alias="测试"><button class="btn btn-primary">测试</button></rcol> <!-- 不对应任何字段的情况-->
+        <rcol name="list" alias="列表">
+            <ul if="<%=list%>">
+                <li each="<%=list%>"><%=a%></li>
+            </ul>
+        </rcol>
     </table-view>
 </div></script></code></pre>
 
@@ -379,6 +384,11 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
                             </label><br>
 
                             <label>
+                                RegExp2:
+                                <input type="text" name="idcard" value="41030319880612000" customValid="isIDCard">
+                            </label><br>
+
+                            <label>
                                 text more than 2: 
                                 <input type="text" name="t3" value="{ data.b }" min="3">
                             </label><br>
@@ -422,6 +432,9 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
         </label><br>
         <label>
             RegExp: <input type="text" name="t4" value="tes" valid="/test/">
+        </label><br>
+        <label>
+            RegExp2: <input type="text" name="idcard" value="41030319880612000" customValid="isIDCard">
         </label><br>
         <label>
             text more than 2: <input type="text" name="t3" value="{ data.b }" min="3">
@@ -472,7 +485,12 @@ var formOpts = {
 }
 riot.mount('.demo super-form', formOpts);
 var theForm = document.querySelector('.demo super-form');
-console.log(theForm.getData()); //返回obj形式的key-value表单数据，注意name相同会覆盖。
+console.log(theForm.getData()); //返回obj形式的key-value表单数据。
+
+window.isIDCard = {
+    regExp: /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+    message: '不是合法的身份证号码'
+}  //在window上定义一个全局的校验规则，在html上用customValid属性调用。
 
 EC.on('submit_success', function(result) {
     console.log(result);                   
@@ -825,6 +843,11 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
             riot.mount('.demo super-form', formOpts);
             var theForm = document.querySelector('.demo super-form');
             console.log(theForm.getData());
+
+            window.isIDCard = {
+                regExp: /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                message: '不是合法的身份证号码'
+            }
 
             /*
              *  super-div

@@ -16,6 +16,7 @@
         <script src="../src/iToolkit_pc.js"></script>
     </head>
     <body>
+        <!-- 避免和框架内置冲突，使用<%= %>来标记表达式 -->
         <table-view>
             <rcol name="name" alias="姓名" width="100">
                 <a href="<%= '/goto/' + id %>"><%= name %></a>
@@ -42,7 +43,7 @@
                     {id: 5, name: 'John', mobile: 15676595625, email: 'John@baidu.com', number: 126243, description: 'Very Bad!'},
                 ],
                 class: 'table',    //table上添加的class，可配合Bootstrap
-                showHeader: true,  //是否展示表头
+                showHeader: true,  //是否展示表头, 默认为true
                 cut: true,         //内容超长是否省略
                 newline: false,    //内容超长是否换行
             };
