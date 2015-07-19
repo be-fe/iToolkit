@@ -206,6 +206,7 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
     var self = this;
     var config = self.opts.opts || self.opts;
+    var EL = self.root;
     for (i in config) {
         self[i] = config[i];
     }
@@ -237,6 +238,12 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
     self.root.close = function() {
         self.root.style.display = 'none';
+    }
+
+    self.root.loadData = function(newData, colName){
+        colName = colName || 'data';
+        self[colName] = newData
+        self.update();
     }
 
 
@@ -390,6 +397,7 @@ riot.tag('super-div', '<style scope> super-div{ display: block; } </style> <yiel
     }
 
     self.on('mount', function() {
+        EL.style.display = 'block';
         self.superDivUrl = EL.getAttribute('data-get') || EL.getAttribute('data-jsonp');
         if (self.superDivUrl) {
             self.getData(config.params);
@@ -431,10 +439,31 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     self.passClass = config.passClass || 'valid-pass';
     self.failedClass = config.failedClass || 'valid-failed';
 
+    self.on('mount', function() {
+        EL.style.display = 'block';
+    })
+
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
         self[colName] = newData;
         self.update();
+    }
+
+    self.checkExistKey = function(obj, key, value) {
+        if (obj.hasOwnProperty(key)) {
+            if (utils.isArray(obj[key])) {
+                obj[key].push(value);
+            }
+            else {
+                var arr = [];
+                arr.push(obj[key]);
+                arr.push(value)
+                obj[key] = arr;
+            }                  
+        }
+        else {
+            obj[key] = value;
+        }
     }
 
     self.getData = EL.getData = function(){
@@ -443,47 +472,28 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
                 if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params[elems[i].name] = encodeURIComponent(value);
+                    var selected = elems[i].selectedOptions;
+                    for (j = 0; j < selected.length; j++) {
+                        value = selected[j].value;
+                        self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
+                    }
                 } 
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
                         value = elems[i].value;
-                        params[elems[i].name] = encodeURIComponent(value);
+                        self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
                     }
                 }
                 else {
                     value = elems[i].value;
-                    params[elems[i].name] = encodeURIComponent(value);
+                    self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
                 }
             }
         }
         return params;
     }
-
-    self.getQuery = EL.getQuery = function(){
-        var elems = self.root.getElementsByTagName('form')[0].elements;
-        var params = {};
-        for (var i = 0; i < elems.length; i++) {
-            if (elems[i].name) {
-                if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params[elems[i].name] = encodeURIComponent(value);
-                } 
-                else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
-                    if (elems[i].checked) {
-                        value = elems[i].value;
-                        params[elems[i].name] = encodeURIComponent(value);
-                    }
-                }
-                else {
-                    value = elems[i].value;
-                    params[elems[i].name] = encodeURIComponent(value);
-                }
-            }
-        }
-        return params
-    }
+    
+    
 
     for (i in config) {
         if (keyWords.indexOf(i) < 0) {
@@ -557,8 +567,11 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
                 if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    var selected = elems[i].selectedOptions;
+                    for (j = 0; j < selected.length; j++) {
+                        value = selected[j].value;
+                        params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    }
                 } 
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
@@ -593,14 +606,14 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 if (xmlhttp.status === 200) {
                     try {
                         var result = JSON.parse(xmlhttp.responseText);
-                        config.callback(result);
+                        config.callback && config.callback(result);
                         EC.trigger('submit_success', result);
                     }catch(e){
                         console.log(e);
                     }
                 }
                 else {
-                    config.errCallback(params);
+                    config.errCallback && config.errCallback(params);
                     EC.trigger('submit_error', params);
                 }
             } 
@@ -611,11 +624,13 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     this.submit = function(e) {
         var validArr = [];
         var elems = self.root.getElementsByTagName('form')[0].elements;
-        var url = self.root.getAttribute('action');
+        var action = config.action || self.root.getAttribute('action');
+        var url = action;
 
         if (config.valid) {
             for (var i = 0; i < elems.length; i++) {
                 var valid = elems[i].getAttribute('valid');
+                var customValid = elems[i].getAttribute('customValid');
                 var max = elems[i].getAttribute('max');
                 var min = elems[i].getAttribute('min');
                 var type = elems[i].getAttribute('type');
@@ -706,13 +721,26 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 else if (name && min && type!== 'number') {
                     validMin();
                 }
+                else if (name && customValid) {
+                    if (window[customValid]) {
+                        var reg = window[customValid].regExp;
+                        var tips = window[customValid].message || self.regWarning;
+                        if (reg && reg.test(v)) {
+                            self.onValidPass(dom, self.successTips); 
+                        }
+                        else {
+                            validArr.push(name);
+                            self.onValidRefuse(dom, tips);
+                        }
+                    }
+                }
             }
         }
         
         if (!validArr.length) {
             e.preventDefault();
             if (config.normalSubmit) { 
-                self.root.firstChild.setAttribute('action', self.root.getAttribute('action'));
+                self.root.firstChild.setAttribute('action', action);
                 return true;
             }
             else {
@@ -909,21 +937,42 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
         self.update();
     }
     
-    self.findNodes = function(node) {
+    self.findNodes = function(node, tag) {
         for(var i = 0;i < node.attributes.length; i++){
             var attrName = node.attributes[i]['name'];
             var attrValue = node.attributes[i]['value'];
             if (attrName === 'if' || attrName === 'show' || attrName === 'hide') {
-                if (attrName == 'hide') attrValue = !attrValue;
-                node.style.display = attrValue ? '' : 'none';
-                break;
+                node.removeAttribute(attrName);
+                var judgeValue = riot.util.tmpl(attrValue, tag);
+                if (attrName == 'hide') judgeValue = !judgeValue;
+                node.style.display = judgeValue ? '' : 'none';
             }
+            if (attrName === 'each') {
+                node.removeAttribute(attrName);
+                var arr = riot.util.tmpl(attrValue, tag);
+                var root = node.parentNode;
+                if (arr && utils.isArray(arr)) {
+                    var placeholder = document.createComment('riot placeholder');
+                    var frag = document.createDocumentFragment();
+
+                    root.insertBefore(placeholder, node);
+                    for (i = 0; i < arr.length; i++) {
+                        var tmp = document.createElement('tmp');
+                        tmp.innerHTML = riot.util.tmpl(node.outerHTML, arr[i]);
+                        frag.appendChild(tmp.firstChild);
+                    }
+
+                    root.removeChild(node);
+                    root.insertBefore(frag, placeholder);
+                }
+                
+            } 
         }
         if (node.hasChildNodes()) {
-            var children = node.childNodes;  
+            var children = node.children;
             for (var i = 0; i < children.length; i++) {  
                 var child = children.item(i);
-                self.findNodes(child);  
+                self.findNodes(child, tag);  
             }  
         }
         
@@ -956,8 +1005,14 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
                     rowdata[i] = iToolkit.tableExtend[i]
                 }
             }
-            td.root.innerHTML = riot.util.tmpl(str, rowdata);
-            self.findNodes(td.root);
+
+            for (i in rowdata) {
+                td[i] = rowdata[i];
+            }
+            
+            td.root.innerHTML = str;
+            self.findNodes(td.root, td);
+            td.root.innerHTML = riot.util.tmpl(td.root.innerHTML, rowdata)
         }
         else{
             return rowdata[col.name];

@@ -1,3 +1,11 @@
+super-div {
+    display: none;
+}
+
+super-form {
+    display: none;
+}
+
 .inline-form > * {
     vertical-align: center;
     margin-bottom: 0;

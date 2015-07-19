@@ -189,10 +189,21 @@ riot.mount('.demo tree', treeOpts);
                     <h5>实例:</h5>
                     <div class="demo">
                         <table-view>
-                            <rcol name="city" width="200px" class="test test1"><a href="<%= testMethod(desc) %>" hide="<%= status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a></rcol>
+                            <rcol name="city" width="200px" class="test test1">
+                                <div>
+                                    <a href="<%= testMethod(desc) %>" hide="<%= status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a>
+
+                                    <a href="<%= testMethod(desc) %>" hide="<%= !status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a>
+                                </div>
+                            </rcol>
                             <rcol name="desc" width="200px"></rcol>
                             <rcol name="name" alias="姓名"></rcol>
                             <rcol alias="测试"><button class="btn btn-primary">测试</button></rcol>
+                            <rcol name="list" alias="列表">
+                                <ul if="<%=list%>">
+                                    <li each="<%=list%>"><%=a%></li>
+                                </ul>
+                            </rcol>
                         </table-view>
                     </div>
                     <button class="btn btn-default" onclick="recoverTable()">恢复初始值</button>
@@ -209,10 +220,20 @@ riot.mount('.demo tree', treeOpts);
                     <pre><code class="language-markup"><script type="prism-html-markup">
 <div class="demo">
     <table-view>
-        <rcol name="city"><a href="<%= testMethod(desc)%>" hide="<%= status==1%>"><%= city%></a></rcol>
+        <rcol name="city">
+            <div>
+                <a href="<%= testMethod(desc) %>" hide="<%= status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a>
+                <a href="<%= testMethod(desc) %>" hide="<%= !status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a>
+            </div>
+        </rcol>
         <rcol name="desc" width="200px"></rcol>
         <rcol name="name" alias="姓名"></rcol>
         <rcol alias="测试"><button class="btn btn-primary">测试</button></rcol> <!-- 不对应任何字段的情况-->
+        <rcol name="list" alias="列表">
+            <ul if="<%=list%>">
+                <li each="<%=list%>"><%=a%></li>
+            </ul>
+        </rcol>
     </table-view>
 </div></script></code></pre>
 
@@ -324,6 +345,7 @@ var modalOpts = {
 riot.mount('.demo modal', modalOpts);
 document.querySelector('#modal-demo').open();  //JS控制模态框打开
 document.querySelector('#modal-demo').close(); //JS控制模态框关闭
+document.querySelector('#modal-demo').loadData(newData, colname); //更新数据，colname不填默认更新data;
                     </code></pre>
                 </section>
 
@@ -362,6 +384,11 @@ document.querySelector('#modal-demo').close(); //JS控制模态框关闭
                             </label><br>
 
                             <label>
+                                RegExp2:
+                                <input type="text" name="idcard" value="41030319880612000" customValid="isIDCard">
+                            </label><br>
+
+                            <label>
                                 text more than 2: 
                                 <input type="text" name="t3" value="{ data.b }" min="3">
                             </label><br>
@@ -373,9 +400,12 @@ document.querySelector('#modal-demo').close(); //JS控制模态框关闭
 
                             <label>
                                 select:
-                                <select>
+                                <select name="select">
                                     <option value="{ data.a }">{ data.a }</option>
                                     <option value="{ data.b }">{ data.b }</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
                                 </select>
                             </label><br>
 
@@ -402,6 +432,9 @@ document.querySelector('#modal-demo').close(); //JS控制模态框关闭
         </label><br>
         <label>
             RegExp: <input type="text" name="t4" value="tes" valid="/test/">
+        </label><br>
+        <label>
+            RegExp2: <input type="text" name="idcard" value="41030319880612000" customValid="isIDCard">
         </label><br>
         <label>
             text more than 2: <input type="text" name="t3" value="{ data.b }" min="3">
@@ -452,7 +485,12 @@ var formOpts = {
 }
 riot.mount('.demo super-form', formOpts);
 var theForm = document.querySelector('.demo super-form');
-console.log(theForm.getData()); //返回obj形式的key-value表单数据，注意name相同会覆盖。
+console.log(theForm.getData()); //返回obj形式的key-value表单数据。
+
+window.isIDCard = {
+    regExp: /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+    message: '不是合法的身份证号码'
+}  //在window上定义一个全局的校验规则，在html上用customValid属性调用。
 
 EC.on('submit_success', function(result) {
     console.log(result);                   
@@ -658,10 +696,10 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
              */
             var tableOpts = {
                 data: [
-                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank, wahahahahaha'},
-                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl'},
-                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe'},
-                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!'}
+                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank, wahahahahaha', list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl', list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe', list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!', list:[{a:1, b:2}, {a:3, b:4}]}
                 ],
                 class: 'table',
                 showHeader: true,
@@ -674,15 +712,14 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
             }
             
             riot.mount('.demo  table-view', tableOpts);
-            riot.mount('rcol');
 
             function recoverTable() {
                 dom = document.querySelector('table-view');
                 dom.loadData([
-                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank'},
-                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl'},
-                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe'},
-                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!'}
+                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank' , list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl' , list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe' , list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!', list:[{a:1, b:2}, {a:3, b:4}]}
                 ]);
             }
 
@@ -806,6 +843,11 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
             riot.mount('.demo super-form', formOpts);
             var theForm = document.querySelector('.demo super-form');
             console.log(theForm.getData());
+
+            window.isIDCard = {
+                regExp: /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                message: '不是合法的身份证号码'
+            }
 
             /*
              *  super-div

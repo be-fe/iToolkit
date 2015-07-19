@@ -18,6 +18,10 @@
     self.passClass = config.passClass || 'valid-pass';
     self.failedClass = config.failedClass || 'valid-failed';
 
+    self.on('mount', function() {
+        EL.style.display = 'block';
+    })
+
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
         self[colName] = newData;
@@ -25,53 +29,54 @@
     }
 
     //获取表单的obj
+    self.checkExistKey = function(obj, key, value) {
+        if (obj.hasOwnProperty(key)) {
+            if (utils.isArray(obj[key])) {
+                obj[key].push(value);
+            }
+            else {
+                var arr = [];
+                arr.push(obj[key]);
+                arr.push(value)
+                obj[key] = arr;
+            }                  
+        }
+        else {
+            obj[key] = value;
+        }
+    }
+
     self.getData = EL.getData = function(){
         var elems = self.root.getElementsByTagName('form')[0].elements;
         var params = {};
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
                 if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params[elems[i].name] = encodeURIComponent(value);
+                    var selected = elems[i].selectedOptions;
+                    for (j = 0; j < selected.length; j++) {
+                        value = selected[j].value;
+                        self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
+                    }
                 } 
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
                         value = elems[i].value;
-                        params[elems[i].name] = encodeURIComponent(value);
+                        self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
                     }
                 }
                 else {
                     value = elems[i].value;
-                    params[elems[i].name] = encodeURIComponent(value);
+                    self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
                 }
             }
         }
         return params;
     }
-
-    self.getQuery = EL.getQuery = function(){
-        var elems = self.root.getElementsByTagName('form')[0].elements;
-        var params = {};
-        for (var i = 0; i < elems.length; i++) {
-            if (elems[i].name) {
-                if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params[elems[i].name] = encodeURIComponent(value);
-                } 
-                else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
-                    if (elems[i].checked) {
-                        value = elems[i].value;
-                        params[elems[i].name] = encodeURIComponent(value);
-                    }
-                }
-                else {
-                    value = elems[i].value;
-                    params[elems[i].name] = encodeURIComponent(value);
-                }
-            }
-        }
-        return params
-    }
+    
+    /*
+     *  将config中的属性浅拷贝到Tag对象上。
+     *  
+     */
 
     for (i in config) {
         if (keyWords.indexOf(i) < 0) {
@@ -151,8 +156,11 @@
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
                 if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    var selected = elems[i].selectedOptions;
+                    for (j = 0; j < selected.length; j++) {
+                        value = selected[j].value;
+                        params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    }
                 } 
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
@@ -187,14 +195,14 @@
                 if (xmlhttp.status === 200) {
                     try {
                         var result = JSON.parse(xmlhttp.responseText);
-                        config.callback(result);
+                        config.callback && config.callback(result);
                         EC.trigger('submit_success', result);
                     }catch(e){
                         console.log(e);
                     }
                 }
                 else {
-                    config.errCallback(params);
+                    config.errCallback && config.errCallback(params);
                     EC.trigger('submit_error', params);
                 }
             } 
@@ -207,11 +215,13 @@
     submit(e) {
         var validArr = [];
         var elems = self.root.getElementsByTagName('form')[0].elements;
-        var url = self.root.getAttribute('action');
+        var action = config.action || self.root.getAttribute('action');
+        var url = action;
 
         if (config.valid) {
             for (var i = 0; i < elems.length; i++) {
                 var valid = elems[i].getAttribute('valid');
+                var customValid = elems[i].getAttribute('customValid');
                 var max = elems[i].getAttribute('max');
                 var min = elems[i].getAttribute('min');
                 var type = elems[i].getAttribute('type');
@@ -302,13 +312,26 @@
                 else if (name && min && type!== 'number') {
                     validMin();
                 }
+                else if (name && customValid) {
+                    if (window[customValid]) {
+                        var reg = window[customValid].regExp;
+                        var tips = window[customValid].message || self.regWarning;
+                        if (reg && reg.test(v)) {
+                            self.onValidPass(dom, self.successTips); 
+                        }
+                        else {
+                            validArr.push(name);
+                            self.onValidRefuse(dom, tips);
+                        }
+                    }
+                }
             }
         }
         
         if (!validArr.length) {
             e.preventDefault();
             if (config.normalSubmit) { 
-                self.root.firstChild.setAttribute('action', self.root.getAttribute('action'));
+                self.root.firstChild.setAttribute('action', action);
                 return true;
             }
             else {

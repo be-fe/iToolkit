@@ -13,6 +13,7 @@
 
     var self = this;
     var config = self.opts.opts || self.opts;
+    var EL = self.root;
     for (i in config) {
         self[i] = config[i];
     }
@@ -44,6 +45,12 @@
 
     self.root.close = function() {
         self.root.style.display = 'none';
+    }
+
+    self.root.loadData = function(newData, colName){
+        colName = colName || 'data';
+        self[colName] = newData
+        self.update();
     }
 
     // document.querySelector("[modal-close-target='" + self.root.id + "']").onclick = function() {

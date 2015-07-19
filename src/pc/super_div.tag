@@ -36,6 +36,7 @@
     }
 
     self.on('mount', function() {
+        EL.style.display = 'block';
         self.superDivUrl = EL.getAttribute('data-get') || EL.getAttribute('data-jsonp');
         if (self.superDivUrl) {
             self.getData(config.params);

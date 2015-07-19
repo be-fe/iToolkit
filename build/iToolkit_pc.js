@@ -443,6 +443,7 @@ function _each(dom, parent, expr) {
       child = getTag(dom),
       checksum
 
+  // console.log(expr);
   root.insertBefore(placeholder, dom)
 
   expr = loopKeys(expr)
@@ -469,7 +470,7 @@ function _each(dom, parent, expr) {
             return mkitem(expr, key, items[key])
           })
       }
-
+      // console.log(items);
       var frag = document.createDocumentFragment(),
           i = tags.length,
           j = items.length
@@ -494,6 +495,7 @@ function _each(dom, parent, expr) {
 
           frag.appendChild(tags[i].root)
         }
+        
         tags[i]._item = _item
         tags[i].update(_item)
       }
@@ -589,7 +591,7 @@ function parseExpressions(root, tag, expressions) {
     // loop
     var attr = dom.getAttribute('each')
 
-    if (attr) { _each(dom, tag, attr); return false }
+    if (attr && attr.match(/\{[\s\S]+\}/)) { _each(dom, tag, attr); return false }
 
     // attribute expressions
     each(dom.attributes, function(attr) {
@@ -659,9 +661,15 @@ function Tag(impl, conf, innerHTML) {
     if (brackets(/\{.*\}/).test(val)) attr[el.name] = val
   })
 
-  if (dom.innerHTML && !/select|select|optgroup|tbody|tr/.test(tagName))
+  if (dom.innerHTML && !/select|select|optgroup|tbody|tr/.test(tagName)) {
     // replace all the yield tags with the tag inner html
+    if (root.tagName !== 'TABLE-VIEW') {
+      // console.log(dom.innerHTML);
+      // console.log(innerHTML);
+    }
     dom.innerHTML = replaceYield(dom.innerHTML, innerHTML)
+    
+  }
 
   // options
   function updateOpts() {
@@ -713,7 +721,6 @@ function Tag(impl, conf, innerHTML) {
 
     // internal use only, fixes #403
     self.trigger('premount')
-
     if (isLoop) {
       // update the root attribute for the looped elements
       self.root = root = loopDom = dom.firstChild
@@ -1177,10 +1184,9 @@ function mountTo(root, tagName, opts) {
   var tag = tagImpl[tagName],
       // cache the inner HTML to fix #855
       innerHTML = root._innerHTML = root._innerHTML || root.innerHTML
-
   // clear the inner html
   root.innerHTML = ''
-
+    //console.log(innerHTML);
   if (tag && root) tag = new Tag(tag, { root: root, opts: opts }, innerHTML)
 
   if (tag && tag.mount) {
@@ -1210,7 +1216,6 @@ riot.tag = function(name, html, css, attrs, fn) {
 }
 
 riot.mount = function(selector, tagName, opts) {
-
   var els,
       allTags,
       tags = []
@@ -1286,7 +1291,6 @@ riot.mount = function(selector, tagName, opts) {
     // get rid of the tagName
     tagName = 0
   }
-
   if (els.tagName)
     pushTags(els)
   else
@@ -1501,6 +1505,9 @@ var utils = {
         else {
             parent.insertBefore(newElement, targetElement.nextSibling);
         }
+    },
+    isArray: function(value) {
+        return toString.call(value) === '[object Array]';
     }
 }
 
@@ -1723,6 +1730,7 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
     var self = this;
     var config = self.opts.opts || self.opts;
+    var EL = self.root;
     for (i in config) {
         self[i] = config[i];
     }
@@ -1754,6 +1762,12 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
     self.root.close = function() {
         self.root.style.display = 'none';
+    }
+
+    self.root.loadData = function(newData, colName){
+        colName = colName || 'data';
+        self[colName] = newData
+        self.update();
     }
 
 
@@ -1907,6 +1921,7 @@ riot.tag('super-div', '<style scope> super-div{ display: block; } </style> <yiel
     }
 
     self.on('mount', function() {
+        EL.style.display = 'block';
         self.superDivUrl = EL.getAttribute('data-get') || EL.getAttribute('data-jsonp');
         if (self.superDivUrl) {
             self.getData(config.params);
@@ -1948,10 +1963,31 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     self.passClass = config.passClass || 'valid-pass';
     self.failedClass = config.failedClass || 'valid-failed';
 
+    self.on('mount', function() {
+        EL.style.display = 'block';
+    })
+
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
         self[colName] = newData;
         self.update();
+    }
+
+    self.checkExistKey = function(obj, key, value) {
+        if (obj.hasOwnProperty(key)) {
+            if (utils.isArray(obj[key])) {
+                obj[key].push(value);
+            }
+            else {
+                var arr = [];
+                arr.push(obj[key]);
+                arr.push(value)
+                obj[key] = arr;
+            }                  
+        }
+        else {
+            obj[key] = value;
+        }
     }
 
     self.getData = EL.getData = function(){
@@ -1960,47 +1996,28 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
                 if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params[elems[i].name] = encodeURIComponent(value);
+                    var selected = elems[i].selectedOptions;
+                    for (j = 0; j < selected.length; j++) {
+                        value = selected[j].value;
+                        self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
+                    }
                 } 
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
                         value = elems[i].value;
-                        params[elems[i].name] = encodeURIComponent(value);
+                        self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
                     }
                 }
                 else {
                     value = elems[i].value;
-                    params[elems[i].name] = encodeURIComponent(value);
+                    self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
                 }
             }
         }
         return params;
     }
-
-    self.getQuery = EL.getQuery = function(){
-        var elems = self.root.getElementsByTagName('form')[0].elements;
-        var params = {};
-        for (var i = 0; i < elems.length; i++) {
-            if (elems[i].name) {
-                if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params[elems[i].name] = encodeURIComponent(value);
-                } 
-                else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
-                    if (elems[i].checked) {
-                        value = elems[i].value;
-                        params[elems[i].name] = encodeURIComponent(value);
-                    }
-                }
-                else {
-                    value = elems[i].value;
-                    params[elems[i].name] = encodeURIComponent(value);
-                }
-            }
-        }
-        return params
-    }
+    
+    
 
     for (i in config) {
         if (keyWords.indexOf(i) < 0) {
@@ -2074,8 +2091,11 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
                 if (elems[i].tagName === "SELECT") {
-                    value = elems[i].options[elems[i].selectedIndex].value;
-                    params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    var selected = elems[i].selectedOptions;
+                    for (j = 0; j < selected.length; j++) {
+                        value = selected[j].value;
+                        params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    }
                 } 
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
@@ -2110,14 +2130,14 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 if (xmlhttp.status === 200) {
                     try {
                         var result = JSON.parse(xmlhttp.responseText);
-                        config.callback(result);
+                        config.callback && config.callback(result);
                         EC.trigger('submit_success', result);
                     }catch(e){
                         console.log(e);
                     }
                 }
                 else {
-                    config.errCallback(params);
+                    config.errCallback && config.errCallback(params);
                     EC.trigger('submit_error', params);
                 }
             } 
@@ -2128,11 +2148,13 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     this.submit = function(e) {
         var validArr = [];
         var elems = self.root.getElementsByTagName('form')[0].elements;
-        var url = self.root.getAttribute('action');
+        var action = config.action || self.root.getAttribute('action');
+        var url = action;
 
         if (config.valid) {
             for (var i = 0; i < elems.length; i++) {
                 var valid = elems[i].getAttribute('valid');
+                var customValid = elems[i].getAttribute('customValid');
                 var max = elems[i].getAttribute('max');
                 var min = elems[i].getAttribute('min');
                 var type = elems[i].getAttribute('type');
@@ -2223,13 +2245,26 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 else if (name && min && type!== 'number') {
                     validMin();
                 }
+                else if (name && customValid) {
+                    if (window[customValid]) {
+                        var reg = window[customValid].regExp;
+                        var tips = window[customValid].message || self.regWarning;
+                        if (reg && reg.test(v)) {
+                            self.onValidPass(dom, self.successTips); 
+                        }
+                        else {
+                            validArr.push(name);
+                            self.onValidRefuse(dom, tips);
+                        }
+                    }
+                }
             }
         }
         
         if (!validArr.length) {
             e.preventDefault();
             if (config.normalSubmit) { 
-                self.root.firstChild.setAttribute('action', self.root.getAttribute('action'));
+                self.root.firstChild.setAttribute('action', action);
                 return true;
             }
             else {
@@ -2426,21 +2461,42 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
         self.update();
     }
     
-    self.findNodes = function(node) {
+    self.findNodes = function(node, tag) {
         for(var i = 0;i < node.attributes.length; i++){
             var attrName = node.attributes[i]['name'];
             var attrValue = node.attributes[i]['value'];
             if (attrName === 'if' || attrName === 'show' || attrName === 'hide') {
-                if (attrName == 'hide') attrValue = !attrValue;
-                node.style.display = attrValue ? '' : 'none';
-                break;
+                node.removeAttribute(attrName);
+                var judgeValue = riot.util.tmpl(attrValue, tag);
+                if (attrName == 'hide') judgeValue = !judgeValue;
+                node.style.display = judgeValue ? '' : 'none';
             }
+            if (attrName === 'each') {
+                node.removeAttribute(attrName);
+                var arr = riot.util.tmpl(attrValue, tag);
+                var root = node.parentNode;
+                if (arr && utils.isArray(arr)) {
+                    var placeholder = document.createComment('riot placeholder');
+                    var frag = document.createDocumentFragment();
+
+                    root.insertBefore(placeholder, node);
+                    for (i = 0; i < arr.length; i++) {
+                        var tmp = document.createElement('tmp');
+                        tmp.innerHTML = riot.util.tmpl(node.outerHTML, arr[i]);
+                        frag.appendChild(tmp.firstChild);
+                    }
+
+                    root.removeChild(node);
+                    root.insertBefore(frag, placeholder);
+                }
+                
+            } 
         }
         if (node.hasChildNodes()) {
-            var children = node.childNodes;  
+            var children = node.children;
             for (var i = 0; i < children.length; i++) {  
                 var child = children.item(i);
-                self.findNodes(child);  
+                self.findNodes(child, tag);  
             }  
         }
         
@@ -2473,8 +2529,14 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
                     rowdata[i] = iToolkit.tableExtend[i]
                 }
             }
-            td.root.innerHTML = riot.util.tmpl(str, rowdata);
-            self.findNodes(td.root);
+
+            for (i in rowdata) {
+                td[i] = rowdata[i];
+            }
+            
+            td.root.innerHTML = str;
+            self.findNodes(td.root, td);
+            td.root.innerHTML = riot.util.tmpl(td.root.innerHTML, rowdata)
         }
         else{
             return rowdata[col.name];
