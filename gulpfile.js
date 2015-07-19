@@ -19,6 +19,13 @@ gulp.task('riot_mobile', function () {
     .pipe(gulp.dest('src'));
 });
 
+gulp.task('riot_light', function () {
+    return gulp.src(['src/pc/supe_div.tag'])
+    .pipe(riot())
+    .pipe(concat('iToolkit_light.js'))
+    .pipe(gulp.dest('src'));
+});
+
 gulp.task('build', function () {
     gulp.src(['src/css/themes/*.css'])
     .pipe(gulp.dest('build/themes'))

@@ -1,0 +1,61 @@
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="../src/css/common.css">
+        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">        
+        <!-- IE兼容  -->
+        <!--[if lt IE 9]>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.5/es5-shim.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+            <script>html5.addElements('test')</script>
+        <![endif]-->
+        <script src="../src/lib/riot.js"></script>
+        <script src="../src/lib/common.js"></script>
+        <script src="../src/iToolkit_pc.js"></script>
+    </head>
+    <body>
+        <button modal-open-target='modal-demo1' class="btn btn-primary">打开模态框</button>
+        <modal id="modal-demo1">
+            <super-form opts="{ formData }" action="{ url }" class="form-horizontal">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Email address</label>
+                    <input type="text" name="email" class="form-control" id="exampleInputEmail1" placeholder="Email" value="{ data.email }" valid="email">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Password</label>
+                    <input type="password" name="password"  class="form-control" id="exampleInputPassword1" placeholder="Password" value="{ data.password }">
+                </div>
+                <input class="btn btn-primary" value="提交" type="submit"/>
+            </super-form>
+        </modal>
+
+        <script>
+            var config = {
+                width: 600,
+                url: '/submit/handle',
+                formData: {
+                    data: {
+                        email: 'zhangsan@baidu.com',
+                        password: 'zhangsan@baidu.com'
+                    },
+                    action: '/submit/pass/handle',   //如果配置该参数，form的action会优先使用该值
+                    // onValidPass: function(dom, message) {
+                    //     alert(message);         //覆盖默认的校验通过函数
+                    // },
+                    // onValidRefuse: function(dom, message) {      //覆盖默认的校验失败函数
+                    //     alert(message);
+                    // },
+                    callback: function() {      //提交成功的回调
+                        alert('success');      
+                    },
+                    errCallback: function(params) {   //提交失败的回调
+                        alert("error, params:" + params);
+                    },
+                }
+            }
+            riot.mount('modal', config)
+        </script>
+    </body>
+</html>

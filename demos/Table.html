@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="../src/css/common.css">
+        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">        
+        <!-- IE兼容  -->
+        <!--[if lt IE 9]>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.5/es5-shim.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+            <script>html5.addElements('test')</script>
+        <![endif]-->
+        <script src="../src/lib/riot.js"></script>
+        <script src="../src/lib/common.js"></script>
+        <script src="../src/iToolkit_pc.js"></script>
+    </head>
+    <body>
+        <table-view>
+            <rcol name="name" alias="姓名" width="100">
+                <a href="<%= '/goto/' + id %>"><%= name %></a>
+            </rcol>
+            <rcol name="email" alias="邮箱" width="150"></rcol>
+            <rcol name="mobile" alias="手机"></rcol>
+            <rcol name="description" alias="备注"></rcol>
+            <rcol name="number" alias="学号"></rcol>
+            <rcol alias="操作">
+                <a href="javascript:void(0);" onclick="deleteStu(<%= id%>)">删除</a> | 
+                <a href="javascript:void(0);" onclick="mark(<%= id%>)">标注</a> |
+                <select if="<%= options%>">
+                    <option each="<%= options %>" value="<%= val%>"><%= alias %></option>
+                </select>
+            </rcol>
+        </table-view>
+        <script>
+            var config = {
+                data: [
+                    {id: 1, name: 'Peter', mobile: 15676545625, email: 'Peter@baidu.com', number: 236243, description: 'Good!', options:[{val: 1, alias: 'one'}, {val: 2, alias: 'two'}, {val: 3, alias: 'three'} ]},
+                    {id: 2, name: 'Tom', mobile: 15676535625, email: 'Tom@baidu.com', number: 386243, description: 'No Good!'},
+                    {id: 2, name: 'David', mobile: 15676555625, email: 'David@baidu.com', number: 676243, description: 'Better!'},
+                    {id: 4, name: 'Lee', mobile: 15676585625, email: 'Lee@baidu.com', number: 566243, description: 'Bad!'},
+                    {id: 5, name: 'John', mobile: 15676595625, email: 'John@baidu.com', number: 126243, description: 'Very Bad!'},
+                ],
+                class: 'table',    //table上添加的class，可配合Bootstrap
+                showHeader: true,  //是否展示表头
+                cut: true,         //内容超长是否省略
+                newline: false,    //内容超长是否换行
+            };
+
+            function deleteStu(id) {
+                alert('delete:' + id);
+            }
+
+            function mark(id) {
+                alert('mark:' + id);
+            }
+            setTimeout(function() {
+                riot.mount('table-view', config);
+            }, 300);
+        </script>
+    </body>
+</html>

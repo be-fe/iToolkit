@@ -170,23 +170,42 @@
         self.update();
     }
     
-    self.findNodes = function(node) {
+    self.findNodes = function(node, tag) {
         for(var i = 0;i < node.attributes.length; i++){
             var attrName = node.attributes[i]['name'];
             var attrValue = node.attributes[i]['value'];
             if (attrName === 'if' || attrName === 'show' || attrName === 'hide') {
-                if (attrName == 'hide') {
-                    attrValue = !attrValue;
+                node.removeAttribute(attrName);
+                var judgeValue = riot.util.tmpl(attrValue, tag);
+                if (attrName == 'hide') judgeValue = !judgeValue;
+                node.style.display = judgeValue ? '' : 'none';
+            }
+            if (attrName === 'each') {
+                node.removeAttribute(attrName);
+                var arr = riot.util.tmpl(attrValue, tag);
+                var root = node.parentNode;
+                if (arr && utils.isArray(arr)) {
+                    var placeholder = document.createComment('riot placeholder');
+                    var frag = document.createDocumentFragment();
+                    //var htmlStr = '';
+                    root.insertBefore(placeholder, node);
+                    for (i = 0; i < arr.length; i++) {
+                        var tmp = document.createElement('tmp');
+                        tmp.innerHTML = riot.util.tmpl(node.outerHTML, arr[i]);
+                        frag.appendChild(tmp.firstChild);
+                    }
+
+                    root.removeChild(node);
+                    root.insertBefore(frag, placeholder);
                 }
                 
-                node.style.display = attrValue ? '' : 'none';
-            }
+            } 
         }
         if (node.hasChildNodes()) {
             var children = node.children;
             for (var i = 0; i < children.length; i++) {  
                 var child = children.item(i);
-                self.findNodes(child);  
+                self.findNodes(child, tag);  
             }  
         }
         
@@ -219,8 +238,14 @@
                     rowdata[i] = iToolkit.tableExtend[i]
                 }
             }
-            td.root.innerHTML = riot.util.tmpl(str, rowdata);
-            self.findNodes(td.root);
+
+            for (i in rowdata) {
+                td[i] = rowdata[i];
+            }
+            
+            td.root.innerHTML = str;
+            self.findNodes(td.root, td);
+            td.root.innerHTML = riot.util.tmpl(td.root.innerHTML, rowdata)
         }
         else{
             return rowdata[col.name];

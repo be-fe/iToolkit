@@ -443,6 +443,7 @@ function _each(dom, parent, expr) {
       child = getTag(dom),
       checksum
 
+  // console.log(expr);
   root.insertBefore(placeholder, dom)
 
   expr = loopKeys(expr)
@@ -469,7 +470,7 @@ function _each(dom, parent, expr) {
             return mkitem(expr, key, items[key])
           })
       }
-
+      // console.log(items);
       var frag = document.createDocumentFragment(),
           i = tags.length,
           j = items.length
@@ -494,6 +495,7 @@ function _each(dom, parent, expr) {
 
           frag.appendChild(tags[i].root)
         }
+        
         tags[i]._item = _item
         tags[i].update(_item)
       }
@@ -589,7 +591,7 @@ function parseExpressions(root, tag, expressions) {
     // loop
     var attr = dom.getAttribute('each')
 
-    if (attr) { _each(dom, tag, attr); return false }
+    if (attr && attr.match(/\{[\s\S]+\}/)) { _each(dom, tag, attr); return false }
 
     // attribute expressions
     each(dom.attributes, function(attr) {
@@ -659,9 +661,15 @@ function Tag(impl, conf, innerHTML) {
     if (brackets(/\{.*\}/).test(val)) attr[el.name] = val
   })
 
-  if (dom.innerHTML && !/select|select|optgroup|tbody|tr/.test(tagName))
+  if (dom.innerHTML && !/select|select|optgroup|tbody|tr/.test(tagName)) {
     // replace all the yield tags with the tag inner html
+    if (root.tagName !== 'TABLE-VIEW') {
+      // console.log(dom.innerHTML);
+      // console.log(innerHTML);
+    }
     dom.innerHTML = replaceYield(dom.innerHTML, innerHTML)
+    
+  }
 
   // options
   function updateOpts() {
@@ -713,7 +721,6 @@ function Tag(impl, conf, innerHTML) {
 
     // internal use only, fixes #403
     self.trigger('premount')
-
     if (isLoop) {
       // update the root attribute for the looped elements
       self.root = root = loopDom = dom.firstChild
@@ -1177,10 +1184,9 @@ function mountTo(root, tagName, opts) {
   var tag = tagImpl[tagName],
       // cache the inner HTML to fix #855
       innerHTML = root._innerHTML = root._innerHTML || root.innerHTML
-
   // clear the inner html
   root.innerHTML = ''
-
+    //console.log(innerHTML);
   if (tag && root) tag = new Tag(tag, { root: root, opts: opts }, innerHTML)
 
   if (tag && tag.mount) {
@@ -1210,7 +1216,6 @@ riot.tag = function(name, html, css, attrs, fn) {
 }
 
 riot.mount = function(selector, tagName, opts) {
-
   var els,
       allTags,
       tags = []
@@ -1286,7 +1291,6 @@ riot.mount = function(selector, tagName, opts) {
     // get rid of the tagName
     tagName = 0
   }
-
   if (els.tagName)
     pushTags(els)
   else

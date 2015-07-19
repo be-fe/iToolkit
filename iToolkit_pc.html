@@ -199,6 +199,11 @@ riot.mount('.demo tree', treeOpts);
                             <rcol name="desc" width="200px"></rcol>
                             <rcol name="name" alias="姓名"></rcol>
                             <rcol alias="测试"><button class="btn btn-primary">测试</button></rcol>
+                            <rcol name="list" alias="列表">
+                                <ul>
+                                    <li each="<%=list%>"><%=a%></li>
+                                </ul>
+                            </rcol>
                         </table-view>
                     </div>
                     <button class="btn btn-default" onclick="recoverTable()">恢复初始值</button>
@@ -673,10 +678,10 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
              */
             var tableOpts = {
                 data: [
-                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank, wahahahahaha'},
-                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl'},
-                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe'},
-                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!'}
+                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank, wahahahahaha', list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl', list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe', list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!', list:[{a:1, b:2}, {a:3, b:4}]}
                 ],
                 class: 'table',
                 showHeader: true,
@@ -689,15 +694,14 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
             }
             
             riot.mount('.demo  table-view', tableOpts);
-            riot.mount('rcol');
 
             function recoverTable() {
                 dom = document.querySelector('table-view');
                 dom.loadData([
-                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank'},
-                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl'},
-                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe'},
-                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!'}
+                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank' , list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl' , list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe' , list:[{a:1, b:2}, {a:3, b:4}]},
+                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!', list:[{a:1, b:2}, {a:3, b:4}]}
                 ]);
             }
 
