@@ -1965,7 +1965,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
     self.on('mount', function() {
         EL.style.display = 'block';
-    })
+    });
 
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
@@ -2148,7 +2148,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     this.submit = function(e) {
         var validArr = [];
         var elems = self.root.getElementsByTagName('form')[0].elements;
-        var action = config.action || self.root.getAttribute('action');
+        var action = self.action || self.root.getAttribute('action');
         var url = action;
 
         if (config.valid) {
