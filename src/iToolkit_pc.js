@@ -777,8 +777,8 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
 
 
-                if (allowEmpty && typeof v !== 'string') {
-                    self.onValidRefuse(dom, self.emailWarning);
+                if (allowEmpty && (v === '' || typeof v !== 'string')) {
+                    self.onValidPass(dom, self.successTips);
                     continue;
                 }
                 if (name && valid) {

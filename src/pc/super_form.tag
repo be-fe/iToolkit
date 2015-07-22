@@ -396,8 +396,8 @@
                 //         self.onValidPass(dom, self.successTips);
                 //     }
                 // }
-                if (allowEmpty && typeof v !== 'string') {
-                    self.onValidRefuse(dom, self.emailWarning);
+                if (allowEmpty && (v === '' || typeof v !== 'string')) {
+                    self.onValidPass(dom, self.successTips);
                     continue;
                 }
                 if (name && valid) {
