@@ -1774,7 +1774,7 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
 
 });
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" type="number" style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
+riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" riot-type={"number"} style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
     
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -1953,19 +1953,126 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     var config = self.opts.opts || self.opts;
     var keyWords = ['insertTip', 'ajaxSubmit', 'submit'];   //保留字，不被覆盖
 
+    var NUMBER_REGEXP = {
+        NON_NEGATIVE_INT: /^0$|^-[1-9]\d*$/,                            //非负整数（正整数 + 0） 
+        POSITIVE_INT: /^[1-9]\d*$/,                                     //正整数 
+        NON_POSITIVE_INT: /^[1-9]\d*$|^0$/,                             //非正整数（负整数 + 0） 
+        NEGATIVE_INT: /^-[1-9]\d*$/,                                    //负整数 
+        INT: /^-?[1-9]\d*$|^0$/,                                        //整数 
+        NON_NEGATIVE_FLOAT: /^(\d)(\.\d+)?$|^([1-9]\d*)(\.\d+)?$|^0$/,  //非负浮点数（正浮点数 + 0） 
+        POSITIVE_FLOAT: /^(\d)(\.\d+)?$|^([1-9]\d*)(\.\d+)?$/,          //正浮点数 
+        NON_POSITIVE_FLOAT: /^(-\d)(\.\d+)?$|^(-[1-9]\d*)(\.\d+)?$|^0$/,//非正浮点数（负浮点数 + 0） 
+        NEGATIVE_FLOAT: /^(-\d)(\.\d+)?$|^(-[1-9]\d*)(\.\d+)?$/,        //负浮点数 
+        FLOAT: /^(-?\d)(\.\d+)?$|^(-?[1-9]\d*)(\.\d+)?$|^0$/            //浮点数
+    };
+
     self.presentWarning = '必填';
     self.emailWarning = '邮箱格式错误';
     self.mobileWarning = '手机格式错误';
     self.urlWarning = '网址格式错误';
     self.successTips = '通过';
     self.regWarning = '字段不符合验证规则';
+    self.numWarning = '数字格式错误';
 
     self.passClass = config.passClass || 'valid-pass';
     self.failedClass = config.failedClass || 'valid-failed';
 
+    
+    var comparator = function (type) {
+        return {
+            handler: function (min, max, dom, value, validArr, name) {
+                switch (type) {
+                    case 'number':
+                        return numComparator(min, max, dom, value, validArr, name);
+                    case 'string':
+                    default:
+                        return strCompatator(min, max, dom, value, validArr, name);
+                }
+            }
+        };
+    };
+
+    
+    function strCompatator(min, max, dom, value, validArr, name) {
+        var nMin = isNaN(min);
+        var nMax = isNaN(max);
+        var len = value.length;
+        if (!nMin && !nMax) {
+            if (len > max || len < min) {
+                validArr.push(name);
+                self.onValidRefuse(dom, self.bpWarning(min, max));
+            }
+            else {
+                self.onValidPass(dom, self.successTips);
+            }
+        }
+        else {
+            if (!nMin) {
+                if (len < min) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.minWarning(min));
+                }
+                else {
+                    self.onValidPass(dom, self.successTips);
+                }
+            }
+            if (!nMax) {
+                if (len > max) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.maxWarning(max));
+                }
+                else {
+                    self.onValidPass(dom, self.successTips);
+                }
+            }
+            if (nMax && nMin) {
+                self.onValidPass(dom, self.successTips);
+            }
+        }
+    }
+
+    
+    function numComparator(min, max, dom, value, validArr, name) {
+        var nMin = isNaN(min);
+        var nMax = isNaN(max);
+        var value = +value;
+        if (!nMin && !nMax) {
+            if (value > max || value < min) {
+                validArr.push(name);
+                self.onValidRefuse(dom, self.numBpWarning(min, max));
+            }
+            else {
+                self.onValidPass(dom, self.successTips);
+            }
+        }
+        else {
+            if (!nMin) {
+                if (value < min) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.minNumWarning(min));
+                }
+                else {
+                    self.onValidPass(dom, self.successTips);
+                }
+            }
+            if (!nMax) {
+                if (value > max) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.maxNumWarning(max));
+                }
+                else {
+                    self.onValidPass(dom, self.successTips);
+                }
+            }
+            if (nMax && nMin) {
+                self.onValidPass(dom, self.successTips);
+            }
+        }
+    }
+
     self.on('mount', function() {
         EL.style.display = 'block';
-    })
+    });
 
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
@@ -2036,7 +2143,21 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     self.minWarning = config.minWarning || function(n) {
         return '不得小于' + n + '个字符';
     }
-    
+
+    self.bpWarning = config.bpWarning || function (min, max) {
+        return '只允许' + min + '-' + max + '个字符';
+    }
+
+    self.minNumWarning = config.minNumWarning || function (n) {
+        return '不得小于' + n;
+    }
+    self.maxNumWarning = config.maxNumWarning || function (n) {
+        return '不得大于' + n;
+    }
+    self.numBpWarning = config.numBpWarning || function (min, max) {
+        return '输入数字应在' + min + '-' + max + '之间';
+    }
+
     
     self.removeTips = function(elems) {
         var root = self.root;
@@ -2133,7 +2254,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                         config.callback && config.callback(result);
                         EC.trigger('submit_success', result);
                     }catch(e){
-                        console.log(e);
+                        throw new Error(e.message);
                     }
                 }
                 else {
@@ -2148,39 +2269,41 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     this.submit = function(e) {
         var validArr = [];
         var elems = self.root.getElementsByTagName('form')[0].elements;
-        var action = config.action || self.root.getAttribute('action');
+        var action = self.action || self.root.getAttribute('action');
         var url = action;
 
         if (config.valid) {
             for (var i = 0; i < elems.length; i++) {
                 var valid = elems[i].getAttribute('valid');
                 var customValid = elems[i].getAttribute('customValid');
-                var max = elems[i].getAttribute('max');
-                var min = elems[i].getAttribute('min');
+                var max = parseInt(elems[i].getAttribute('max'), 10);
+                var min = parseInt(elems[i].getAttribute('min'), 10);
                 var type = elems[i].getAttribute('type');
+                var allowEmpty = elems[i].getAttribute('allowEmpty');
                 var v = elems[i].value; 
                 var name = elems[i].name;
                 var dom = elems[i];
-                var validMin = function() {
-                    min = parseInt(min, 10);
-                    if (v.length < min) {
-                        validArr.push(name);
-                        self.onValidRefuse(dom, self.minWarning(min));
-                    }
-                    else {
-                        self.onValidPass(dom, self.successTips);
-                    }
-                }
 
-                var validMax = function() {
-                    max = parseInt(max, 10);
-                    if (v.length > max) {
-                        validArr.push(name);
-                        self.onValidRefuse(dom, self.maxWarning(max));
-                    }
-                    else {
-                        self.onValidPass(dom, self.successTips);
-                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                if (allowEmpty && typeof v !== 'string') {
+                    self.onValidRefuse(dom, self.emailWarning);
+                    continue;
                 }
                 if (name && valid) {
                     if (valid === 'email') {
@@ -2216,14 +2339,15 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                             validArr.push(name);
                             self.onValidRefuse(dom, self.presentWarning);
                         }
-                        else if (max && type!== 'number'){
-                            validMax();
-                        }
-                        else if (min && type!== 'number'){
-                            validMin();
-                        }
+
+
+
+
+
+
                         else {
-                            self.onValidPass(dom, self.successTips);
+
+                            comparator('string').handler(min, max, dom, v, validArr, name);
                         }
                     }
                     else if (valid.match(/^\/\S+\/$/)) {
@@ -2231,26 +2355,41 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                         valid = valid.replace(/\/$/, '');
                         var reg = new RegExp(valid);
                         if (reg.test(v)) {
-                            self.onValidPass(dom, self.successTips); 
+
+                            comparator('string').handler(min, max, dom, v, validArr, name);
                         }
                         else {
                             validArr.push(name);
                             self.onValidRefuse(dom, self.regWarning);
                         }
                     }
+                    else if (NUMBER_REGEXP[valid.toUpperCase()]) {
+                        var reg = NUMBER_REGEXP[valid.toUpperCase()];
+                        if (reg.test(v)) {
+                            comparator('number').handler(min, max, dom, v, validArr, name);
+                        }
+                        else {
+                            validArr.push(name);
+                            self.onValidRefuse(dom, self.numWarning);
+                        }
+                    }
                 }
-                else if (name && max && type!== 'number') {
-                    validMax();
-                }
-                else if (name && min && type!== 'number') {
-                    validMin();
+
+
+
+
+
+
+                else if (name && !valid) {
+                    comparator('string').handler(min, max, dom, v, validArr, name);
                 }
                 else if (name && customValid) {
                     if (window[customValid]) {
                         var reg = window[customValid].regExp;
                         var tips = window[customValid].message || self.regWarning;
                         if (reg && reg.test(v)) {
-                            self.onValidPass(dom, self.successTips); 
+
+                            comparator('string').handler(min, max, dom, v, validArr, name); 
                         }
                         else {
                             validArr.push(name);
