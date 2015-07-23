@@ -14,7 +14,8 @@
     "url": "^0.10.3",
     "gulp-rename": "x",
     "gulp-minify-css": "x",
-    "gulp-uglify": "x"
+    "gulp-uglify": "x",
+    "gulp-header": "^1.2.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
