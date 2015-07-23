@@ -20,5 +20,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "xieyu33333",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "gulp-header": "^1.2.2"
+  }
 }
