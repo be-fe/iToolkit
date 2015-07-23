@@ -451,6 +451,7 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
 
                             <input type="submit" class="btn btn-primary" value="提交">
                         </super-form>
+                        <button class="btn btn-primary" onclick="removeTip()">清除提示</button>
                     </div>
 
                     <h5>HTML:</h5>
@@ -547,6 +548,7 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
 
         <input type="submit" class="btn btn-primary" value="提交">
     </super-form>
+    <button class="btn btn-primary" onclick="removeTip()">清除提示</button>
 </div>
                     </script></code></pre>
                     <h5>JavaScript</h5>
@@ -603,10 +605,15 @@ var formOpts = {
     passClass: 'pass',          //验证通过时为input添加的class， 默认为valid-pass
     failedClass: 'failed'         //验证失败时为input添加的class，默认为valid-failed
 }
+
 riot.mount('.demo super-form', formOpts);
+
 var theForm = document.querySelector('.demo super-form');
 console.log(theForm.getData()); //返回obj形式的key-value表单数据。
 
+function removeTip() {    //清除提示信息，EL.removeTips
+    theForm.removeTips();
+}
 window.isIDCard = {
     regExp: /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
     message: '不是合法的身份证号码'
@@ -880,6 +887,11 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
             function showCell() {
                 dom = document.querySelector('table-view');
                 dom.show('city');
+            }
+
+            function removeTip() {
+                var elem = document.querySelector('super-form');
+                elem.removeTips();
             }
 
             /*
