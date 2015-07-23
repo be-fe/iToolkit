@@ -2301,6 +2301,9 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
 
 
+                if (!allowEmpty && !max && !min && !valid && !customValid) {
+                    continue;
+                }
                 if (allowEmpty && (v === '' || typeof v !== 'string')) {
                     self.onValidPass(dom, self.successTips);
                     continue;
@@ -2381,21 +2384,38 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
 
                 else if (name && !valid) {
-                    comparator('string').handler(min, max, dom, v, validArr, name);
+                    if (customValid) {
+                        if (window[customValid]) {
+                            var reg = window[customValid].regExp;
+                            var tips = window[customValid].message || self.regWarning;
+                            if (reg && reg.test(v)) {
+
+                                comparator('string').handler(min, max, dom, v, validArr, name); 
+                            }
+                            else {
+                                validArr.push(name);
+                                self.onValidRefuse(dom, tips);
+                            }
+                        }
+                    }
+                    else {
+                        comparator('string').handler(min, max, dom, v, validArr, name);
+                    }
+                    
                 }
                 else if (name && customValid) {
                     if (window[customValid]) {
-                        var reg = window[customValid].regExp;
-                        var tips = window[customValid].message || self.regWarning;
-                        if (reg && reg.test(v)) {
+                            var reg = window[customValid].regExp;
+                            var tips = window[customValid].message || self.regWarning;
+                            if (reg && reg.test(v)) {
 
-                            comparator('string').handler(min, max, dom, v, validArr, name); 
+                                comparator('string').handler(min, max, dom, v, validArr, name); 
+                            }
+                            else {
+                                validArr.push(name);
+                                self.onValidRefuse(dom, tips);
+                            }
                         }
-                        else {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, tips);
-                        }
-                    }
                 }
             }
         }
