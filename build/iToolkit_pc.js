@@ -2159,8 +2159,9 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
 
     
-    self.removeTips = function(elems) {
+    self.removeTips = EL.removeTips = function() {
         var root = self.root;
+        var elems = root.getElementsByTagName('form')[0].elements;
         var tips = root.getElementsByClassName('tip-container');
         if (tips && tips.length) {
             del();
@@ -2242,7 +2243,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         xmlhttp.send(params);
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
-                self.removeTips(elems);
+                self.removeTips();
                 submitbtn.value = submitText;
                 submitbtn.disabled = false;
                 if (config.complete && typeof config.complete === 'function') {
