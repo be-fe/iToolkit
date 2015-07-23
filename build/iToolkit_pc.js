@@ -2403,20 +2403,20 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     }
                     
                 }
-                else if (name && customValid) {
-                    if (window[customValid]) {
-                            var reg = window[customValid].regExp;
-                            var tips = window[customValid].message || self.regWarning;
-                            if (reg && reg.test(v)) {
 
-                                comparator('string').handler(min, max, dom, v, validArr, name); 
-                            }
-                            else {
-                                validArr.push(name);
-                                self.onValidRefuse(dom, tips);
-                            }
-                        }
-                }
+
+
+
+
+
+
+
+
+
+
+
+
+
             }
         }
         
