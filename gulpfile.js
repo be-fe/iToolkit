@@ -46,12 +46,28 @@ gulp.task('build', function () {
 });
 
 gulp.task('default', ['riot_pc', 'riot_mobile', 'build'], function () {
-    gulp.watch(['src/*/*.tag', 'src/*.tag', 'src/themes/*.css'], ['riot_pc', 'riot_mobile', 'build']);
+    gulp.watch(['src/*/*.tag', 'src/css/*.css', 'src/css/themes/*.css'], ['riot_pc', 'riot_mobile', 'build']);
 });
 
 function setHeader() {
     var date = new Date();
-    date = date.toDateString();
+    var time = [
+        date.getFullYear(),
+        date.getMonth() + 1,
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds()
+    ];
+
+    time = time.map(function (d) {
+        return d > 10 ? d : '0' + d;
+    });
+
+    var dateStr = time.slice(0, 3);
+    var timeStr = time.slice(3, 6);
+
+    time = dateStr.join('-') + ' ' + timeStr.join(':');
 
     var banner = [
         '/**',
@@ -62,6 +78,6 @@ function setHeader() {
         '\n'
     ].join('\n');
 
-    return header(banner, {pkg: pkg, date: date});
+    return header(banner, {pkg: pkg, date: time});
 }
 
