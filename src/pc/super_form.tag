@@ -396,6 +396,9 @@
                 //         self.onValidPass(dom, self.successTips);
                 //     }
                 // }
+                if (!allowEmpty && !max && !min && !valid && !customValid) {
+                    continue;
+                }
                 if (allowEmpty && (v === '' || typeof v !== 'string')) {
                     self.onValidPass(dom, self.successTips);
                     continue;
@@ -476,22 +479,39 @@
                 //     validMin();
                 // }
                 else if (name && !valid) {
-                    comparator('string').handler(min, max, dom, v, validArr, name);
-                }
-                else if (name && customValid) {
-                    if (window[customValid]) {
-                        var reg = window[customValid].regExp;
-                        var tips = window[customValid].message || self.regWarning;
-                        if (reg && reg.test(v)) {
-                            // self.onValidPass(dom, self.successTips);
-                            comparator('string').handler(min, max, dom, v, validArr, name); 
-                        }
-                        else {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, tips);
+                    if (customValid) {
+                        if (window[customValid]) {
+                            var reg = window[customValid].regExp;
+                            var tips = window[customValid].message || self.regWarning;
+                            if (reg && reg.test(v)) {
+                                // self.onValidPass(dom, self.successTips);
+                                comparator('string').handler(min, max, dom, v, validArr, name); 
+                            }
+                            else {
+                                validArr.push(name);
+                                self.onValidRefuse(dom, tips);
+                            }
                         }
                     }
+                    else {
+                        comparator('string').handler(min, max, dom, v, validArr, name);
+                    }
+                    
                 }
+                // else if (name && customValid) {
+                //     if (window[customValid]) {
+                //             var reg = window[customValid].regExp;
+                //             var tips = window[customValid].message || self.regWarning;
+                //             if (reg && reg.test(v)) {
+                //                 // self.onValidPass(dom, self.successTips);
+                //                 comparator('string').handler(min, max, dom, v, validArr, name); 
+                //             }
+                //             else {
+                //                 validArr.push(name);
+                //                 self.onValidRefuse(dom, tips);
+                //             }
+                //         }
+                // }
             }
         }
         

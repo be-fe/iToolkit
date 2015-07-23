@@ -80,7 +80,7 @@ HTML:
         <input type="text" name="t7" value="good! There it is!" min="7" allowEmpty="true">
         <input type="text" name="n1" value="1" valid="int">
         <input type="text" name="n2" value="1" valid="float">
-        input type="text" name="n3" value="1" valid="int" min="2">
+        <input type="text" name="n3" value="1" valid="int" min="2">
         <input type="text" name="n4" value="1" valid="int" max="9">
         <input type="text" name="n5" value="1" valid="int" max="9" min="2">
         <input type="submit" value="提交">
