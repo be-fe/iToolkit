@@ -357,6 +357,10 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
                     <div class="demo">
                         <super-form action="/test">
                             <input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
+                            <label>
+                                no property: 
+                                <input type="text" name="ee" value="1">
+                            </label><br>
 
                             <label>
                                 Must be: 
@@ -463,6 +467,11 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
         <label>
             Must be: 
             <input type="text" name="present" value="1" valid="present" max="10">
+        </label><br>
+
+        <label>
+            Must be: 
+            <input type="text" name="ee" value="1">
         </label><br>
 
         <label>
@@ -962,6 +971,7 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                     b: 'he'
                 },
                 valid: true,       //是否执行校验
+                realTime: true,    //是否失去焦点校验
                 complete: function() {
                     alert('complete');
                 },
