@@ -560,7 +560,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
     }
 
-    self.on('mount', function() {
+    self.one('mount', function() {
         EL.style.display = 'block';
 
         var events = '\v' == 'v' ? 'propertychange' : 'input';

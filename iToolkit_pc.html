@@ -191,9 +191,9 @@ riot.mount('.demo tree', treeOpts);
                         <table-view>
                             <rcol name="city" width="200px" class="test test1">
                                 <div>
-                                    <a href="<%= testMethod(desc) %>" hide="<%= status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a>
+                                    <a href="<%= testMethod(desc) %>" hide="<%= status==1%>" onclick="Test.test(<%= 'sss'||desc %>)"><%= city%></a>
 
-                                    <a href="<%= testMethod(desc) %>" hide="<%= !status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a>
+                                    <a href="<%= testMethod(desc) %>" hide="<%= !status==1%>" onclick="Test.test(<%= 'sss'||desc%>)"><%= city%></a>
                                 </div>
                             </rcol>
                             <rcol name="desc" width="200px"></rcol>
@@ -222,8 +222,8 @@ riot.mount('.demo tree', treeOpts);
     <table-view>
         <rcol name="city">
             <div>
-                <a href="<%= testMethod(desc) %>" hide="<%= status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a>
-                <a href="<%= testMethod(desc) %>" hide="<%= !status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a>
+                <a href="<%= testMethod(desc) %>" hide="<%= status==1%>" onclick="Test.test(<%= 'sss'||desc%>)"><%= city%></a>
+                <a href="<%= testMethod(desc) %>" hide="<%= !status==1%>" onclick="Test.test(<%= 'sss'||desc%>)"><%= city%></a>
             </div>
         </rcol>
         <rcol name="desc" width="200px"></rcol>
@@ -356,7 +356,8 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
                     <h5>Example:</h5>
                     <div class="demo">
                         <super-form action="/test">
-                            <input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
+                            <input type="text" name="t1" value="{ data.a }" >
+                            <input type="text" name="t1" value="{ data.b }" >
                             <label>
                                 no property: 
                                 <input type="text" name="ee" value="1">
@@ -456,6 +457,7 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
                             <input type="submit" class="btn btn-primary" value="提交">
                         </super-form>
                         <button class="btn btn-primary" onclick="removeTip()">清除提示</button>
+                        <button class="btn btn-primary" onclick="reload()">reload</button>
                     </div>
 
                     <h5>HTML:</h5>
@@ -558,6 +560,7 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
         <input type="submit" class="btn btn-primary" value="提交">
     </super-form>
     <button class="btn btn-primary" onclick="removeTip()">清除提示</button>
+    <button class="btn btn-primary" onclick="reload()">reload</button>
 </div>
                     </script></code></pre>
                     <h5>JavaScript</h5>
@@ -568,6 +571,7 @@ var formOpts = {
         b: 'he'
     },
     valid: true,                //是否执行校验
+    realTime: true,             //是否执行实时监测
     complete: function() {      //提交完成的回调，可不填
         alert('complete');
     },
@@ -623,6 +627,13 @@ console.log(theForm.getData()); //返回obj形式的key-value表单数据。
 function removeTip() {    //清除提示信息，EL.removeTips
     theForm.removeTips();
 }
+
+function reload() {
+    var data = {a: 'hehe', b: 'hehehe'};
+    theForm.loadData({});  //ensure your data can be reset;
+    theForm.loadData(data);
+}
+
 window.isIDCard = {
     regExp: /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
     message: '不是合法的身份证号码'
@@ -984,7 +995,11 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
             }
             riot.mount('.demo super-form', formOpts);
             var theForm = document.querySelector('.demo super-form');
-            console.log(theForm.getData());
+            function load() {
+                var data = {a: 'hehe', b: 'hehehe'};
+                theForm.loadData({});
+                theForm.loadData(data);
+            }
 
             window.isIDCard = {
                 regExp: /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,

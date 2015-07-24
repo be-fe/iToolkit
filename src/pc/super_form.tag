@@ -169,7 +169,7 @@
         }
     }
 
-    self.on('mount', function() {
+    self.one('mount', function() {
         EL.style.display = 'block';
         // if ie <= 8
         var events = '\v' == 'v' ? 'propertychange' : 'input';

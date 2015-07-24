@@ -2084,7 +2084,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
     }
 
-    self.on('mount', function() {
+    self.one('mount', function() {
         EL.style.display = 'block';
 
         var events = '\v' == 'v' ? 'propertychange' : 'input';
@@ -2321,6 +2321,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
     }.bind(this);
 
+    
     function doCheck(validArr, elem) {
         var valid = elem.getAttribute('valid');
         var customValid = elem.getAttribute('customValid');
