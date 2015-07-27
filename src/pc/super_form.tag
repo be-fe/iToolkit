@@ -361,10 +361,10 @@
             }
             if (elems[i].type === "submit") {
                 if (elems[i].tagName === 'BUTTON') {
-                var submitbtn = elems[i];
-                var submitText = submitbtn.innerHTML;
-                submitbtn.disabled = 'disabled';
-                submitbtn.innerHTML = self.submitingText;
+                    var submitbtn = elems[i];
+                    var submitText = submitbtn.innerHTML;
+                    submitbtn.disabled = 'disabled';
+                    submitbtn.innerHTML = self.submitingText;
                 }
                 else {
                     var submitbtn = elems[i];
