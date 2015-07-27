@@ -356,12 +356,7 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
                     <h5>Example:</h5>
                     <div class="demo">
                         <super-form action="/test">
-                            <input type="text" name="t1" value="{ data.a }" >
-                            <input type="text" name="t1" value="{ data.b }" >
-                            <label>
-                                no property: 
-                                <input type="text" name="ee" value="1">
-                            </label><br>
+                            <input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
 
                             <label>
                                 Must be: 
