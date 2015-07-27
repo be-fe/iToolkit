@@ -2071,28 +2071,29 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
 
     
-    function getEvent() {
-        if (window.addEventListener) {
-            return function (elem, events, handler) {
-                elem.addEventListener(events, handler, false);
-            }
-        }
-        else {
-            return function (elem, events, handler) {
-                elem['on' + events] = handler;
-            }
-        }
-    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     self.one('mount', function() {
         EL.style.display = 'block';
 
-        var events = '\v' == 'v' ? 'propertychange' : 'input';
-        var addEvent = getEvent();
+
+
         if (config.realTime) {
             var elems = self.root.getElementsByTagName('form')[0].elements;
             for (var i = 0, len = elems.length; i < len; i ++) {
-                addEvent(elems[i], events, valueOnChange);
+
+                elems[i].addEventListener('input', valueOnChange, false);
             }
         }
     });
@@ -2257,11 +2258,19 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     params += elems[i].name + "=" + encodeURIComponent(value) + "&";
                 }
             }
-            if (elems[i].type === "submit" && elems[i].tagName !== "BUTTON") {
+            if (elems[i].type === "submit") {
+                if (elems[i].tagName === 'BUTTON') {
                 var submitbtn = elems[i];
-                var submitText = submitbtn.value || submitbtn.innerText;
+                var submitText = submitbtn.innerHTML;
                 submitbtn.disabled = 'disabled';
-                submitbtn.value = self.submitingText;
+                submitbtn.innerHTML = self.submitingText;
+                }
+                else {
+                    var submitbtn = elems[i];
+                    var submitText = submitbtn.value;
+                    submitbtn.disabled = 'disabled';
+                    submitbtn.value = self.submitingText;
+                }
             }
         }
         var xmlhttp = new XMLHttpRequest();
@@ -2271,7 +2280,12 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
                 self.removeTips();
-                submitbtn.value = submitText;
+                if (submitbtn.tagName === 'BUTTON') {
+                    submitbtn.innerHTML = submitText;
+                }
+                else {
+                    submitbtn.value = submitText;
+                }
                 submitbtn.disabled = false;
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
@@ -2350,8 +2364,13 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
 
 
-        if (!allowEmpty && !max && !min && !valid && !customValid) {
-            self.onValidPass(dom, self.successTips);
+        if (
+            allowEmpty === null
+            && isNaN(max)
+            && isNaN(min)
+            && valid === null
+            && customValid === null
+        ) {
             return;
         }
         if (allowEmpty && (v === '' || typeof v !== 'string')) {
