@@ -2070,9 +2070,38 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
     }
 
-    self.on('mount', function() {
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+    self.one('mount', function() {
         EL.style.display = 'block';
+
+
+
+        if (config.realTime) {
+            var elems = self.root.getElementsByTagName('form')[0].elements;
+            for (var i = 0, len = elems.length; i < len; i ++) {
+
+                elems[i].addEventListener('input', valueOnChange, false);
+            }
+        }
     });
+
+    
+    function valueOnChange(e) {
+        doCheck([], this);
+    }
 
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
@@ -2205,7 +2234,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         utils.removeClass(dom, self.failedClass);
         utils.addClass(dom, self.passClass);
     }
-    
 
     
     self.ajaxSubmit = function(elems, url) {
@@ -2230,11 +2258,19 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     params += elems[i].name + "=" + encodeURIComponent(value) + "&";
                 }
             }
-            if (elems[i].type === "submit" && elems[i].tagName !== "BUTTON") {
+            if (elems[i].type === "submit") {
+                if (elems[i].tagName === 'BUTTON') {
                 var submitbtn = elems[i];
-                var submitText = submitbtn.value || submitbtn.innerText;
+                var submitText = submitbtn.innerHTML;
                 submitbtn.disabled = 'disabled';
-                submitbtn.value = self.submitingText;
+                submitbtn.innerHTML = self.submitingText;
+                }
+                else {
+                    var submitbtn = elems[i];
+                    var submitText = submitbtn.value;
+                    submitbtn.disabled = 'disabled';
+                    submitbtn.value = self.submitingText;
+                }
             }
         }
         var xmlhttp = new XMLHttpRequest();
@@ -2244,7 +2280,12 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
                 self.removeTips();
-                submitbtn.value = submitText;
+                if (submitbtn.tagName === 'BUTTON') {
+                    submitbtn.innerHTML = submitText;
+                }
+                else {
+                    submitbtn.value = submitText;
+                }
                 submitbtn.disabled = false;
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
@@ -2275,149 +2316,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
         if (config.valid) {
             for (var i = 0; i < elems.length; i++) {
-                var valid = elems[i].getAttribute('valid');
-                var customValid = elems[i].getAttribute('customValid');
-                var max = parseInt(elems[i].getAttribute('max'), 10);
-                var min = parseInt(elems[i].getAttribute('min'), 10);
-                var type = elems[i].getAttribute('type');
-                var allowEmpty = elems[i].getAttribute('allowEmpty');
-                var v = elems[i].value; 
-                var name = elems[i].name;
-                var dom = elems[i];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                if (!allowEmpty && !max && !min && !valid && !customValid) {
-                    continue;
-                }
-                if (allowEmpty && (v === '' || typeof v !== 'string')) {
-                    self.onValidPass(dom, self.successTips);
-                    continue;
-                }
-                if (name && valid) {
-                    if (valid === 'email') {
-                        if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.emailWarning);
-                        }
-                        else {
-                            self.onValidPass(dom, self.successTips); 
-                        }
-                    }
-                    else if (valid === 'mobile') {
-                        if (!v.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.mobileWarning);
-                        }
-                        else {
-                            self.onValidPass(dom, self.successTips); 
-                        }
-                    }
-                    else if (valid === 'url') {
-                        if (!v.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.urlWarning);
-                        }
-                        else {
-                            self.onValidPass(dom, self.successTips); 
-                        }
-                    }
-                    else if (valid === 'present') {
-                        v = v.replace(' ', '');
-                        if (!v.length) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.presentWarning);
-                        }
-
-
-
-
-
-
-                        else {
-
-                            comparator('string').handler(min, max, dom, v, validArr, name);
-                        }
-                    }
-                    else if (valid.match(/^\/\S+\/$/)) {
-                        valid = valid.replace(/^\//, '');
-                        valid = valid.replace(/\/$/, '');
-                        var reg = new RegExp(valid);
-                        if (reg.test(v)) {
-
-                            comparator('string').handler(min, max, dom, v, validArr, name);
-                        }
-                        else {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.regWarning);
-                        }
-                    }
-                    else if (NUMBER_REGEXP[valid.toUpperCase()]) {
-                        var reg = NUMBER_REGEXP[valid.toUpperCase()];
-                        if (reg.test(v)) {
-                            comparator('number').handler(min, max, dom, v, validArr, name);
-                        }
-                        else {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.numWarning);
-                        }
-                    }
-                }
-
-
-
-
-
-
-                else if (name && !valid) {
-                    if (customValid) {
-                        if (window[customValid]) {
-                            var reg = window[customValid].regExp;
-                            var tips = window[customValid].message || self.regWarning;
-                            if (reg && reg.test(v)) {
-
-                                comparator('string').handler(min, max, dom, v, validArr, name); 
-                            }
-                            else {
-                                validArr.push(name);
-                                self.onValidRefuse(dom, tips);
-                            }
-                        }
-                    }
-                    else {
-                        comparator('string').handler(min, max, dom, v, validArr, name);
-                    }
-                    
-                }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                doCheck(validArr, elems[i]);
             }
         }
         
@@ -2435,6 +2334,159 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             return false;
         }
     }.bind(this);
+
+    
+    function doCheck(validArr, elem) {
+        var valid = elem.getAttribute('valid');
+        var customValid = elem.getAttribute('customValid');
+        var max = parseInt(elem.getAttribute('max'), 10);
+        var min = parseInt(elem.getAttribute('min'), 10);
+        var type = elem.getAttribute('type');
+        var allowEmpty = elem.getAttribute('allowEmpty');
+        var v = elem.value; 
+        var name = elem.name;
+        var dom = elem;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        if (
+            allowEmpty === null
+            && isNaN(max)
+            && isNaN(min)
+            && valid === null
+            && customValid === null
+        ) {
+            return;
+        }
+        if (allowEmpty && (v === '' || typeof v !== 'string')) {
+            self.onValidPass(dom, self.successTips);
+            return;
+        }
+        if (name && valid) {
+            if (valid === 'email') {
+                if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.emailWarning);
+                }
+                else {
+                    self.onValidPass(dom, self.successTips); 
+                }
+            }
+            else if (valid === 'mobile') {
+                if (!v.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.mobileWarning);
+                }
+                else {
+                    self.onValidPass(dom, self.successTips); 
+                }
+            }
+            else if (valid === 'url') {
+                if (!v.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.urlWarning);
+                }
+                else {
+                    self.onValidPass(dom, self.successTips); 
+                }
+            }
+            else if (valid === 'present') {
+                v = v.replace(' ', '');
+                if (!v.length) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.presentWarning);
+                }
+
+
+
+
+
+
+                else {
+
+                    comparator('string').handler(min, max, dom, v, validArr, name);
+                }
+            }
+            else if (valid.match(/^\/\S+\/$/)) {
+                valid = valid.replace(/^\//, '');
+                valid = valid.replace(/\/$/, '');
+                var reg = new RegExp(valid);
+                if (reg.test(v)) {
+
+                    comparator('string').handler(min, max, dom, v, validArr, name);
+                }
+                else {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.regWarning);
+                }
+            }
+            else if (NUMBER_REGEXP[valid.toUpperCase()]) {
+                var reg = NUMBER_REGEXP[valid.toUpperCase()];
+                if (reg.test(v)) {
+                    comparator('number').handler(min, max, dom, v, validArr, name);
+                }
+                else {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.numWarning);
+                }
+            }
+        }
+
+
+
+
+
+
+        else if (name && !valid) {
+            if (customValid) {
+                if (window[customValid]) {
+                    var reg = window[customValid].regExp;
+                    var tips = window[customValid].message || self.regWarning;
+                    if (reg && reg.test(v)) {
+
+                        comparator('string').handler(min, max, dom, v, validArr, name); 
+                    }
+                    else {
+                        validArr.push(name);
+                        self.onValidRefuse(dom, tips);
+                    }
+                }
+            }
+            else {
+                comparator('string').handler(min, max, dom, v, validArr, name);
+            }
+                    
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
 
 
 });
