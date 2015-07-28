@@ -2089,7 +2089,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
 
 
-        if (config.realTime) {
+        if (config.realTime && config.valid) {
             var elems = self.root.getElementsByTagName('form')[0].elements;
             for (var i = 0, len = elems.length; i < len; i ++) {
 
@@ -2260,10 +2260,10 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             }
             if (elems[i].type === "submit") {
                 if (elems[i].tagName === 'BUTTON') {
-                var submitbtn = elems[i];
-                var submitText = submitbtn.innerHTML;
-                submitbtn.disabled = 'disabled';
-                submitbtn.innerHTML = self.submitingText;
+                    var submitbtn = elems[i];
+                    var submitText = submitbtn.innerHTML;
+                    submitbtn.disabled = 'disabled';
+                    submitbtn.innerHTML = self.submitingText;
                 }
                 else {
                     var submitbtn = elems[i];
@@ -2319,10 +2319,12 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 doCheck(validArr, elems[i]);
             }
         }
+
+        config.beforeSubmit && config.beforeSubmit(validArr);
         
         if (!validArr.length) {
             e.preventDefault();
-            if (config.normalSubmit) { 
+            if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
                 return true;
             }

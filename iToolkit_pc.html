@@ -576,6 +576,17 @@ var formOpts = {
     errCallback: function(params) {   //提交失败的回调
         alert("error, params:" + params);
     },
+    beforeSubmit: function($invalid) {//在提交前执行的额外操作
+        var theForm = document.getElementsByTagName('super-form')[0];
+        var t4 = theForm.querySelector('form');
+        if (t4.value < 200) {
+            $invalid.push('t4');
+            alert('beforeSubmit测试:不通过,不得小于200,');
+        }
+        else {
+            alert('通过');
+        }
+    },
     normalSubmit: false,              //是否为ajax提交, 默认为true
     onValidRefuse: function(dom, message) {        //验证失败的回调函数,非必需,组件提供了默认动作
        alert(message);  //覆盖默认动作
@@ -977,7 +988,7 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                     b: 'he'
                 },
                 valid: true,       //是否执行校验
-                realTime: true,    //是否失去焦点校验
+                realTime: true,    //是否实时验证
                 complete: function() {
                     alert('complete');
                 },
@@ -986,6 +997,17 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                 },
                 errCallback: function(params) {
                     alert("error, params:" + params);
+                },
+                beforeSubmit: function($invalid) {//在提交前执行的额外操作
+                    var theForm = document.getElementsByTagName('super-form')[0];
+                    var t4 = theForm.querySelector('form')['t4'];
+                    if (t4.value < 200) {
+                        $invalid.push('t4');
+                        alert('beforeSubmit测试:不通过,不得小于200,');
+                    }
+                    else {
+                        alert('beforeSubmit测试:通过');
+                    }
                 }
             }
             riot.mount('.demo super-form', formOpts);
