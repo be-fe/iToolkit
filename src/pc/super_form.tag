@@ -174,7 +174,7 @@
         // if ie <= 8
         // var events = '\v' == 'v' ? 'propertychange' : 'input';
         // var addEvent = getEvent();
-        if (config.realTime) {
+        if (config.realTime && config.valid) {
             var elems = self.root.getElementsByTagName('form')[0].elements;
             for (var i = 0, len = elems.length; i < len; i ++) {
                 // addEvent(elems[i], events, valueOnChange);
@@ -422,10 +422,12 @@
                 doCheck(validArr, elems[i]);
             }
         }
+
+        config.beforeSubmit && config.beforeSubmit(validArr);
         
         if (!validArr.length) {
             e.preventDefault();
-            if (config.normalSubmit) { 
+            if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
                 return true;
             }
