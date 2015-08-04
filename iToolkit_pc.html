@@ -608,15 +608,15 @@ var formOpts = {
         return '只允许' + min + '-' + max + '个字符';//字符长度验证失败的提示内容,非必须,组件提供了默认提示信息
     },
 
-    minNumWarning = function (min) {
+    minNumWarning: function (min) {
         return '不得小于' + min;                     //数字长度验证失败的提示内容,非必须,组件提供了默认提示信息
     },
 
-    maxNumWarning = function (max) {
+    maxNumWarning: function (max) {
         return '不得大于' + max;                     //数字长度验证失败的提示内容,非必须,组件提供了默认提示信息
     },
 
-    numBpWarning = function (min, max) {            //数字长度验证失败的提示内容,非必须,组件提供了默认提示信息
+    numBpWarning:function (min, max) {            //数字长度验证失败的提示内容,非必须,组件提供了默认提示信息
         return '输入数字应在' + min + '-' + max + '之间';
     },
 

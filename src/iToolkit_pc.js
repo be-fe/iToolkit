@@ -799,13 +799,13 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         config.beforeSubmit && config.beforeSubmit(validArr);
         
         if (!validArr.length) {
-            e.preventDefault();
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
                 return true;
             }
             else {
                 self.ajaxSubmit(elems, url);
+                return false;
             }
         }
         else {
