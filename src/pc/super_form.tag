@@ -426,12 +426,12 @@
         config.beforeSubmit && config.beforeSubmit(validArr);
         
         if (!validArr.length) {
-            e.preventDefault();
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
                 return true;
             }
             else {
+                e.preventDefault();
                 self.ajaxSubmit(elems, url);
             }
         }
