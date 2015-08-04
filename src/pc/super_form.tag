@@ -431,8 +431,8 @@
                 return true;
             }
             else {
+                e.preventDefault();
                 self.ajaxSubmit(elems, url);
-                return false;
             }
         }
         else {

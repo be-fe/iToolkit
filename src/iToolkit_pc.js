@@ -804,8 +804,8 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 return true;
             }
             else {
+                e.preventDefault();
                 self.ajaxSubmit(elems, url);
-                return false;
             }
         }
         else {

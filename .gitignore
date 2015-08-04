@@ -14,3 +14,4 @@ Makefile.in
 /stamp-h1
 /old
 node_modules
+.DS_Store
