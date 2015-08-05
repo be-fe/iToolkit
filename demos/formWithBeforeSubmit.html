@@ -1,0 +1,222 @@
+<html>
+	<head>
+		<meta charset='utf-8'>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+		<link rel="stylesheet" href="../src/css/common.css">
+		<link rel="stylesheet" href="../src/css/themes/simple_pc.css">
+		<!-- IE兼容  -->
+		<!--[if lt IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.5/es5-shim.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+		<script>html5.addElements('test')</script>
+		<![endif]-->
+		<script src="../src/lib/riot.js"></script>
+		<script src="../src/lib/common.js"></script>
+		<script src="../src/iToolkit_pc.js"></script>
+	</head>
+	<body>
+		<button modal-open-target='modal-demo1' class="btn btn-primary">打开模态框</button>
+		<section id="super-form">
+			<h2>Super-form</h2><hr>
+			<p>可以提供ajax提交、防连击保护、表单校验、数据模板、常用指令等五大功能</p>
+			<h5>Example:</h5>
+			<div class="demo">
+				<super-form action="/test">
+				<input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
+				<label>
+					Must be:
+					<input type="text" name="present" value="1" valid="present" max="10">
+				</label><br>
+				<label>
+					email:
+					<input type="text" name="email" value="xieyu@baidu.com" valid="email">
+				</label><br>
+				<label>
+					url:
+					<input type="text" name="url" value="http://www.baidu.com" valid="url">
+				</label><br>
+				<label>
+					mobile:
+					<input type="text" name="mobile" value="13927678767" valid="mobile">
+				</label><br>
+				<label>
+					RegExp:
+					<input type="text" name="t3" value="test" valid="/test/">
+				</label><br>
+				<label>
+					RegExp2:
+					<input type="text" name="idcard" value="41030319880612000" customValid="isIDCard" allowEmpty="true">
+				</label><br>
+				<label>
+					text more than 2:
+					<input type="text" name="t4" value="{ data.b }" min="3">
+				</label><br>
+				<label>
+					text less than 9:
+					<input type="text" name="t5" value="good! There it is!" max="9">
+				</label><br>
+				<label>
+					text less than 9 and more than 2:
+					<input type="text" name="t6" value="good! There it is!" max="9" min="2">
+				</label><br>
+				<label>
+					text allow empty:
+					<input type="text" name="t7" value="good! There it is!" min="7" allowEmpty="true">
+				</label><br>
+				<label>
+					number int:
+					<input type="text" name="n1" value="1" valid="int">
+				</label><br>
+				<label>
+					number float:
+					<input type="text" name="n2" value="1" valid="float">
+				</label><br>
+				<label>
+					int more than 2:
+					<input type="text" name="n3" value="1" valid="int" min="2">
+				</label><br>
+				<label>
+					int less than 9:
+					<input type="text" name="n4" value="1" valid="int" max="9">
+				</label><br>
+				<label>
+					int less than 9 and more than 2:
+					<input type="text" name="n5" value="1" valid="int" max="9" min="2">
+				</label><br>
+				<label>
+					is ip?:
+					<input type="text" name="n6" customValid="isIP">
+				</label><br>
+				<label id="test">
+					beforeSubmit:
+					<input type="text" name="n7" > <input type="text" name="n8">
+				</label><br>
+				<label>
+					select:
+					<select name="select">
+						<option value="{ data.a }">{ data.a }</option>
+						<option value="{ data.b }">{ data.b }</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+					</select>
+				</label><br>
+				<button type="submit" class="btn btn-primary" >提交</button>
+				</super-form>
+				<button class="btn btn-primary" onclick="removeTip()">清除提示</button>
+				<button class="btn btn-primary" onclick="reload()">reload</button>
+			</div>
+		</section>
+		<script>
+			function removeTip() {
+                var elem = document.querySelector('super-form');
+                elem.removeTips();
+            }
+
+            function reload() {
+                var elem = document.querySelector('super-form');
+                var data = {a: 'hehe', b: 'hehehe'};
+                elem.loadData({});
+                elem.loadData(data);
+            }
+
+	        function removeThisTip(id) {
+	        	var context = document.getElementById(id);
+	        	var elems = context.getElementsByTagName('input');
+	        	// todo
+	        	var tips = context.getElementsByClassName('tip-container');
+	        	if (tips && tips.length) {
+		            del();
+		        }
+		        function del() {
+		            for (i = 0; i < tips.length; i++) {
+		                tips[i].parentNode.removeChild(tips[i]);
+		                if (tips.length) {
+		                    del();
+		                }
+		            }
+		        }
+
+		        for (var i = 0; i < elems.length; i++) {
+		            utils.removeClass(elems[i], 'valid-pass');
+		            utils.removeClass(elems[i], 'valid-failed');
+		        }
+	        }
+
+	        function checkPass(id) {
+	        	var context = document.getElementById(id);
+	        	var elems = context.getElementsByTagName('input');
+	        	var first = elems[0];
+	        	var second = elems[1];
+	        	if (parseInt(first.value, 10) < parseInt(second.value, 10)) {
+	        		return false;
+	        	}
+	        	return true;
+	        }
+
+	        function addThisTip(id, message, className) {
+	        	var context = document.getElementById(id);
+	        	var elems = context.getElementsByTagName('input');
+	        	for (var i = 0; i < elems.length; i++) {
+	        		elems[i].className = className;
+	        	};
+	        	var tipContainer = document.createElement('span');
+        		tipContainer.className = className === 'valid-pass' ? 'tip-container success' : 'tip-container';
+        		tipContainer.innerHTML = message;
+        		context.appendChild(tipContainer);
+	        }
+			/*
+             *  super form 提交
+             */
+            var formOpts = {
+                data: {
+                    a: 1,
+                    b: 'he'
+                },
+                valid: true,       //是否执行校验
+                realTime: true,    //是否实时验证
+                complete: function() {
+                    alert('complete');
+                },
+                callback: function() {
+                    alert('success');
+                },
+                errCallback: function(params) {
+                    alert("error, params:" + params);
+                },
+                beforeSubmit: function($invalid) {//在提交前执行的额外操作
+                    removeThisTip('test');
+                    var passed = checkPass('test');
+                    if (passed) {
+                    	addThisTip('test', '通过', 'valid-pass');
+                    }
+                    else {
+                    	addThisTip('test', '值1不能小于值2', 'valid-failed')
+                    }
+                }
+            }
+            riot.mount('.demo super-form', formOpts);
+            var theForm = document.querySelector('.demo super-form');
+            function load() {
+                var data = {a: 'hehe', b: 'hehehe'};
+                theForm.loadData({});
+                theForm.loadData(data);
+            }
+
+            var empRegExp = {
+			    ip: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/,
+			    idCard: /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/
+			};
+
+			window.isIDCard = {
+			    regExp: empRegExp.idCard,
+			    message: '不是合法的身份证号码'
+			};
+			window.isIP = {
+			    regExp: empRegExp.ip,
+			    message: 'IP地址格式错误'
+			};
+		</script>
+	</body>
+</html>

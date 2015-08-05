@@ -45,9 +45,14 @@ gulp.task('build', function () {
     .pipe(gulp.dest('build'));
 });
 
-gulp.task('default', ['riot_pc', 'riot_mobile', 'build'], function () {
+gulp.task('default', ['riot_pc', 'riot_mobile', 'riot_plugins', 'build'], function () {
     gulp.watch(['src/*/*.tag', 'src/css/*.css', 'src/css/themes/*.css'], ['riot_pc', 'riot_mobile', 'build']);
 });
+
+gulp.task('riot_plugins', function () {
+    gulp.src(['src/plugins/**/*'])
+        .pipe(gulp.dest('build/plugins'));
+})
 
 function setHeader() {
     var date = new Date();

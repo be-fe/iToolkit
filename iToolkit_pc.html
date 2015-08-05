@@ -57,6 +57,7 @@
                     <a href="#loading" class="list-group-item">Loading</a>
                     <a href="#goto-top" class="list-group-item">Goto-Top</a>
                     <a href="#editable-link" class="list-group-item">Editable-link</a>
+                    <a href="#date-picker" class="list-group-item">Datepicker</a>
                 </div>
             </div>
             <div class="col-xs-8">
@@ -821,9 +822,120 @@ riot.mount('.demo goto-top');
 riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                     </code></pre>
                 </section>
-    
-<!-- ****************************** editable-link end *************************************** -->
 
+<!-- ******************************** date-picker Start ********************************** -->
+                <section id="date-picker">
+                    <h2>date-picker</h2><hr>
+                    <p>简单易用的时间选择器插件</p>
+                    <h5>Example:</h5>
+                    <date-picker></date-picker>
+
+                    <h5>HTML:</h5>
+<pre><code class="language-markup"><script type="prism-html-markup">
+<date-picker></date-picker>
+</script></code></pre>
+
+                    <h5>JavaScript:</h5>
+<pre><code class="language-javascript">
+var dpOpt = {
+    path: '../src/plugins/datepicker/',         // 组件依赖的路径
+    position: 'bottom left',                    // 选择器出现的位置，可省略
+    firstDay: 1,                                // 定义一个星期的第一天，0星期天，1星期一，可省略
+    minDate: new Date('2011-01-01'),            // 选择器的时间边界，必须接受时间对象，可省略
+    maxDate: new Date('2020-12-31'),
+    yearRange: [2011, 2020],                    // 选择器选择年份的范围， 可省略
+    theme: null,                                // 主题， 可省略
+    onSelect: function (date) {                 // 当选择了时间时可用的回调，可省
+        console.log('the day is selected', date);
+    },
+    onOpen: function () {                        // 当选择器打开时，可省
+        console.log('picker is open');
+    },
+    onClose: function () {
+        console.log('picker is closed');         // 当选择器关闭时，可省
+    },
+    onDraw: function () {                        // 当重绘选择器时，可省
+        console.log('going to other month');
+    }
+}
+
+riot.mount('date-picker', dpOpt);
+</code></pre>
+                    
+                    <h5>如何使用自己的主题？</h5>
+                    <p>如果需要使用自己的主题，您需要加载自己的css主题文件。</p>
+<pre><code class="language-css">
+/* your style file */
+
+.pika-single.dark-theme {
+    color: #fff;
+    background: #333;
+    border: 1px solid #666;
+    border-bottom-color: #999;
+}
+
+.dark-theme .pika-label {
+    background-color: #333;
+}
+
+.dark-theme .pika-prev,
+.dark-theme .is-rtl .pika-next {
+    background-image: url('');
+}
+
+.dark-theme .pika-next,
+.dark-theme .is-rtl .pika-prev {
+    background-image: url('');
+}
+
+.dark-theme .pika-table th {
+    color: #999;
+}
+
+.dark-theme .pika-button {
+    color: #fff;
+    background: #222;
+}
+
+.dark-theme .pika-week {
+    color: #999;
+}
+
+.dark-theme .is-today .pika-button {
+    color: #33aaff;
+}
+
+.dark-theme .is-selected .pika-button {
+    color: #fff;
+    background: #33aaff;
+    box-shadow: inset 0 1px 3px #178fe5;
+}
+
+.dark-theme .is-disabled .pika-button {
+    color: #999;
+    opacity: .3;
+}
+
+.dark-theme .pika-button:hover {
+    color: #fff !important;
+    background: #ff8000 !important;
+}
+</code></pre>
+                    <h5>使用主题</h5>
+<pre><code class="language-javascript">
+var dpOpt = {
+    ...
+    theme: 'dark-theme',
+    ...
+    ...
+};
+
+riot.mount('date-picker', dpOpt);
+</code></pre>
+                    <p><b>注：</b>该组件依赖datepicker.css和datepicker.js。</p>
+                </section>
+    
+<!-- ****************************** date-picker end *************************************** -->
                 <goto-top></goto-top>
             </div>
         </div>
@@ -918,6 +1030,13 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
             function removeTip() {
                 var elem = document.querySelector('super-form');
                 elem.removeTips();
+            }
+
+            function reload() {
+                var elem = document.querySelector('super-form');
+                var data = {a: 'hehe', b: 'hehehe'};
+                elem.loadData({});
+                elem.loadData(data);
             }
 
             /*
@@ -1071,6 +1190,32 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
             
             riot.mount('editable-link', { errCallback: function(){alert('failed')} });
 
+            /*
+             * date-picker
+             */
+            var dpOpt = {
+                path: './src/plugins/datepicker/',          // dependents' path
+                position: 'bottom left',                    // picker's position
+                firstDay: 1,                                // 0~6
+                minDate: new Date('2011-01-01'),            // picker's border
+                maxDate: new Date('2020-12-31'),
+                yearRange: [2011, 2020],                    // picker's year options
+                theme: null,                                // theme
+                onSelect: function (date) {                 // when we selected
+                    console.log('the day is selected', date);
+                },
+                onOpen: function () {
+                    console.log('picker is open');
+                },
+                onClose: function () {
+                    console.log('picker is closed');
+                },
+                onDraw: function () {
+                    console.log('going to other month');
+                }
+            }
+
+            riot.mount('date-picker', dpOpt);
         </script>
         <script src="demos/prism.js"></script>
     </body>
