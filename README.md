@@ -98,6 +98,39 @@ JavaScript:
     }
     riot.mount('super-form', formOpts);
 
+### DatePicker
+#### example code:
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html#datepicker)
+HTML:
+
+    <date-picker></date-picker>
+
+JavaScript:
+
+    var dpOpt = {
+        path: '../src/plugins/datepicker/',         // dependents' path
+        position: 'bottom left',                    // picker's position
+        firstDay: 1,                                // 0~6
+        minDate: new Date('2011-01-01'),            // picker's border
+        maxDate: new Date('2020-12-31'),
+        yearRange: [2011, 2020],                    // picker's year options
+        theme: null,                                // theme
+        onSelect: function (date) {                 // when we selected
+            console.log('the day is selected', date);
+        },
+        onOpen: function () {
+            console.log('picker is open');
+        },
+        onClose: function () {
+            console.log('picker is closed');
+        },
+        onDraw: function () {
+            console.log('going to other month');
+        }
+    }
+
+    riot.mount('date-picker', dpOpt);
+
 ### Paginate
 #### example code:
 [Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html#paginate)   
