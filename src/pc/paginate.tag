@@ -22,6 +22,7 @@
     </div>
     
     var self = this;
+    var EL = self.root;
     var config = self.opts.opts || self.opts;
     
     self.count = config.count || 0;
@@ -35,12 +36,42 @@
     self.showPageCount = config.showPageCount || true;
     self.showItemCount = config.showItemCount || true;
     self.needInit = config.needInit || false;
+
+    EL.setCount = function (num) {
+        var count = self.count + num;
+        var oldPageCount = self.pageCount;
+        count < 0
+        ? self.count = 0
+        : self.count = count;
+
+        self.pageCount = Math.ceil(self.count/self.pagesize) || 1;
+        self.currentPage = (
+            self.currentPage > self.pageCount
+            ? self.pageCount
+            : self.currentPage
+        );
+
+        if (self.pageCount <= self.showNumber) {
+            self.pages = [];
+            for (var i = 0; i < self.pageCount; i++) {
+                self.pages.push({page: i + 1});
+            }
+        }
+
+        if (self.needInit) {
+            config.callback(self.currentPage);
+        }
+
+        self.pageChange(self.currentPage)
+        self.update();
+    };
     
     if (self.needInit) {
         config.callback(self.currentPage);
     }
 
     self.pages = [];
+    
     if (self.pageCount < (self.showNumber + 1)) {
         for (i = 0; i < self.pageCount; i++) {
             self.pages.push({page: i + 1});
@@ -119,7 +150,7 @@
             }
             self.pages.push({page: '...'});
         }
-    }
+    };
 
 
 </paginate>
