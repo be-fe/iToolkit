@@ -20,6 +20,10 @@
         <modal id="modal-demo1">
             <super-form opts="{ formData }" action="{ url }" class="form-horizontal">
                 <div class="form-group">
+                    <label for="exampleInputIP">IP address</label>
+                    <input type="text" name="ip" class="form-control" id="exampleInputIP" placeholder="0.0.0.0" value="" customValid="isIP">
+                </div>
+                <div class="form-group">
                     <label for="exampleInputEmail1">Email address</label>
                     <input type="text" name="email" class="form-control" id="exampleInputEmail1" placeholder="Email" value="{ data.email }" valid="email">
                 </div>
@@ -36,6 +40,7 @@
                 width: 600,
                 url: '/submit/handle',
                 formData: {
+                    realTime: true,
                     data: {
                         email: 'zhangsan@baidu.com',
                         password: 'zhangsan@baidu.com'
@@ -55,6 +60,20 @@
                     },
                 }
             }
+
+            var empRegExp = {
+                ip: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/,
+                idCard: /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/
+            };
+
+            window.isIDCard = {
+                regExp: empRegExp.idCard,
+                message: '不是合法的身份证号码'
+            };
+            window.isIP = {
+                regExp: empRegExp.ip,
+                message: 'IP地址格式错误'
+            };
             riot.mount('modal', config)
             document.querySelector('super-form').loadData('/submit/actionchange', 'action');
         </script>
