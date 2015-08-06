@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>date picker</title>
+		<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="../src/css/common.css">
+        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">
+        <!-- IE兼容  -->
+        <!--[if lt IE 9]>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.5/es5-shim.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+            <script>html5.addElements('test')</script>
+        <![endif]-->
+        <script src="../src/lib/riot.js"></script>
+        <script src="../src/lib/common.js"></script>
+        <script src="../src/iToolkit_pc.js"></script>
+</head>
+<body>
+	<date-picker id="datepicker">
+	</date-picker>
+	<script>
+
+		var dpOpt = {
+			path: '../src/plugins/datepicker/',
+			position: 'bottom left',
+			firstDay: 1,
+			minDate: new Date('2011-01-01'),
+			maxDate: new Date('2020-12-31'),
+			yearRange: [2011, 2020],
+			showMonthAfterYear: false,
+			theme: null,
+			onSelect: function (date) {
+				console.log('day is selected', date);
+			},
+			onOpen: function (d) {
+				console.log('picker is open', d);
+			},
+			onClose: function (d) {
+				console.log('picker is closed', d);
+			},
+			onDraw: function (d) {
+				console.log('going to other month', d);
+			}
+		}
+
+		riot.mount('date-picker', dpOpt);
+	</script>
+</body>
+</html>

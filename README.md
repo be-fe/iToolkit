@@ -73,7 +73,7 @@ HTML:
         <input type="text" name="t7" value="good! There it is!" min="7" allowEmpty="true">
         <input type="text" name="n1" value="1" valid="int">
         <input type="text" name="n2" value="1" valid="float">
-        input type="text" name="n3" value="1" valid="int" min="2">
+        <input type="text" name="n3" value="1" valid="int" min="2">
         <input type="text" name="n4" value="1" valid="int" max="9">
         <input type="text" name="n5" value="1" valid="int" max="9" min="2">
         <input type="submit" value="提交">
@@ -97,6 +97,39 @@ JavaScript:
         submitingText: "submiting..."
     }
     riot.mount('super-form', formOpts);
+
+### DatePicker
+#### example code:
+[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html#datepicker)
+HTML:
+
+    <date-picker></date-picker>
+
+JavaScript:
+
+    var dpOpt = {
+        path: '../src/plugins/datepicker/',         // dependents' path
+        position: 'bottom left',                    // picker's position
+        firstDay: 1,                                // 0~6
+        minDate: new Date('2011-01-01'),            // picker's border
+        maxDate: new Date('2020-12-31'),
+        yearRange: [2011, 2020],                    // picker's year options
+        theme: null,                                // theme
+        onSelect: function (date) {                 // when we selected
+            console.log('the day is selected', date);
+        },
+        onOpen: function () {
+            console.log('picker is open');
+        },
+        onClose: function () {
+            console.log('picker is closed');
+        },
+        onDraw: function () {
+            console.log('going to other month');
+        }
+    }
+
+    riot.mount('date-picker', dpOpt);
 
 ### Paginate
 #### example code:

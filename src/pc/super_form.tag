@@ -151,9 +151,47 @@
         }
     }
 
-    self.on('mount', function() {
+    /**
+     * getEvent
+     * @description 用于一次判断获取事件函数
+     * @return {Function}
+     */
+    // function getEvent() {
+    //     if (window.addEventListener) {
+    //         return function (elem, events, handler) {
+    //             elem.addEventListener(events, handler, false);
+    //         }
+    //     }
+    //     else {
+    //         return function (elem, events, handler) {
+    //             elem['on' + events] = handler;
+    //         }
+    //     }
+    // }
+
+    self.one('mount', function() {
         EL.style.display = 'block';
+        // if ie <= 8
+        // var events = '\v' == 'v' ? 'propertychange' : 'input';
+        // var addEvent = getEvent();
+        if (config.realTime && config.valid) {
+            var elems = self.root.getElementsByTagName('form')[0].elements;
+            for (var i = 0, len = elems.length; i < len; i ++) {
+                // addEvent(elems[i], events, valueOnChange);
+                elems[i].addEventListener('input', valueOnChange, false);
+            }
+        }
     });
+
+    /**
+     * valueOnChange
+     * @description 实时监听值的变化的处理函数
+     * @param  {Object} e 事件
+     * @return {[type]}   [description]
+     */
+    function valueOnChange(e) {
+        doCheck([], this);
+    }
 
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
@@ -247,8 +285,9 @@
     /*
      * 移除提示
      */
-    self.removeTips = function(elems) {
+    self.removeTips = EL.removeTips = function() {
         var root = self.root;
+        var elems = root.getElementsByTagName('form')[0].elements;
         var tips = root.getElementsByClassName('tip-container');
         if (tips && tips.length) {
             del();
@@ -294,7 +333,6 @@
         utils.removeClass(dom, self.failedClass);
         utils.addClass(dom, self.passClass);
     }
-    
 
     /*
      * ajax提交
@@ -321,11 +359,19 @@
                     params += elems[i].name + "=" + encodeURIComponent(value) + "&";
                 }
             }
-            if (elems[i].type === "submit" && elems[i].tagName !== "BUTTON") {
-                var submitbtn = elems[i];
-                var submitText = submitbtn.value || submitbtn.innerText;
-                submitbtn.disabled = 'disabled';
-                submitbtn.value = self.submitingText;
+            if (elems[i].type === "submit") {
+                if (elems[i].tagName === 'BUTTON') {
+                    var submitbtn = elems[i];
+                    var submitText = submitbtn.innerHTML;
+                    submitbtn.disabled = 'disabled';
+                    submitbtn.innerHTML = self.submitingText;
+                }
+                else {
+                    var submitbtn = elems[i];
+                    var submitText = submitbtn.value;
+                    submitbtn.disabled = 'disabled';
+                    submitbtn.value = self.submitingText;
+                }
             }
         }
         var xmlhttp = new XMLHttpRequest();
@@ -334,8 +380,13 @@
         xmlhttp.send(params);
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
-                self.removeTips(elems);
-                submitbtn.value = submitText;
+                self.removeTips();
+                if (submitbtn.tagName === 'BUTTON') {
+                    submitbtn.innerHTML = submitText;
+                }
+                else {
+                    submitbtn.value = submitText;
+                }
                 submitbtn.disabled = false;
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
@@ -368,15 +419,43 @@
 
         if (config.valid) {
             for (var i = 0; i < elems.length; i++) {
-                var valid = elems[i].getAttribute('valid');
-                var customValid = elems[i].getAttribute('customValid');
-                var max = parseInt(elems[i].getAttribute('max'), 10);
-                var min = parseInt(elems[i].getAttribute('min'), 10);
-                var type = elems[i].getAttribute('type');
-                var allowEmpty = elems[i].getAttribute('allowEmpty');
-                var v = elems[i].value; 
-                var name = elems[i].name;
-                var dom = elems[i];
+                doCheck(validArr, elems[i]);
+            }
+        }
+
+        config.beforeSubmit && config.beforeSubmit(validArr);
+        
+        if (!validArr.length) {
+            if (config.normalSubmit) {
+                self.root.firstChild.setAttribute('action', action);
+                return true;
+            }
+            else {
+                e.preventDefault();
+                self.ajaxSubmit(elems, url);
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * doCheck
+     * @param  {Array} validArr  用于验证是否通过的数组
+     * @param  {Object} elem     需要验证的节点对象
+     * @return {[type]}          [description]
+     */
+    function doCheck(validArr, elem) {
+        var valid = elem.getAttribute('valid');
+        var customValid = elem.getAttribute('customValid');
+        var max = parseInt(elem.getAttribute('max'), 10);
+        var min = parseInt(elem.getAttribute('min'), 10);
+        var type = elem.getAttribute('type');
+        var allowEmpty = elem.getAttribute('allowEmpty');
+        var v = elem.value; 
+        var name = elem.name;
+        var dom = elem;
                 // var validMin = function() {
                 //     if (v.length < min) {
                 //         validArr.push(name);
@@ -396,118 +475,128 @@
                 //         self.onValidPass(dom, self.successTips);
                 //     }
                 // }
-                if (allowEmpty && (v === '' || typeof v !== 'string')) {
-                    self.onValidPass(dom, self.successTips);
-                    continue;
+        if (
+            allowEmpty === null
+            && isNaN(max)
+            && isNaN(min)
+            && valid === null
+            && customValid === null
+        ) {
+            return;
+        }
+        if (allowEmpty && (v === '' || typeof v !== 'string')) {
+            self.onValidPass(dom, self.successTips);
+            return;
+        }
+        if (name && valid) {
+            if (valid === 'email') {
+                if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.emailWarning);
                 }
-                if (name && valid) {
-                    if (valid === 'email') {
-                        if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.emailWarning);
-                        }
-                        else {
-                            self.onValidPass(dom, self.successTips); 
-                        }
-                    }
-                    else if (valid === 'mobile') {
-                        if (!v.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.mobileWarning);
-                        }
-                        else {
-                            self.onValidPass(dom, self.successTips); 
-                        }
-                    }
-                    else if (valid === 'url') {
-                        if (!v.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.urlWarning);
-                        }
-                        else {
-                            self.onValidPass(dom, self.successTips); 
-                        }
-                    }
-                    else if (valid === 'present') {
-                        v = v.replace(' ', '');
-                        if (!v.length) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.presentWarning);
-                        }
+                else {
+                    self.onValidPass(dom, self.successTips); 
+                }
+            }
+            else if (valid === 'mobile') {
+                if (!v.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.mobileWarning);
+                }
+                else {
+                    self.onValidPass(dom, self.successTips); 
+                }
+            }
+            else if (valid === 'url') {
+                if (!v.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.urlWarning);
+                }
+                else {
+                    self.onValidPass(dom, self.successTips); 
+                }
+            }
+            else if (valid === 'present') {
+                v = v.replace(' ', '');
+                if (!v.length) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.presentWarning);
+                }
                         // else if (max && type!== 'number'){
                         //     validMax();
                         // }
                         // else if (min && type!== 'number'){
                         //     validMin();
                         // }
-                        else {
+                else {
                             // self.onValidPass(dom, self.successTips);
-                            comparator('string').handler(min, max, dom, v, validArr, name);
-                        }
-                    }
-                    else if (valid.match(/^\/\S+\/$/)) {
-                        valid = valid.replace(/^\//, '');
-                        valid = valid.replace(/\/$/, '');
-                        var reg = new RegExp(valid);
-                        if (reg.test(v)) {
-                            // self.onValidPass(dom, self.successTips); 
-                            comparator('string').handler(min, max, dom, v, validArr, name);
-                        }
-                        else {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.regWarning);
-                        }
-                    }
-                    else if (NUMBER_REGEXP[valid.toUpperCase()]) {
-                        var reg = NUMBER_REGEXP[valid.toUpperCase()];
-                        if (reg.test(v)) {
-                            comparator('number').handler(min, max, dom, v, validArr, name);
-                        }
-                        else {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.numWarning);
-                        }
-                    }
+                    comparator('string').handler(min, max, dom, v, validArr, name);
                 }
+            }
+            else if (valid.match(/^\/\S+\/$/)) {
+                valid = valid.replace(/^\//, '');
+                valid = valid.replace(/\/$/, '');
+                var reg = new RegExp(valid);
+                if (reg.test(v)) {
+                            // self.onValidPass(dom, self.successTips); 
+                    comparator('string').handler(min, max, dom, v, validArr, name);
+                }
+                else {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.regWarning);
+                }
+            }
+            else if (NUMBER_REGEXP[valid.toUpperCase()]) {
+                var reg = NUMBER_REGEXP[valid.toUpperCase()];
+                if (reg.test(v)) {
+                    comparator('number').handler(min, max, dom, v, validArr, name);
+                }
+                else {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.numWarning);
+                }
+            }
+        }
                 // else if (name && max && type!== 'number') {
                 //     validMax();
                 // }
                 // else if (name && min && type!== 'number') {
                 //     validMin();
                 // }
-                else if (name && !valid) {
-                    comparator('string').handler(min, max, dom, v, validArr, name);
-                }
-                else if (name && customValid) {
-                    if (window[customValid]) {
-                        var reg = window[customValid].regExp;
-                        var tips = window[customValid].message || self.regWarning;
-                        if (reg && reg.test(v)) {
-                            // self.onValidPass(dom, self.successTips);
-                            comparator('string').handler(min, max, dom, v, validArr, name); 
-                        }
-                        else {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, tips);
-                        }
+        else if (name && !valid) {
+            if (customValid) {
+                if (window[customValid]) {
+                    var reg = window[customValid].regExp;
+                    var tips = window[customValid].message || self.regWarning;
+                    if (reg && reg.test(v)) {
+                                // self.onValidPass(dom, self.successTips);
+                        comparator('string').handler(min, max, dom, v, validArr, name); 
+                    }
+                    else {
+                        validArr.push(name);
+                        self.onValidRefuse(dom, tips);
                     }
                 }
             }
-        }
-        
-        if (!validArr.length) {
-            e.preventDefault();
-            if (config.normalSubmit) { 
-                self.root.firstChild.setAttribute('action', action);
-                return true;
-            }
             else {
-                self.ajaxSubmit(elems, url);
+                comparator('string').handler(min, max, dom, v, validArr, name);
             }
+                    
         }
-        else {
-            return false;
-        }
+                // else if (name && customValid) {
+                //     if (window[customValid]) {
+                //             var reg = window[customValid].regExp;
+                //             var tips = window[customValid].message || self.regWarning;
+                //             if (reg && reg.test(v)) {
+                //                 // self.onValidPass(dom, self.successTips);
+                //                 comparator('string').handler(min, max, dom, v, validArr, name); 
+                //             }
+                //             else {
+                //                 validArr.push(name);
+                //                 self.onValidRefuse(dom, tips);
+                //             }
+                //         }
+                // }
     }
 
 </super-form>

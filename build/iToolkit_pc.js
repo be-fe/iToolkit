@@ -1509,7 +1509,280 @@ var utils = {
     isArray: function(value) {
         return toString.call(value) === '[object Array]';
     }
-}
+};
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(function () {
+            // Also create a global in case some scripts
+            // that are loaded still are looking for
+            // a global even when an AMD loader is in use.
+            return (root.jsLoader = factory());
+        });
+    } else {
+        // Browser globals
+        root.jsLoader = factory();
+    }
+}(utils, function () {
+
+    var cache = {};
+    var _cid = 0;
+    var tasks = [];
+    var toString = Object.prototype.toString;
+    var isArray = isType('Array');
+    var isFunction = isType('Function');
+    var HEAD_NODE = document.head || document.getElementsByTagName('head')[0];
+    var DONE = 'done';
+    var INPROCESS = 'inprocess';
+    var REJECTED = 'rejected';
+    var PENDING = 'pending';
+    var processCache = {};
+
+    /**
+     * 产生客户端id
+     * @return {Number} [description]
+     */
+    function cid() {
+        return _cid++;
+    }
+
+    function isCSS(css) {
+        return css.match(/\.css\??/);
+    }
+
+    /**
+     * Script对象，储存需要加载的脚本的基本信息
+     * @param {String} uri 地址
+     */
+    function Script(uri) {
+        this.uri = uri;
+        this.cid = cid();
+        this.status = PENDING;
+    }
+
+    /**
+     * 从缓存中获取需要的Script对象
+     * @param  {String} uri [description]
+     * @return {Object}     需要的Script对象
+     */
+    Script.get = function (uri) {
+        // 如果不存在于缓存中，创建一个新的Script对象
+        return cache[uri] || (cache[uri] = new Script(uri));
+    };
+
+    /**
+     * 当加载完成或失败时调用的处理函数
+     * @param  {Object} js Script对象
+     * @return {[type]}    [description]
+     */
+    Script.resolve = function (js) {
+        var self = this;
+        self.status++;
+        if (js && js.status === REJECTED) {
+            var error = Error('Source: ' + js.uri + ' load failed');
+            reject(error);
+        }
+        if (self.status === self.task.length) {
+            setTimeout(function () {
+                self.callback && self.callback();
+                self = null;
+                resolve(tasks.shift());
+            }, 7);
+        }
+    };
+
+    /**
+     * 用于获取类型的方法
+     * @param  {String}  type [description]
+     * @return {Boolean}      [description]
+     */
+    function isType(type) {
+        return function (obj) {
+            return toString.call(obj) === '[object ' + type + ']';
+        }
+    }
+
+    /**
+     * 将传入参数处理成数组形式
+     * @param  {[type]} obj [description]
+     * @return {Array}      [description]
+     */
+    function makeArray(obj) {
+        return Array.prototype.concat(obj);
+    }
+
+    /**
+     * jsLoader
+     * @param  {[type]}   js       function or string or array
+     * @param  {Function} callback 加载完成后的回调
+     * @return {Function}          
+     */
+    function jsLoader(js, callback) {
+        jsLoader.then(js, callback).start();
+        return jsLoader;
+    }
+
+    /**
+     * then方法用于向任务列表增加任务
+     * @param  {[type]}   js       function or string or array
+     * @param  {Function} callback [description]
+     * @return {Function}          [description]
+     */
+    jsLoader.then = function (js, callback) {
+        if (!js) {
+            return jsLoader;
+        }
+        if (!isArray(js)) {
+            js = makeArray(js);
+        }
+        var resolver = {
+            task: [],
+            callback: callback,
+            status: 0
+        };
+        for (var i = 0; i < js.length; i++) {
+            resolver.task.push(getCache(js[i]));
+        }
+        tasks.push(resolver);
+        // jsLoader.resolve();
+        return jsLoader;
+    };
+
+    /**
+     * [reject description]
+     * @param  {Object} e Object Error
+     * @return {[type]}   [description]
+     */
+    function reject(e) {
+        throw e;
+    }
+
+    /**
+     * 执行任务序列中的任务
+     * @param  {Object} resolver [description]
+     * @return {[type]}          [description]
+     */
+    function resolve(resolver) {
+        if (!resolver) {
+            if (!tasks.length) {
+                return;
+            }
+        }
+        for (var i = 0; i < resolver.task.length; i++) {
+            var js = resolver.task[i];
+            request(js, resolver);
+        }
+    }
+
+    /**
+     * 开始
+     * @return {[type]} [description]
+     */
+    jsLoader.start = function () {
+        resolve(tasks.shift());
+        return jsLoader;
+    }
+
+    function loadStyles(script, resolver) {
+        var node = document.createElement('link');
+        node.type = 'text/css';
+        node.rel = 'stylesheet';
+        node.href = script.uri;
+        HEAD_NODE.appendChild(node);
+        node = null;
+        script.status = DONE;
+        Script.resolve.call(resolver);
+    }
+
+    /**
+     * [request description]
+     * @param  {[type]} js       [description]
+     * @param  {[type]} resolver [description]
+     * @return {[type]}          [description]
+     */
+    function request(js, resolver) {
+        if (isFunction(js.uri)) {
+            try {
+                js.uri();
+                js.status = DONE;
+                Script.resolve.call(resolver);
+            }
+            catch (e) {
+                js.status = REJECTED;
+                Script.resolve.call(resolver);
+            }
+            return;
+        }
+        if (js.status === DONE) {
+            Script.resolve.call(resolver);
+            return;
+        }
+        if (isCSS(js.uri)) {
+            loadStyles(js, resolver);
+            return;
+        }
+        if (js.status === INPROCESS) {
+            // 在loading过程中，标记遇到的resolver
+            js.changeStatus = true;
+            processCache[js.cid] = processCache[js.cid] || [];
+            processCache[js.cid].push({js:js, resolver:resolver});
+            return;
+        }
+        js.status = INPROCESS;
+        var node = document.createElement('script');
+        node.async = true;
+        node.src = js.uri;
+        node.onload = node.onerror = onloadResolve;
+        HEAD_NODE.appendChild(node);
+
+        function onloadResolve(evt) {
+            if (evt.type === 'error') {
+                js.status = REJECTED;
+            }
+            if (evt.type === 'load') {
+                js.status = DONE;
+            }
+            Script.resolve.call(resolver, js);
+            if (js.changeStatus) {
+                // 如果加载完成，处理处在waiting状态下的任务
+                js.changeStatus = false;
+                for (var i = 0; i < processCache[js.cid].length; i++) {
+                    var tmp = processCache[js.cid][i];
+                    Script.resolve.call(tmp.resolver, tmp.js);
+                }
+                processCache[js.cid] = null;
+            }
+            node.onload = node.onerror = null;
+            HEAD_NODE.removeChild(node);
+            node = null;
+        }
+    }
+
+    /**
+     * 获取可能存在别名的Script对象
+     * @param  {String} uri [description]
+     * @return {Object}     Script Object
+     */
+    function getCache(uri) {
+        var src = getAlias(uri);
+        return  src ? Script.get(src) : Script.get(uri);
+    };
+
+    /**
+     * 获取真实地址
+     * @param  {String} str [description]
+     * @return {[type]}     [description]
+     */
+    function getAlias(str) {
+        return jsLoader.alias[str];
+    }
+
+    jsLoader.alias = {};
+
+    return jsLoader;
+
+}));
 
 /*
  * 全局事件监控
@@ -1522,6 +1795,23 @@ var EventCtrl = EC = riot.observable();
 var iToolkit = {};
 iToolkit.tableExtend = {};
 
+riot.tag('date-picker', '<input type="text" value="" class="datepicker">', function(opts) {
+
+    var self = this;
+    var EL = self.root;
+    var config = self.opts.opts || self.opts;
+    var path = config.path || '';
+    utils.jsLoader([
+        path + 'datepicker.js',
+        path + 'datepicker.css'
+    ],function () {
+        var inputEle = self.root.getElementsByTagName('input')[0]
+            config.fields = [self.root.getElementsByTagName('input')[0]];
+            new DatePicker(config);
+    });
+
+
+});
 riot.tag('dropdown', '', function(opts) {
 
 });
@@ -1777,6 +2067,7 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" riot-type={"number"} style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
     
     var self = this;
+    var EL = self.root;
     var config = self.opts.opts || self.opts;
     
     self.count = config.count || 0;
@@ -1790,12 +2081,42 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
     self.showPageCount = config.showPageCount || true;
     self.showItemCount = config.showItemCount || true;
     self.needInit = config.needInit || false;
+
+    EL.setCount = function (num) {
+        var count = self.count + num;
+        var oldPageCount = self.pageCount;
+        count < 0
+        ? self.count = 0
+        : self.count = count;
+
+        self.pageCount = Math.ceil(self.count/self.pagesize) || 1;
+        self.currentPage = (
+            self.currentPage > self.pageCount
+            ? self.pageCount
+            : self.currentPage
+        );
+
+        if (self.pageCount <= self.showNumber) {
+            self.pages = [];
+            for (var i = 0; i < self.pageCount; i++) {
+                self.pages.push({page: i + 1});
+            }
+        }
+
+        if (self.needInit) {
+            config.callback(self.currentPage);
+        }
+
+        self.pageChange(self.currentPage)
+        self.update();
+    };
     
     if (self.needInit) {
         config.callback(self.currentPage);
     }
 
     self.pages = [];
+    
     if (self.pageCount < (self.showNumber + 1)) {
         for (i = 0; i < self.pageCount; i++) {
             self.pages.push({page: i + 1});
@@ -1874,7 +2195,7 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
             }
             self.pages.push({page: '...'});
         }
-    }
+    };
 
 
 
@@ -2070,9 +2391,38 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
     }
 
-    self.on('mount', function() {
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+    self.one('mount', function() {
         EL.style.display = 'block';
+
+
+
+        if (config.realTime && config.valid) {
+            var elems = self.root.getElementsByTagName('form')[0].elements;
+            for (var i = 0, len = elems.length; i < len; i ++) {
+
+                elems[i].addEventListener('input', valueOnChange, false);
+            }
+        }
     });
+
+    
+    function valueOnChange(e) {
+        doCheck([], this);
+    }
 
     EL.loadData = function(newData, colName){
         colName = colName || 'data';
@@ -2159,8 +2509,9 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
 
     
-    self.removeTips = function(elems) {
+    self.removeTips = EL.removeTips = function() {
         var root = self.root;
+        var elems = root.getElementsByTagName('form')[0].elements;
         var tips = root.getElementsByClassName('tip-container');
         if (tips && tips.length) {
             del();
@@ -2204,7 +2555,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         utils.removeClass(dom, self.failedClass);
         utils.addClass(dom, self.passClass);
     }
-    
 
     
     self.ajaxSubmit = function(elems, url) {
@@ -2229,11 +2579,19 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     params += elems[i].name + "=" + encodeURIComponent(value) + "&";
                 }
             }
-            if (elems[i].type === "submit" && elems[i].tagName !== "BUTTON") {
-                var submitbtn = elems[i];
-                var submitText = submitbtn.value || submitbtn.innerText;
-                submitbtn.disabled = 'disabled';
-                submitbtn.value = self.submitingText;
+            if (elems[i].type === "submit") {
+                if (elems[i].tagName === 'BUTTON') {
+                    var submitbtn = elems[i];
+                    var submitText = submitbtn.innerHTML;
+                    submitbtn.disabled = 'disabled';
+                    submitbtn.innerHTML = self.submitingText;
+                }
+                else {
+                    var submitbtn = elems[i];
+                    var submitText = submitbtn.value;
+                    submitbtn.disabled = 'disabled';
+                    submitbtn.value = self.submitingText;
+                }
             }
         }
         var xmlhttp = new XMLHttpRequest();
@@ -2242,8 +2600,13 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         xmlhttp.send(params);
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
-                self.removeTips(elems);
-                submitbtn.value = submitText;
+                self.removeTips();
+                if (submitbtn.tagName === 'BUTTON') {
+                    submitbtn.innerHTML = submitText;
+                }
+                else {
+                    submitbtn.value = submitText;
+                }
                 submitbtn.disabled = false;
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
@@ -2274,139 +2637,19 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
         if (config.valid) {
             for (var i = 0; i < elems.length; i++) {
-                var valid = elems[i].getAttribute('valid');
-                var customValid = elems[i].getAttribute('customValid');
-                var max = parseInt(elems[i].getAttribute('max'), 10);
-                var min = parseInt(elems[i].getAttribute('min'), 10);
-                var type = elems[i].getAttribute('type');
-                var allowEmpty = elems[i].getAttribute('allowEmpty');
-                var v = elems[i].value; 
-                var name = elems[i].name;
-                var dom = elems[i];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                if (allowEmpty && (v === '' || typeof v !== 'string')) {
-                    self.onValidPass(dom, self.successTips);
-                    continue;
-                }
-                if (name && valid) {
-                    if (valid === 'email') {
-                        if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.emailWarning);
-                        }
-                        else {
-                            self.onValidPass(dom, self.successTips); 
-                        }
-                    }
-                    else if (valid === 'mobile') {
-                        if (!v.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.mobileWarning);
-                        }
-                        else {
-                            self.onValidPass(dom, self.successTips); 
-                        }
-                    }
-                    else if (valid === 'url') {
-                        if (!v.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.urlWarning);
-                        }
-                        else {
-                            self.onValidPass(dom, self.successTips); 
-                        }
-                    }
-                    else if (valid === 'present') {
-                        v = v.replace(' ', '');
-                        if (!v.length) {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.presentWarning);
-                        }
-
-
-
-
-
-
-                        else {
-
-                            comparator('string').handler(min, max, dom, v, validArr, name);
-                        }
-                    }
-                    else if (valid.match(/^\/\S+\/$/)) {
-                        valid = valid.replace(/^\//, '');
-                        valid = valid.replace(/\/$/, '');
-                        var reg = new RegExp(valid);
-                        if (reg.test(v)) {
-
-                            comparator('string').handler(min, max, dom, v, validArr, name);
-                        }
-                        else {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.regWarning);
-                        }
-                    }
-                    else if (NUMBER_REGEXP[valid.toUpperCase()]) {
-                        var reg = NUMBER_REGEXP[valid.toUpperCase()];
-                        if (reg.test(v)) {
-                            comparator('number').handler(min, max, dom, v, validArr, name);
-                        }
-                        else {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, self.numWarning);
-                        }
-                    }
-                }
-
-
-
-
-
-
-                else if (name && !valid) {
-                    comparator('string').handler(min, max, dom, v, validArr, name);
-                }
-                else if (name && customValid) {
-                    if (window[customValid]) {
-                        var reg = window[customValid].regExp;
-                        var tips = window[customValid].message || self.regWarning;
-                        if (reg && reg.test(v)) {
-
-                            comparator('string').handler(min, max, dom, v, validArr, name); 
-                        }
-                        else {
-                            validArr.push(name);
-                            self.onValidRefuse(dom, tips);
-                        }
-                    }
-                }
+                doCheck(validArr, elems[i]);
             }
         }
+
+        config.beforeSubmit && config.beforeSubmit(validArr);
         
         if (!validArr.length) {
-            e.preventDefault();
-            if (config.normalSubmit) { 
+            if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
                 return true;
             }
             else {
+                e.preventDefault();
                 self.ajaxSubmit(elems, url);
             }
         }
@@ -2414,6 +2657,159 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             return false;
         }
     }.bind(this);
+
+    
+    function doCheck(validArr, elem) {
+        var valid = elem.getAttribute('valid');
+        var customValid = elem.getAttribute('customValid');
+        var max = parseInt(elem.getAttribute('max'), 10);
+        var min = parseInt(elem.getAttribute('min'), 10);
+        var type = elem.getAttribute('type');
+        var allowEmpty = elem.getAttribute('allowEmpty');
+        var v = elem.value; 
+        var name = elem.name;
+        var dom = elem;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        if (
+            allowEmpty === null
+            && isNaN(max)
+            && isNaN(min)
+            && valid === null
+            && customValid === null
+        ) {
+            return;
+        }
+        if (allowEmpty && (v === '' || typeof v !== 'string')) {
+            self.onValidPass(dom, self.successTips);
+            return;
+        }
+        if (name && valid) {
+            if (valid === 'email') {
+                if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.emailWarning);
+                }
+                else {
+                    self.onValidPass(dom, self.successTips); 
+                }
+            }
+            else if (valid === 'mobile') {
+                if (!v.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.mobileWarning);
+                }
+                else {
+                    self.onValidPass(dom, self.successTips); 
+                }
+            }
+            else if (valid === 'url') {
+                if (!v.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.urlWarning);
+                }
+                else {
+                    self.onValidPass(dom, self.successTips); 
+                }
+            }
+            else if (valid === 'present') {
+                v = v.replace(' ', '');
+                if (!v.length) {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.presentWarning);
+                }
+
+
+
+
+
+
+                else {
+
+                    comparator('string').handler(min, max, dom, v, validArr, name);
+                }
+            }
+            else if (valid.match(/^\/\S+\/$/)) {
+                valid = valid.replace(/^\//, '');
+                valid = valid.replace(/\/$/, '');
+                var reg = new RegExp(valid);
+                if (reg.test(v)) {
+
+                    comparator('string').handler(min, max, dom, v, validArr, name);
+                }
+                else {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.regWarning);
+                }
+            }
+            else if (NUMBER_REGEXP[valid.toUpperCase()]) {
+                var reg = NUMBER_REGEXP[valid.toUpperCase()];
+                if (reg.test(v)) {
+                    comparator('number').handler(min, max, dom, v, validArr, name);
+                }
+                else {
+                    validArr.push(name);
+                    self.onValidRefuse(dom, self.numWarning);
+                }
+            }
+        }
+
+
+
+
+
+
+        else if (name && !valid) {
+            if (customValid) {
+                if (window[customValid]) {
+                    var reg = window[customValid].regExp;
+                    var tips = window[customValid].message || self.regWarning;
+                    if (reg && reg.test(v)) {
+
+                        comparator('string').handler(min, max, dom, v, validArr, name); 
+                    }
+                    else {
+                        validArr.push(name);
+                        self.onValidRefuse(dom, tips);
+                    }
+                }
+            }
+            else {
+                comparator('string').handler(min, max, dom, v, validArr, name);
+            }
+                    
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
 
 
 });
