@@ -443,7 +443,7 @@ var utils = {
     function getCache(uri) {
         var src = getAlias(uri);
         return  src ? Script.get(src) : Script.get(uri);
-    };
+    }
 
     /**
      * 获取真实地址

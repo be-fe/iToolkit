@@ -15,7 +15,8 @@
     "gulp-rename": "x",
     "gulp-minify-css": "x",
     "gulp-uglify": "x",
-    "gulp-header": "^1.2.2"
+    "gulp-header": "^1.2.2",
+    "gulp-jshint": "x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

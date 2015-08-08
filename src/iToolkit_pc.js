@@ -1,19 +1,17 @@
 riot.tag('date-picker', '<input type="text" value="" class="datepicker">', function(opts) {
-
-    var self = this;
-    var EL = self.root;
-    var config = self.opts.opts || self.opts;
-    var path = config.path || '';
-    utils.jsLoader([
-        path + 'datepicker.js',
-        path + 'datepicker.css'
-    ],function () {
-        var inputEle = self.root.getElementsByTagName('input')[0]
-            config.fields = [self.root.getElementsByTagName('input')[0]];
-            new DatePicker(config);
-    });
-
-
+        var self = this;
+        var EL = self.root;
+        var config = self.opts.opts || self.opts;
+        var path = config.path || '';
+        utils.jsLoader([
+            path + 'datepicker.js',
+            path + 'datepicker.css'
+        ],function () {
+            var inputEle = self.root.getElementsByTagName('input')[0]
+                config.fields = [self.root.getElementsByTagName('input')[0]];
+                new DatePicker(config);
+        });
+    
 });
 riot.tag('dropdown', '', function(opts) {
 
@@ -55,80 +53,6 @@ riot.tag('editable-link', '<a href="javascript:void(0);" if="{ !editable }" oncl
             self.editable = false;
             self.update();
         }
-    }
-
-});
-riot.tag('file-upload', '<div id="uploader" class="wu-example">  <div id="thelist" class="uploader-list"></div> <div class="btns"> <div id="picker">选择文件</div> <button id="ctlBtn" class="btn btn-default">开始上传</button> </div> </div>', function(opts) {
-    
-    var self = this;
-    var config = self.opts.opts || self.opts;
-    var head = document.getElementsByTagName('head')[0];
-    var webUploadJS = document.createElement('script');
-    webUploadJS.src = config.jsUrl || 'http://cdn.staticfile.org/webuploader/0.1.1/webuploader.js';
-    var jQuerySource = document.createElement('script');
-    jQuerySource.src = 'http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js';
-
-    self.getSource = function() {
-        if (!window.WebUploader) {
-            head.appendChild(webUploadJS);
-
-        }
-    }
-
-    if (!window.jQuery) {
-        head.appendChild(jQuerySource);
-        jQuerySource.onload = self.getSource;
-    }
-    else {
-        self.getSource();
-    }
-
-
-
-    
-    webUploadJS.onload = function() {
-        console.log(WebUploader);
-        var uploader = WebUploader.create({
-
-            swf: '/js/Uploader.swf',
-
-            server: 'http://webuploader.duapp.com/server/fileupload.php',
-
-
-            pick: '#picker',
-
-            resize: false
-        });
-        console.log(uploader);
-
-        uploader.on( 'uploadProgress', function( file, percentage ) {
-            var $li = $( '#'+file.id ),
-                $percent = $li.find('.progress .progress-bar');
-
-            if ( !$percent.length ) {
-                $percent = $('<div class="progress progress-striped active">' +
-                  '<div class="progress-bar" role="progressbar" style="width: 0%">' +
-                  '</div>' +
-                '</div>').appendTo( $li ).find('.progress-bar');
-            }
-
-            $li.find('p.state').text('上传中');
-
-            $percent.css( 'width', percentage * 100 + '%' );
-        });
-
-        uploader.on( 'uploadSuccess', function( file ) {
-            $( '#'+file.id ).find('p.state').text('已上传');
-        });
-
-        uploader.on( 'uploadError', function( file ) {
-            $( '#'+file.id ).find('p.state').text('上传出错');
-        });
-
-        uploader.on( 'uploadComplete', function( file ) {
-            $( '#'+file.id ).find('.progress').fadeOut();
-        });
-
     }
 
 });
@@ -242,24 +166,29 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
     this.close = function(e) {
         self.root.style.display = 'none';
+        self.onClose && self.onClose();
     }.bind(this);
+
     if (document.querySelector("[modal-open-target='" + self.root.id + "']")) {
         document.querySelector("[modal-open-target='" + self.root.id + "']").onclick = function() {
             self.root.style.display = 'block';
+            self.onOpen && self.onOpen();
         }
     }
 
     self.root.open = function() {
         self.root.style.display = 'block';
+        self.onOpen && self.onOpen();
     }
 
     self.root.close = function() {
         self.root.style.display = 'none';
+        self.onClose && self.onClose();
     }
 
     self.root.loadData = function(newData, colName){
         colName = colName || 'data';
-        self[colName] = newData
+        self[colName] = newData;
         self.update();
     }
 
@@ -267,7 +196,7 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
 
 });
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" riot-type={"number"} style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
+riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" type="number" style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
     
     var self = this;
     var EL = self.root;
