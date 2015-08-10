@@ -901,8 +901,7 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                     <p>简单易用的时间选择器插件</p>
                     <h5>Example:</h5>
                     <h5>简单的date-picker</h5>
-                    <date-picker id="datepicker">
-                    </date-picker>
+                    <date-picker id="datepicker" class="btn btn-success">click</date-picker>
                     <h5>用按钮触发的date-picker</h5>
                     <input type="text" id="d-1"><date-picker id="d-btn-1" class="btn btn-default"></date-picker>
                     <h5>关联时间选择</h5>
@@ -947,12 +946,8 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                     <h5>JavaScript:</h5>
 <pre><code class="language-javascript">
 var dpOpt = {
-    istime: false,
-    istoday: false,
-    isclear: false,
-    issure: false,
     choose: function (d) {
-        console.log(d);
+        alert(d);
     }
 };
 
@@ -1329,12 +1324,14 @@ riot.mount('#d-btn-3', end);
              * date-picker
              */
             var dpOpt = {
+                buttonText: 'click',
                 istime: false,
                 istoday: false,
-                isclear: false,
                 issure: false,
+                isclear: false,
+                festival: false,
                 choose: function (d) {
-                    console.log(d);
+                    alert(d);
                 }
             };
 

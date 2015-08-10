@@ -7,7 +7,8 @@ riot.tag('date-picker', '', function(opts) {
     var js = document.scripts;
 
     if (!config.trigger && !config.elem) {
-        config.elem = EL;
+        config.trigger = config.elem = EL;
+        config.onlyCb = true;
     }
 
     if (config.trigger) {
