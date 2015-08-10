@@ -900,111 +900,125 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
                     <h2>date-picker</h2><hr>
                     <p>简单易用的时间选择器插件</p>
                     <h5>Example:</h5>
-                    <date-picker></date-picker>
-
+                    <h5>简单的date-picker</h5>
+                    <date-picker id="datepicker">
+                    </date-picker>
+                    <h5>用按钮触发的date-picker</h5>
+                    <input type="text" id="d-1"><date-picker id="d-btn-1" class="btn btn-default"></date-picker>
+                    <h5>关联时间选择</h5>
+                    <div>开始</div>
+                    <div class="input-group"  style="width:200px;">
+                        <input type="text" id="d-2" class="form-control">
+                        <span class="input-group-btn">
+                            <date-picker id="d-btn-2" class="btn btn-primary"></date-picker>
+                        </span>
+                    </div>
+                    <div>结束</div>
+                    <div class="input-group"  style="width:200px;">
+                        <input type="text" id="d-3" class="form-control">
+                        <span class="input-group-btn">
+                            <date-picker id="d-btn-3" class="btn btn-primary"></date-picker>
+                        </span>
+                    </div>
                     <h5>HTML:</h5>
 <pre><code class="language-markup"><script type="prism-html-markup">
-<date-picker></date-picker>
+<h5>简单的date-picker</h5>
+<date-picker id="datepicker">
+</date-picker>
+<h5>用按钮触发的date-picker</h5>
+<input type="text" id="d-1"><date-picker id="d-btn-1" class="btn btn-default"></date-picker>
+<h5>关联时间选择</h5>
+<div>开始</div>
+<div class="input-group"  style="width:200px;">
+    <input type="text" id="d-2" class="form-control">
+    <span class="input-group-btn">
+        <date-picker id="d-btn-2" class="btn btn-primary"></date-picker>
+    </span>
+</div>
+<div>结束</div>
+<div class="input-group"  style="width:200px;">
+    <input type="text" id="d-3" class="form-control">
+    <span class="input-group-btn">
+        <date-picker id="d-btn-3" class="btn btn-primary"></date-picker>
+    </span>
+</div>
 </script></code></pre>
 
                     <h5>JavaScript:</h5>
 <pre><code class="language-javascript">
 var dpOpt = {
-    path: '../src/plugins/datepicker/',         // 组件依赖的路径
-    position: 'bottom left',                    // 选择器出现的位置，可省略
-    firstDay: 1,                                // 定义一个星期的第一天，0星期天，1星期一，可省略
-    minDate: new Date('2011-01-01'),            // 选择器的时间边界，必须接受时间对象，可省略
-    maxDate: new Date('2020-12-31'),
-    yearRange: [2011, 2020],                    // 选择器选择年份的范围， 可省略
-    theme: null,                                // 主题， 可省略
-    onSelect: function (date) {                 // 当选择了时间时可用的回调，可省
-        console.log('the day is selected', date);
-    },
-    onOpen: function () {                        // 当选择器打开时，可省
-        console.log('picker is open');
-    },
-    onClose: function () {
-        console.log('picker is closed');         // 当选择器关闭时，可省
-    },
-    onDraw: function () {                        // 当重绘选择器时，可省
-        console.log('going to other month');
+    istime: false,
+    istoday: false,
+    isclear: false,
+    issure: false,
+    choose: function (d) {
+        console.log(d);
+    }
+};
+
+riot.mount('#datepicker', dpOpt);
+
+var dpOpt1 = {
+    path: '../build/plugins/laydate/', // 插件路径,不填默认在iToolkit_pc.js同级目录plugins/laydate下
+    trigger: true,  // date-picker用于触发选择器。
+    elem: '#d-1',  // 需显示日期的元素选择器,也可接受Element对象
+    // theme: 'danlan', // TODO,更改主题需要对容器加一个可辨识的主题前缀，目前只有最后一次加载的css会起到修改主题的作用
+    format: 'YYYY-MM-DD hh:mm:ss', // 日期格式
+    buttonText: '按钮',
+    istime: true, // 是否开启时间选择
+    istoday: true, // 是否显示今天
+    issure: true, // 是否显示确认
+    isclear: true, // 是否显示清空
+    festival: false,  // 是否显示节日
+    min: '2014-01-01 00:00:00', // 最小日期
+    max: '2015-12-31 23:59:59', // 最大日期
+    start: '2015-08-09 23:59:59', // 开始日期
+    fixed: false, // 是否固定在可视区域
+    zIndex: 9999,
+    choose: function (d) { // 选择好日期的回调 date格式'YYYY-MM-DD hh:mm:ss' or 'YYYY-MM-DD'
+        console.log(d);
     }
 }
 
-riot.mount('date-picker', dpOpt);
+riot.mount('#d-btn-1', dpOpt1);
+
+var start = {
+    trigger: true,
+    elem: '#d-2',
+    format: 'YYYY-MM-DD',
+    buttonText: '按钮1',
+    min: '2014-01-01 00:00:00',
+    max: '2015-12-31 23:59:59',
+    istime: false,
+    istoday: false,
+    issure: false,
+    isclear: false,
+    zIndex: 9999,
+    choose: function (d) {
+        end.min = d;
+        end.start = d;
+    }
+}
+
+riot.mount('#d-btn-2', start);
+
+var end = {
+    trigger: true,
+    elem: '#d-3',
+    theme: 'zap',
+    format: 'YYYY-MM-DD',
+    buttonText: '按钮2',
+    min: '2014-01-01 00:00:00',
+    max: '2015-12-31 23:59:59',
+    zIndex: 9999,
+    choose: function (d) {
+        start.max = d;
+    }
+}
+
+riot.mount('#d-btn-3', end);
 </code></pre>
-                    
-                    <h5>如何使用自己的主题？</h5>
-                    <p>如果需要使用自己的主题，您需要加载自己的css主题文件。</p>
-<pre><code class="language-css">
-/* your style file */
-
-.pika-single.dark-theme {
-    color: #fff;
-    background: #333;
-    border: 1px solid #666;
-    border-bottom-color: #999;
-}
-
-.dark-theme .pika-label {
-    background-color: #333;
-}
-
-.dark-theme .pika-prev,
-.dark-theme .is-rtl .pika-next {
-    background-image: url('');
-}
-
-.dark-theme .pika-next,
-.dark-theme .is-rtl .pika-prev {
-    background-image: url('');
-}
-
-.dark-theme .pika-table th {
-    color: #999;
-}
-
-.dark-theme .pika-button {
-    color: #fff;
-    background: #222;
-}
-
-.dark-theme .pika-week {
-    color: #999;
-}
-
-.dark-theme .is-today .pika-button {
-    color: #33aaff;
-}
-
-.dark-theme .is-selected .pika-button {
-    color: #fff;
-    background: #33aaff;
-    box-shadow: inset 0 1px 3px #178fe5;
-}
-
-.dark-theme .is-disabled .pika-button {
-    color: #999;
-    opacity: .3;
-}
-
-.dark-theme .pika-button:hover {
-    color: #fff !important;
-    background: #ff8000 !important;
-}
-</code></pre>
-                    <h5>使用主题</h5>
-<pre><code class="language-javascript">
-var dpOpt = {
-    ...
-    theme: 'dark-theme',
-    ...
-    ...
-};
-
-riot.mount('date-picker', dpOpt);
-</code></pre>
-                    <p><b>注：</b>该组件尚未完成。</p>
+                    <p><b>注：</b>该组件依赖laydate</p>
                 </section>
     
 <!-- ****************************** date-picker end *************************************** -->
@@ -1315,28 +1329,75 @@ riot.mount('date-picker', dpOpt);
              * date-picker
              */
             var dpOpt = {
-                path: './src/plugins/datepicker/',          // dependents' path
-                position: 'bottom left',                    // picker's position
-                firstDay: 1,                                // 0~6
-                minDate: new Date('2011-01-01'),            // picker's border
-                maxDate: new Date('2020-12-31'),
-                yearRange: [2011, 2020],                    // picker's year options
-                theme: null,                                // theme
-                onSelect: function (date) {                 // when we selected
-                    console.log('the day is selected', date);
-                },
-                onOpen: function () {
-                    console.log('picker is open');
-                },
-                onClose: function () {
-                    console.log('picker is closed');
-                },
-                onDraw: function () {
-                    console.log('going to other month');
+                istime: false,
+                istoday: false,
+                isclear: false,
+                issure: false,
+                choose: function (d) {
+                    console.log(d);
+                }
+            };
+
+            riot.mount('#datepicker', dpOpt);
+
+            var dpOpt1 = {
+                path: '../src/plugins/laydate/',
+                trigger: true,
+                elem: '#d-1',
+                // theme: 'danlan', // TODO,更改主题需要对容器加一个可辨识的主题前缀，目前只有最后一次加载的css会起到修改主题的作用
+                format: 'YYYY-MM-DD hh:mm:ss',
+                buttonText: '按钮',
+                istime: true,
+                istoday: true,
+                issure: true,
+                isclear: true,
+                festival: false,
+                min: '2014-01-01 00:00:00',
+                max: '2015-12-31 23:59:59',
+                start: '2015-08-09 23:59:59',
+                zIndex: 9999,
+                choose: function (d) {
+                    console.log(d);
                 }
             }
 
-            riot.mount('date-picker', dpOpt);
+            riot.mount('#d-btn-1', dpOpt1);
+
+            var start = {
+                trigger: true,
+                elem: '#d-2',
+                format: 'YYYY-MM-DD',
+                buttonText: '按钮1',
+                min: '2014-01-01 00:00:00',
+                max: '2015-12-31 23:59:59',
+                istime: false,
+                istoday: false,
+                issure: false,
+                isclear: false,
+                zIndex: 9999,
+                choose: function (d) {
+                    end.min = d;
+                    end.start = d;
+                }
+            }
+
+            riot.mount('#d-btn-2', start);
+
+            var end = {
+                trigger: true,
+                elem: '#d-3',
+                theme: 'zap',
+                format: 'YYYY-MM-DD',
+                buttonText: '按钮2',
+                min: '2014-01-01 00:00:00',
+                max: '2015-12-31 23:59:59',
+                zIndex: 9999,
+                choose: function (d) {
+                    start.max = d;
+                }
+            }
+
+            riot.mount('#d-btn-3', end);
         </script>
         <script src="demos/prism.js"></script>
     </body>
