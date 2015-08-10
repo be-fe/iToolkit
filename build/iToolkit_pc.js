@@ -1795,21 +1795,72 @@ var EventCtrl = EC = riot.observable();
 var iToolkit = {};
 iToolkit.tableExtend = {};
 
-riot.tag('date-picker', '<input type="text" value="" class="datepicker">', function(opts) {
-        var self = this;
-        var EL = self.root;
-        var config = self.opts.opts || self.opts;
-        var path = config.path || '';
-        utils.jsLoader([
-            path + 'datepicker.js',
-            path + 'datepicker.css'
-        ],function () {
-            var inputEle = self.root.getElementsByTagName('input')[0]
-                config.fields = [self.root.getElementsByTagName('input')[0]];
-                new DatePicker(config);
-        });
+riot.tag('date-picker', '', function(opts) {
+
+    var self = this;
+    var EL = self.root;
+    var config = self.opts.opts || self.opts;
+
+    var js = document.scripts;
+
+    if (!config.trigger && !config.elem) {
+        config.elem = EL;
+    }
+
+    if (config.trigger) {
+        config.trigger = EL;
+        if (!config.elem) {
+            throw new Error('config.elem input error');
+        }
+    }
+
+    if (
+        config.buttonText
+        && typeof config.buttonText === 'string'
+    ) {
+        EL.innerHTML = config.buttonText;
+    }
+
+    var path = '';
+
+    var jsPath = '';
+
+    if (!config.path) {
+        for (var i = 0; i < js.length; i++) {
+            if (!js[i].src) {
+                continue;
+            }
+            if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
+                jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+                break;
+            }
+        }
+        path = jsPath + 'plugins/laydate/';
+    }
+    else {
+        path = config.path;
+    }
+
+    var theme = config.theme ? config.theme : 'default';
+
+    utils.jsLoader([
+        path + 'laydate.min.js',
+        path + '/need/' + 'laydate.css',
+        path + '/skins/' + theme + '/laydate.css'
+    ], function () {
+
+        if (config.trigger) {
+            config.trigger.onclick = function () {
+                laydate(config);
+            };
+            return;
+        }
+        laydate(config);
+    });
+
     
 });
+
 riot.tag('dropdown', '', function(opts) {
 
 });
@@ -1993,7 +2044,7 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
 
 });
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" type="number" style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
+riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" riot-type={"number"} style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
     
     var self = this;
     var EL = self.root;
