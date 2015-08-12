@@ -193,7 +193,20 @@
         doCheck([], this);
     }
 
+    function isType(obj) {
+        return toString.call(obj).match(/ (.*)]/)[1];
+    }
+    function dif(obj) {
+        var constructor = isType(obj);
+        return new window[constructor](obj);
+    }
+
     EL.loadData = function(newData, colName){
+        if (isType(newData) === 'Object') {
+            for(var i in newData) {
+                newData[i] = dif(newData[i]);
+            }
+        }
         colName = colName || 'data';
         self[colName] = newData;
         self.update();
@@ -255,6 +268,7 @@
         }
     }
     self.data = config.data;
+
     self.submitingText = config.submitingText || '提交中...';
     if (config.valid === undefined) {
         config.valid = true;
@@ -423,9 +437,17 @@
             }
         }
 
-        config.beforeSubmit && config.beforeSubmit(validArr);
-        
         if (!validArr.length) {
+            try {
+                config.beforeSubmit && config.beforeSubmit(validArr);
+            }
+            catch (e) {
+                validArr.push(e);
+            }
+        }
+
+        if (!validArr.length) {
+
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
                 return true;

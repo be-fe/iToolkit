@@ -167,7 +167,7 @@ Dates.run = function(options){
     }
 
     as.elemv = /textarea|input/.test(elem.tagName.toLocaleLowerCase()) ? 'value' : 'innerHTML';
-    if (config.init && !options.onlyCb) {
+    if (config.init && options.justChoose) {
         elem[as.elemv] = laydate.now(null, options.format || config.format)
     }
 
@@ -277,7 +277,7 @@ Dates.check = function(){
             return 1;
         } else if(isvoid[0]){
             Dates.elem[as.elemv] = '';
-            Dates.msg('日期不在有效期内，请重新选择。');
+            Dates.msg('日期不符合格式，请重新选择。');
             return 1;
         } else {
             isvoid.value = Dates.elem[as.elemv].match(exp).join();
@@ -461,7 +461,13 @@ Dates.viewYears = function(YY){
 //初始化面板数据
 Dates.initDate = function(){
     var S = Dates.query, log = {}, De = new Date();
-    var ymd = Dates.elem[as.elemv].match(/\d+/g) || [];
+    var ymd;
+    if (Dates.elem[as.elemv]) {
+        ymd = Dates.elem[as.elemv].match(/\d+/g) || [];
+    }
+    else {
+        ymd = [];
+    }
     if(ymd.length < 3){
         ymd = Dates.options.start.match(/\d+/g) || [];
         if(ymd.length < 3){
@@ -608,7 +614,7 @@ Dates.view = function(elem, options){
     
     Dates.initDate();
     Dates.iswrite();
-    Dates.options.onlyCb ? '' : Dates.check();
+    Dates.options.justChoose ? '' : Dates.check();
 };
 
 //隐藏内部弹出元素
@@ -640,7 +646,7 @@ Dates.parse = function(ymd, hms, format){
 Dates.creation = function(ymd, hide){
     var S = Dates.query, hms = Dates.hmsin;
     var getDates = Dates.parse(ymd, [hms[0].value, hms[1].value, hms[2].value]);
-    if (Dates.options.onlyCb) {
+    if (Dates.options.justChoose) {
         Dates.close();
         typeof Dates.options.choose === 'function' && Dates.options.choose(getDates);
         return;

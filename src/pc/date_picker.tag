@@ -1,31 +1,11 @@
 <date-picker>
-
+    <yield>
     <script>
-
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
 
     var js = document.scripts;
-
-    if (!config.trigger && !config.elem) {
-        config.trigger = config.elem = EL;
-        config.onlyCb = true;
-    }
-
-    if (config.trigger) {
-        config.trigger = EL;
-        if (!config.elem) {
-            throw new Error('config.elem input error');
-        }
-    }
-
-    if (
-        config.buttonText
-        && typeof config.buttonText === 'string'
-    ) {
-        EL.innerHTML = config.buttonText;
-    }
 
     var path = '';
 
@@ -54,16 +34,55 @@
         path + '/need/' + 'laydate.css',
         path + '/skins/' + theme + '/laydate.css'
     ], function () {
+        for (var i = 0; i < EL.children.length; i++) {
+                var child = EL.children[i];
+                if (child.attributes['pTrigger']) {
+                    self.pTrigger = child;
+                }
+                if (child.attributes['media']) {
+                    self.media = child;
+                }
+            }
+            resolve();
+            self.update();
+    });
 
-        if (config.trigger) {
-            config.trigger.onclick = function () {
+
+    
+
+    function resolve() {
+        if (self.pTrigger || self.media) {
+            if (self.pTrigger === self.media) {
+                config.elem = config.pTrigger = self.media;
+            }
+            if (typeof self.pTrigger === 'undefined') {
+                config.elem = self.media;
+            }
+            if (
+                self.pTrigger
+                && self.media
+                && (self.pTrigger !== self.media)
+            ) {
+                config.pTrigger = self.pTrigger;
+                config.elem = self.media;
+            }
+            if (self.pTrigger && !self.media) {
+                config.elem = self.pTrigger;
+                config.justChoose = true;
+            }
+        }
+        else {
+            throw 'media and pTrigger property was not found in the element';
+        }
+
+        if (config.pTrigger) {
+            config.pTrigger.onclick = function (e) {
                 laydate(config);
-            };
+            }
             return;
         }
         laydate(config);
-    });
-
+    }
     </script>
 
 </date-picker>

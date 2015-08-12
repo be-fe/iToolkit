@@ -15,107 +15,182 @@
         <script src="../src/lib/riot.js"></script>
         <script src="../src/lib/common.js"></script>
         <script src="../src/iToolkit_pc.js"></script>
-        <style>
-		#datepicker {
-			width: 100px;
-			height: 20px;
-			border: 1px solid #ccc;
-		}
-        </style>
 </head>
-<body>
-	<h5>简单的date-picker</h5>
-	<date-picker id="datepicker">
-	</date-picker>
-	<h5>用按钮触发的date-picker</h5>
-	<input type="text" id="d-1"><date-picker id="d-btn-1" class="btn btn-default"></date-picker>
-	<h5>关联时间选择</h5>
-	<div>开始</div>
-	<div class="input-group"  style="width:200px;">
-		<input type="text" id="d-2" class="form-control">
-	    <span class="input-group-btn">
-	        <date-picker id="d-btn-2" class="btn btn-primary"></date-picker>
-	    </span>
-	</div>
-	<div>结束</div>
-	<div class="input-group"  style="width:200px;">
-		<input type="text" id="d-3" class="form-control">
-	    <span class="input-group-btn">
-	        <date-picker id="d-btn-3" class="btn btn-primary"></date-picker>
-	    </span>
-	</div>
-	<script>
+<body>	
+		<h5>自身作为选择器触发器</h5>
+		<date-picker id="d1">
+			<style>
+				#d1 div {
+					width: 200px;
+					height: 20px;
+					background: #ccc;
+				}
+			</style>
+			<div media>test</div>
+		</date-picker>
 
-		var dpOpt = {
-			istime: false,
-			istoday: false,
-			isclear: false,
-			issure: false,
+		<h5>没有media 和属性抛错</5>
+		<date-picker id="d2">
+			<style>
+				#d2 div {
+					width: 200px;
+					height: 20px;
+					background: #ccc;
+				}
+			</style>
+			<div>test</div>
+		</date-picker>
+
+		<h5>使用按钮触发</h5>
+		<date-picker id="d3">
+			<style>
+				#d1 input {
+					width: 200px;
+					height: 20px;
+					background: #ccc;
+				}
+			</style>
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>只使用回调</h5>
+		<date-picker id="d4">
+			<div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>设置选择器开始时间</h5>
+		<date-picker id="d5">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>设置选择器选择范围</h5>
+		<date-picker id="d6">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>添加时分秒选择</h5>
+		<date-picker id="d7">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>添加确认清除今天按钮</h5>
+		<date-picker id="d8">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>限制时间范围选择</h5>
+		<div>开始</div>
+		<date-picker id="d9">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+		<div>结束</div>
+		<date-picker id="d0">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+	<script>
+		var d1 = {
 			choose: function (d) {
-				console.log(d);
+				alert(d);
 			}
 		};
+		riot.mount('#d1', d1);
 
-		riot.mount('#datepicker', dpOpt);
+		var d2 = {
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d2', d2);
 
-		var dpOpt1 = {
-			path: '../src/plugins/laydate/',
-			trigger: true,
-			elem: '#d-1',
-			// theme: 'danlan',
-			format: 'YYYY-MM-DD hh:mm:ss',
-			buttonText: '按钮',
+		var d3 = {
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d3', d3);
+
+		var d4 = {
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d4', d4);
+
+		var d5 = {
+			start: '2014-01-01 00:00:00',
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d5', d5);
+
+		var d6 = {
+			min: '2014-01-01 00:00:00',
+			max: '2015-12-30 23:59:59',
+			start: '2014-01-01 00:00:00',
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d6', d6);
+
+		var d7 = {
 			istime: true,
-			istoday: true,
+			format: 'YYYY-MM-DD hh:mm:ss',
+			min: '2014-01-01 00:00:00',
+			max: '2015-12-30 23:59:59',
+			start: '2014-01-01 00:00:00',
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d7', d7);
+
+		var d8 = {
+			istime: true,
 			issure: true,
+			istoday: true,
 			isclear: true,
-			festival: false,
+			format: 'YYYY-MM-DD hh:mm:ss',
 			min: '2014-01-01 00:00:00',
-			max: '2015-12-31 23:59:59',
-			start: '2015-08-09 23:59:59',
-			zIndex: 9999,
+			max: '2015-12-30 23:59:59',
+			start: '2014-01-01 00:00:00',
 			choose: function (d) {
-				console.log(d);
+				alert(d);
 			}
-		}
+		};
+		riot.mount('#d8', d8);
 
-		riot.mount('#d-btn-1', dpOpt1);
-
-		var start = {
-			trigger: true,
-			elem: '#d-2',
-			format: 'YYYY-MM-DD',
-			buttonText: '按钮1',
+		var d9 = {
+			istime: true,
+			issure: true,
+			istoday: true,
+			isclear: true,
+			format: 'YYYY-MM-DD hh:mm:ss',
 			min: '2014-01-01 00:00:00',
-			max: '2015-12-31 23:59:59',
-			istime: false,
-			istoday: false,
-			issure: false,
-			isclear: false,
-			zIndex: 9999,
+			max: '2015-12-30 23:59:59',
+			start: '2014-01-01 00:00:00',
 			choose: function (d) {
-				end.min = d;
-				end.start = d;
+				d0.min = d;
+				d0.start = d;
 			}
-		}
+		};
+		riot.mount('#d9', d9);
 
-		riot.mount('#d-btn-2', start);
-
-		var end = {
-			trigger: true,
-			elem: '#d-3',
-			theme: 'zap',
-			format: 'YYYY-MM-DD',
-			buttonText: '按钮2',
+		var d0 = {
+			istime: true,
+			issure: true,
+			istoday: true,
+			isclear: true,
+			format: 'YYYY-MM-DD hh:mm:ss',
 			min: '2014-01-01 00:00:00',
-			max: '2015-12-31 23:59:59',
-			zIndex: 9999,
+			max: '2015-12-30 23:59:59',
+			start: '2014-01-01 00:00:00',
 			choose: function (d) {
-				start.max = d;
+				d0.max = d;
 			}
-		}
-
-		riot.mount('#d-btn-3', end);
+		};
+		riot.mount('#d0', d0);
 	</script>
 </body>
 </html>

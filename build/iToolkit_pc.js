@@ -1508,6 +1508,12 @@ var utils = {
     },
     isArray: function(value) {
         return toString.call(value) === '[object Array]';
+    },
+    isObject: function(obj) {
+        return toString.call(obj) === '[object Object]';
+    },
+    isFunction: function(fn) {
+        return toString.call(fn) === '[object Function]';
     }
 };
 
@@ -1795,31 +1801,12 @@ var EventCtrl = EC = riot.observable();
 var iToolkit = {};
 iToolkit.tableExtend = {};
 
-riot.tag('date-picker', '', function(opts) {
-
+riot.tag('date-picker', '<yield>', function(opts) {
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
 
     var js = document.scripts;
-
-    if (!config.trigger && !config.elem) {
-        config.elem = EL;
-    }
-
-    if (config.trigger) {
-        config.trigger = EL;
-        if (!config.elem) {
-            throw new Error('config.elem input error');
-        }
-    }
-
-    if (
-        config.buttonText
-        && typeof config.buttonText === 'string'
-    ) {
-        EL.innerHTML = config.buttonText;
-    }
 
     var path = '';
 
@@ -1848,16 +1835,55 @@ riot.tag('date-picker', '', function(opts) {
         path + '/need/' + 'laydate.css',
         path + '/skins/' + theme + '/laydate.css'
     ], function () {
+        for (var i = 0; i < EL.children.length; i++) {
+                var child = EL.children[i];
+                if (child.attributes['pTrigger']) {
+                    self.pTrigger = child;
+                }
+                if (child.attributes['media']) {
+                    self.media = child;
+                }
+            }
+            resolve();
+            self.update();
+    });
 
-        if (config.trigger) {
-            config.trigger.onclick = function () {
+
+    
+
+    function resolve() {
+        if (self.pTrigger || self.media) {
+            if (self.pTrigger === self.media) {
+                config.elem = config.pTrigger = self.media;
+            }
+            if (typeof self.pTrigger === 'undefined') {
+                config.elem = self.media;
+            }
+            if (
+                self.pTrigger
+                && self.media
+                && (self.pTrigger !== self.media)
+            ) {
+                config.pTrigger = self.pTrigger;
+                config.elem = self.media;
+            }
+            if (self.pTrigger && !self.media) {
+                config.elem = self.pTrigger;
+                config.justChoose = true;
+            }
+        }
+        else {
+            throw 'media and pTrigger property was not found in the element';
+        }
+
+        if (config.pTrigger) {
+            config.pTrigger.onclick = function (e) {
                 laydate(config);
-            };
+            }
             return;
         }
         laydate(config);
-    });
-
+    }
     
 });
 
@@ -2404,7 +2430,20 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         doCheck([], this);
     }
 
+    function isType(obj) {
+        return toString.call(obj).match(/ (.*)]/)[1];
+    }
+    function dif(obj) {
+        var constructor = isType(obj);
+        return new window[constructor](obj);
+    }
+
     EL.loadData = function(newData, colName){
+        if (isType(newData) === 'Object') {
+            for(var i in newData) {
+                newData[i] = dif(newData[i]);
+            }
+        }
         colName = colName || 'data';
         self[colName] = newData;
         self.update();
@@ -2462,6 +2501,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
     }
     self.data = config.data;
+
     self.submitingText = config.submitingText || '提交中...';
     if (config.valid === undefined) {
         config.valid = true;
@@ -2621,9 +2661,17 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             }
         }
 
-        config.beforeSubmit && config.beforeSubmit(validArr);
-        
         if (!validArr.length) {
+            try {
+                config.beforeSubmit && config.beforeSubmit(validArr);
+            }
+            catch (e) {
+                validArr.push(e);
+            }
+        }
+
+        if (!validArr.length) {
+
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
                 return true;

@@ -184,6 +184,12 @@ var utils = {
     },
     isArray: function(value) {
         return toString.call(value) === '[object Array]';
+    },
+    isObject: function(obj) {
+        return toString.call(obj) === '[object Object]';
+    },
+    isFunction: function(fn) {
+        return toString.call(fn) === '[object Function]';
     }
 };
 
