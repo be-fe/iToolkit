@@ -897,114 +897,264 @@ riot.mount('editable-link', { errCallback: function(){alert('failed')} });
 
 <!-- ******************************** date-picker Start ********************************** -->
                 <section id="date-picker">
-                    <h2>date-picker</h2><hr>
-                    <p>简单易用的时间选择器插件</p>
-                    <h5>Example:</h5>
-                    <date-picker></date-picker>
+                    <h5>自身作为选择器触发器</h5>
+                    <date-picker id="d1">
+                        <style>
+                            #d1 div {
+                                width: 200px;
+                                height: 20px;
+                                background: #ccc;
+                            }
+                        </style>
+                        <div media>test</div>
+                    </date-picker>
 
+                    <h5>没有media 和属性抛错</5>
+                    <date-picker id="d2">
+                        <style>
+                            #d2 div {
+                                width: 200px;
+                                height: 20px;
+                                background: #ccc;
+                            }
+                        </style>
+                        <div>test</div>
+                    </date-picker>
+
+                    <h5>使用按钮触发</h5>
+                    <date-picker id="d3">
+                        <style>
+                            #d1 input {
+                                width: 200px;
+                                height: 20px;
+                                background: #ccc;
+                            }
+                        </style>
+                        <input media /><div pTrigger class="btn btn-success">test</div>
+                    </date-picker>
+
+                    <h5>只使用回调</h5>
+                    <date-picker id="d4">
+                        <div pTrigger class="btn btn-success">test</div>
+                    </date-picker>
+
+                    <h5>设置选择器开始时间</h5>
+                    <date-picker id="d5">
+                        <input media /><div pTrigger class="btn btn-success">test</div>
+                    </date-picker>
+
+                    <h5>设置选择器选择范围</h5>
+                    <date-picker id="d6">
+                        <input media /><div pTrigger class="btn btn-success">test</div>
+                    </date-picker>
+
+                    <h5>添加时分秒选择</h5>
+                    <date-picker id="d7">
+                        <input media /><div pTrigger class="btn btn-success">test</div>
+                    </date-picker>
+
+                    <h5>添加确认清除今天按钮</h5>
+                    <date-picker id="d8">
+                        <input media /><div pTrigger class="btn btn-success">test</div>
+                    </date-picker>
+
+                    <h5>限制时间范围选择</h5>
+                    <div>开始</div>
+                    <date-picker id="d9">
+                        <input media /><div pTrigger class="btn btn-success">test</div>
+                    </date-picker>
+                    <div>结束</div>
+                    <date-picker id="d0">
+                        <input media /><div pTrigger class="btn btn-success">test</div>
+                    </date-picker>
                     <h5>HTML:</h5>
 <pre><code class="language-markup"><script type="prism-html-markup">
-<date-picker></date-picker>
+<h5>自身作为选择器触发器</h5>
+<date-picker id="d1">
+    <div media>test</div>
+</date-picker>
+
+<h5>没有media 和属性抛错</5>
+<date-picker id="d2">
+    <div>test</div>
+</date-picker>
+
+<h5>使用按钮触发</h5>
+<date-picker id="d3">
+    <input media /><div pTrigger class="btn btn-success">test</div>
+</date-picker>
+
+<h5>只使用回调</h5>
+<date-picker id="d4">
+    <div pTrigger class="btn btn-success">test</div>
+</date-picker>
+
+<h5>设置选择器开始时间</h5>
+<date-picker id="d5">
+    <input media /><div pTrigger class="btn btn-success">test</div>
+</date-picker>
+
+<h5>设置选择器选择范围</h5>
+<date-picker id="d6">
+    <input media /><div pTrigger class="btn btn-success">test</div>
+</date-picker>
+
+<h5>添加时分秒选择</h5>
+<date-picker id="d7">
+    <input media /><div pTrigger class="btn btn-success">test</div>
+</date-picker>
+
+<h5>添加确认清除今天按钮</h5>
+<date-picker id="d8">
+    <input media /><div pTrigger class="btn btn-success">test</div>
+</date-picker>
+
+<h5>限制时间范围选择</h5>
+<div>开始</div>
+<date-picker id="d9">
+    <input media /><div pTrigger class="btn btn-success">test</div>
+</date-picker>
+<div>结束</div>
+<date-picker id="d0">
+    <input media /><div pTrigger class="btn btn-success">test</div>
+</date-picker>
 </script></code></pre>
 
                     <h5>JavaScript:</h5>
 <pre><code class="language-javascript">
 var dpOpt = {
-    path: '../src/plugins/datepicker/',         // 组件依赖的路径
-    position: 'bottom left',                    // 选择器出现的位置，可省略
-    firstDay: 1,                                // 定义一个星期的第一天，0星期天，1星期一，可省略
-    minDate: new Date('2011-01-01'),            // 选择器的时间边界，必须接受时间对象，可省略
-    maxDate: new Date('2020-12-31'),
-    yearRange: [2011, 2020],                    // 选择器选择年份的范围， 可省略
-    theme: null,                                // 主题， 可省略
-    onSelect: function (date) {                 // 当选择了时间时可用的回调，可省
-        console.log('the day is selected', date);
-    },
-    onOpen: function () {                        // 当选择器打开时，可省
-        console.log('picker is open');
-    },
-    onClose: function () {
-        console.log('picker is closed');         // 当选择器关闭时，可省
-    },
-    onDraw: function () {                        // 当重绘选择器时，可省
-        console.log('going to other month');
+    choose: function (d) {
+        alert(d);
+    }
+};
+
+riot.mount('#datepicker', dpOpt);
+
+var dpOpt1 = {
+    // theme: 'danlan', // TODO,更改主题需要对容器加一个可辨识的主题前缀，目前只有最后一次加载的css会起到修改主题的作用
+    format: 'YYYY-MM-DD hh:mm:ss', // 日期格式
+    istime: true, // 是否开启时间选择
+    istoday: true, // 是否显示今天
+    issure: true, // 是否显示确认
+    isclear: true, // 是否显示清空
+    festival: false,  // 是否显示节日
+    min: '2014-01-01 00:00:00', // 最小日期
+    max: '2015-12-31 23:59:59', // 最大日期
+    start: '2015-08-09 23:59:59', // 开始日期
+    fixed: false, // 是否固定在可视区域
+    zIndex: 9999,
+    choose: function (d) { // 选择好日期的回调 date格式'YYYY-MM-DD hh:mm:ss' or 'YYYY-MM-DD'
+        console.log(d);
     }
 }
 
-riot.mount('date-picker', dpOpt);
-</code></pre>
-                    
-                    <h5>如何使用自己的主题？</h5>
-                    <p>如果需要使用自己的主题，您需要加载自己的css主题文件。</p>
-<pre><code class="language-css">
-/* your style file */
+riot.mount('#d-btn-1', dpOpt1);
 
-.pika-single.dark-theme {
-    color: #fff;
-    background: #333;
-    border: 1px solid #666;
-    border-bottom-color: #999;
-}
-
-.dark-theme .pika-label {
-    background-color: #333;
-}
-
-.dark-theme .pika-prev,
-.dark-theme .is-rtl .pika-next {
-    background-image: url('');
-}
-
-.dark-theme .pika-next,
-.dark-theme .is-rtl .pika-prev {
-    background-image: url('');
-}
-
-.dark-theme .pika-table th {
-    color: #999;
-}
-
-.dark-theme .pika-button {
-    color: #fff;
-    background: #222;
-}
-
-.dark-theme .pika-week {
-    color: #999;
-}
-
-.dark-theme .is-today .pika-button {
-    color: #33aaff;
-}
-
-.dark-theme .is-selected .pika-button {
-    color: #fff;
-    background: #33aaff;
-    box-shadow: inset 0 1px 3px #178fe5;
-}
-
-.dark-theme .is-disabled .pika-button {
-    color: #999;
-    opacity: .3;
-}
-
-.dark-theme .pika-button:hover {
-    color: #fff !important;
-    background: #ff8000 !important;
-}
-</code></pre>
-                    <h5>使用主题</h5>
-<pre><code class="language-javascript">
-var dpOpt = {
-    ...
-    theme: 'dark-theme',
-    ...
-    ...
+var d1 = {
+  choose: function(d) {
+    alert(d);
+  }
 };
+riot.mount('#d1', d1);
 
-riot.mount('date-picker', dpOpt);
+var d2 = {
+  choose: function(d) {
+    alert(d);
+  }
+};
+riot.mount('#d2', d2);
+
+var d3 = {
+  choose: function(d) {
+    alert(d);
+  }
+};
+riot.mount('#d3', d3);
+
+var d4 = {
+  choose: function(d) {
+    alert(d);
+  }
+};
+riot.mount('#d4', d4);
+
+var d5 = {
+  start: '2014-01-01 00:00:00',
+  choose: function(d) {
+    alert(d);
+  }
+};
+riot.mount('#d5', d5);
+
+var d6 = {
+  min: '2014-01-01 00:00:00',
+  max: '2015-12-30 23:59:59',
+  start: '2014-01-01 00:00:00',
+  choose: function(d) {
+    alert(d);
+  }
+};
+riot.mount('#d6', d6);
+
+var d7 = {
+  istime: true,
+  format: 'YYYY-MM-DD hh:mm:ss',
+  min: '2014-01-01 00:00:00',
+  max: '2015-12-30 23:59:59',
+  start: '2014-01-01 00:00:00',
+  choose: function(d) {
+    alert(d);
+  }
+};
+riot.mount('#d7', d7);
+
+var d8 = {
+  istime: true,
+  issure: true,
+  istoday: true,
+  isclear: true,
+  format: 'YYYY-MM-DD hh:mm:ss',
+  min: '2014-01-01 00:00:00',
+  max: '2015-12-30 23:59:59',
+  start: '2014-01-01 00:00:00',
+  choose: function(d) {
+    alert(d);
+  }
+};
+riot.mount('#d8', d8);
+
+var d9 = {
+  istime: true,
+  issure: true,
+  istoday: true,
+  isclear: true,
+  format: 'YYYY-MM-DD hh:mm:ss',
+  min: '2014-01-01 00:00:00',
+  max: '2015-12-30 23:59:59',
+  start: '2014-01-01 00:00:00',
+  choose: function(d) {
+    d0.min = d;
+    d0.start = d;
+  }
+};
+riot.mount('#d9', d9);
+
+var d0 = {
+  istime: true,
+  issure: true,
+  istoday: true,
+  isclear: true,
+  format: 'YYYY-MM-DD hh:mm:ss',
+  min: '2014-01-01 00:00:00',
+  max: '2015-12-30 23:59:59',
+  start: '2014-01-01 00:00:00',
+  choose: function(d) {
+    d0.max = d;
+  }
+};
+riot.mount('#d0', d0);
 </code></pre>
-                    <p><b>注：</b>该组件尚未完成。</p>
+                    <p><b>注：</b>该组件依赖laydate</p>
                 </section>
     
 <!-- ****************************** date-picker end *************************************** -->
@@ -1314,29 +1464,111 @@ riot.mount('date-picker', dpOpt);
             /*
              * date-picker
              */
-            var dpOpt = {
-                path: './src/plugins/datepicker/',          // dependents' path
-                position: 'bottom left',                    // picker's position
-                firstDay: 1,                                // 0~6
-                minDate: new Date('2011-01-01'),            // picker's border
-                maxDate: new Date('2020-12-31'),
-                yearRange: [2011, 2020],                    // picker's year options
-                theme: null,                                // theme
-                onSelect: function (date) {                 // when we selected
-                    console.log('the day is selected', date);
-                },
-                onOpen: function () {
-                    console.log('picker is open');
-                },
-                onClose: function () {
-                    console.log('picker is closed');
-                },
-                onDraw: function () {
-                    console.log('going to other month');
-                }
-            }
+            var d1 = {
+              choose: function(d) {
+                alert(d);
+              }
+            };
+            riot.mount('#d1', d1);
 
-            riot.mount('date-picker', dpOpt);
+            /*
+            var d2 = {
+              choose: function(d) {
+                alert(d);
+              }
+            };
+            riot.mount('#d2', d2);
+            */
+
+            var d3 = {
+              choose: function(d) {
+                alert(d);
+              }
+            };
+            riot.mount('#d3', d3);
+
+            var d4 = {
+              choose: function(d) {
+                alert(d);
+              }
+            };
+            riot.mount('#d4', d4);
+
+            var d5 = {
+              start: '2014-01-01 00:00:00',
+              choose: function(d) {
+                alert(d);
+              }
+            };
+            riot.mount('#d5', d5);
+
+            var d6 = {
+              min: '2014-01-01 00:00:00',
+              max: '2015-12-30 23:59:59',
+              start: '2014-01-01 00:00:00',
+              choose: function(d) {
+                alert(d);
+              }
+            };
+            riot.mount('#d6', d6);
+
+            var d7 = {
+              istime: true,
+              format: 'YYYY-MM-DD hh:mm:ss',
+              min: '2014-01-01 00:00:00',
+              max: '2015-12-30 23:59:59',
+              start: '2014-01-01 00:00:00',
+              choose: function(d) {
+                alert(d);
+              }
+            };
+            riot.mount('#d7', d7);
+
+            var d8 = {
+              istime: true,
+              issure: true,
+              istoday: true,
+              isclear: true,
+              format: 'YYYY-MM-DD hh:mm:ss',
+              min: '2014-01-01 00:00:00',
+              max: '2015-12-30 23:59:59',
+              start: '2014-01-01 00:00:00',
+              choose: function(d) {
+                alert(d);
+              }
+            };
+            riot.mount('#d8', d8);
+
+            var d9 = {
+              istime: true,
+              issure: true,
+              istoday: true,
+              isclear: true,
+              format: 'YYYY-MM-DD hh:mm:ss',
+              min: '2014-01-01 00:00:00',
+              max: '2015-12-30 23:59:59',
+              start: '2014-01-01 00:00:00',
+              choose: function(d) {
+                d0.min = d;
+                d0.start = d;
+              }
+            };
+            riot.mount('#d9', d9);
+
+            var d0 = {
+              istime: true,
+              issure: true,
+              istoday: true,
+              isclear: true,
+              format: 'YYYY-MM-DD hh:mm:ss',
+              min: '2014-01-01 00:00:00',
+              max: '2015-12-30 23:59:59',
+              start: '2014-01-01 00:00:00',
+              choose: function(d) {
+                d0.max = d;
+              }
+            };
+            riot.mount('#d0', d0);
         </script>
         <script src="demos/prism.js"></script>
     </body>

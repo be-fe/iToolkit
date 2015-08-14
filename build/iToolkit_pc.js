@@ -1508,6 +1508,12 @@ var utils = {
     },
     isArray: function(value) {
         return toString.call(value) === '[object Array]';
+    },
+    isObject: function(obj) {
+        return toString.call(obj) === '[object Object]';
+    },
+    isFunction: function(fn) {
+        return toString.call(fn) === '[object Function]';
     }
 };
 
@@ -1795,21 +1801,92 @@ var EventCtrl = EC = riot.observable();
 var iToolkit = {};
 iToolkit.tableExtend = {};
 
-riot.tag('date-picker', '<input type="text" value="" class="datepicker">', function(opts) {
-        var self = this;
-        var EL = self.root;
-        var config = self.opts.opts || self.opts;
-        var path = config.path || '';
-        utils.jsLoader([
-            path + 'datepicker.js',
-            path + 'datepicker.css'
-        ],function () {
-            var inputEle = self.root.getElementsByTagName('input')[0]
-                config.fields = [self.root.getElementsByTagName('input')[0]];
-                new DatePicker(config);
-        });
+riot.tag('date-picker', '<yield>', function(opts) {
+    var self = this;
+    var EL = self.root;
+    var config = self.opts.opts || self.opts;
+
+    var js = document.scripts;
+
+    var path = '';
+
+    var jsPath = '';
+
+    if (!config.path) {
+        for (var i = 0; i < js.length; i++) {
+            if (!js[i].src) {
+                continue;
+            }
+            if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
+                jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+                break;
+            }
+        }
+        path = jsPath + 'plugins/laydate/';
+    }
+    else {
+        path = config.path;
+    }
+
+    var theme = config.theme ? config.theme : 'default';
+
+    utils.jsLoader([
+        path + 'laydate.min.js',
+        path + '/need/' + 'laydate.css',
+        path + '/skins/' + theme + '/laydate.css'
+    ], function () {
+        for (var i = 0; i < EL.children.length; i++) {
+                var child = EL.children[i];
+                if (child.attributes['pTrigger']) {
+                    self.pTrigger = child;
+                }
+                if (child.attributes['media']) {
+                    self.media = child;
+                }
+            }
+            resolve();
+            self.update();
+    });
+
+
+    
+
+    function resolve() {
+        if (self.pTrigger || self.media) {
+            if (self.pTrigger === self.media) {
+                config.elem = config.pTrigger = self.media;
+            }
+            if (typeof self.pTrigger === 'undefined') {
+                config.elem = self.media;
+            }
+            if (
+                self.pTrigger
+                && self.media
+                && (self.pTrigger !== self.media)
+            ) {
+                config.pTrigger = self.pTrigger;
+                config.elem = self.media;
+            }
+            if (self.pTrigger && !self.media) {
+                config.elem = self.pTrigger;
+                config.justChoose = true;
+            }
+        }
+        else {
+            throw 'media and pTrigger property was not found in the element';
+        }
+
+        if (config.pTrigger) {
+            config.pTrigger.onclick = function (e) {
+                laydate(config);
+            }
+            return;
+        }
+        laydate(config);
+    }
     
 });
+
 riot.tag('dropdown', '', function(opts) {
 
 });
@@ -1993,7 +2070,7 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
 
 });
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" type="number" style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
+riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" riot-type={"number"} style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
     
     var self = this;
     var EL = self.root;
@@ -2353,7 +2430,20 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         doCheck([], this);
     }
 
+    function isType(obj) {
+        return toString.call(obj).match(/ (.*)]/)[1];
+    }
+    function dif(obj) {
+        var constructor = isType(obj);
+        return new window[constructor](obj);
+    }
+
     EL.loadData = function(newData, colName){
+        if (isType(newData) === 'Object') {
+            for(var i in newData) {
+                newData[i] = dif(newData[i]);
+            }
+        }
         colName = colName || 'data';
         self[colName] = newData;
         self.update();
@@ -2411,6 +2501,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
     }
     self.data = config.data;
+
     self.submitingText = config.submitingText || '提交中...';
     if (config.valid === undefined) {
         config.valid = true;
@@ -2570,9 +2661,17 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             }
         }
 
-        config.beforeSubmit && config.beforeSubmit(validArr);
-        
         if (!validArr.length) {
+            try {
+                config.beforeSubmit && config.beforeSubmit(validArr);
+            }
+            catch (e) {
+                validArr.push(e);
+            }
+        }
+
+        if (!validArr.length) {
+
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
                 return true;
