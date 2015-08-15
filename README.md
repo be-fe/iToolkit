@@ -19,7 +19,7 @@ e.g:
 [中文readme](https://github.com/BE-FE/iToolkit/blob/master/README_Chinese.md)   
 [中文文档](https://github.com/BE-FE/iToolkit/blob/master/doc.md)    
 [Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)  
-[新版文档](http://be-fe.github.io/iToolkit/docs/_book/index.html)  
+[新版文档](http://be-fe.github.io/iToolkit/docs/book/index.html)  
 
 ### Table
 #### Table generator:
