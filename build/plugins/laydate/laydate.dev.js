@@ -12,12 +12,13 @@
 
 //全局配置，如果采用默认均不需要改动
 var config =  {
-    path: '', //laydate所在路径
     format: 'YYYY-MM-DD', //日期格式
     min: '1900-01-01 00:00:00', //最小日期
     max: '2099-12-31 23:59:59', //最大日期
-    isv: false,
-    init: true
+    istime: false,
+    istoday: false,
+    isclear: false,
+    issure: false
 };
 
 var Dates = {}, doc = document, creat = 'createElement', byid = 'getElementById', tags = 'getElementsByTagName';
@@ -166,7 +167,9 @@ Dates.run = function(options){
     }
 
     as.elemv = /textarea|input/.test(elem.tagName.toLocaleLowerCase()) ? 'value' : 'innerHTML';
-    if (config.init) elem[as.elemv] = laydate.now(null, options.format || config.format)
+    if (config.init && options.justChoose) {
+        elem[as.elemv] = laydate.now(null, options.format || config.format)
+    }
 
     if(even && target.tagName){
         if(!elem || elem === Dates.elem){
@@ -274,7 +277,7 @@ Dates.check = function(){
             return 1;
         } else if(isvoid[0]){
             Dates.elem[as.elemv] = '';
-            Dates.msg('日期不在有效期内，请重新选择。');
+            Dates.msg('日期不符合格式，请重新选择。');
             return 1;
         } else {
             isvoid.value = Dates.elem[as.elemv].match(exp).join();
@@ -458,7 +461,13 @@ Dates.viewYears = function(YY){
 //初始化面板数据
 Dates.initDate = function(){
     var S = Dates.query, log = {}, De = new Date();
-    var ymd = Dates.elem[as.elemv].match(/\d+/g) || [];
+    var ymd;
+    if (Dates.elem[as.elemv]) {
+        ymd = Dates.elem[as.elemv].match(/\d+/g) || [];
+    }
+    else {
+        ymd = [];
+    }
     if(ymd.length < 3){
         ymd = Dates.options.start.match(/\d+/g) || [];
         if(ymd.length < 3){
@@ -475,9 +484,9 @@ Dates.iswrite = function(){
         time: S('#laydate_hms')
     };
     Dates.shde(log.time, !Dates.options.istime);
-    Dates.shde(as.oclear, !('isclear' in Dates.options ? Dates.options.isclear : 1));
-    Dates.shde(as.otoday, !('istoday' in Dates.options ? Dates.options.istoday : 1));
-    Dates.shde(as.ok, !('issure' in Dates.options ? Dates.options.issure : 1));
+    Dates.shde(as.oclear, !('isclear' in Dates.options ? Dates.options.isclear : config.isclear));
+    Dates.shde(as.otoday, !('istoday' in Dates.options ? Dates.options.istoday : config.istoday));
+    Dates.shde(as.ok, !('issure' in Dates.options ? Dates.options.issure : config.issure));
 };
 
 //方位辨别
@@ -591,7 +600,6 @@ Dates.view = function(elem, options){
             +'<a id="laydate_today">今天</a>'
             +'<a id="laydate_ok">确认</a>'
           +'</div>'
-          +(config.isv ? '<a href="http://sentsin.com/layui/laydate/" class="laydate_v" target="_blank">laydate-v'+ laydate.v +'</a>' : '')
         +'</div>';
         doc.body.appendChild(div); 
         Dates.box = S('#'+as[0]);        
@@ -606,7 +614,7 @@ Dates.view = function(elem, options){
     
     Dates.initDate();
     Dates.iswrite();
-    Dates.check();
+    Dates.options.justChoose ? '' : Dates.check();
 };
 
 //隐藏内部弹出元素
@@ -638,6 +646,11 @@ Dates.parse = function(ymd, hms, format){
 Dates.creation = function(ymd, hide){
     var S = Dates.query, hms = Dates.hmsin;
     var getDates = Dates.parse(ymd, [hms[0].value, hms[1].value, hms[2].value]);
+    if (Dates.options.justChoose) {
+        Dates.close();
+        typeof Dates.options.choose === 'function' && Dates.options.choose(getDates);
+        return;
+    }
     Dates.elem[as.elemv] = getDates;
     if(!hide){
         Dates.close();
@@ -771,7 +784,7 @@ Dates.events = function(){
     Dates.hmsin = log.hmsin = S('#laydate_hms input');
     log.hmss = ['小时', '分钟', '秒数'];
     log.hmsarr = [];
-    
+
     //生成时分秒或警告信息
     Dates.msg = function(i, title){
         var str = '<div class="laydte_hsmtex">'+ (title || '提示') +'<span>×</span></div>';

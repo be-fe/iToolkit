@@ -168,47 +168,40 @@ riot.tag('goto-top', '<div class="itoolkit-goto-top" show="{ showGotoTop }" oncl
     
 
 });
-riot.tag('loading', '<div class="{itoolkit-loading: true, default: default}" > <img riot-src="{ img }" if="{ img }" width="{ width }" alt="loading"> </div>', 'loading .itoolkit-loading { text-align: center; }', function(opts) {
+riot.tag('loading', '<div class="{itoolkit-loading: true, default: default}" > <yield> </div>', 'loading .itoolkit-loading { text-align: center; }', function(opts) {
 
     var self = this;
     var config = self.opts.opts || self.opts;
-    
-    if (!config.img) {
-        self.img = false;
-        self.default = true;
-    }
-    else {
-        self.img = config.img;
-    }
+    self.default = true;
     
     self.on('mount', function() {
-        var childDom = self.root.getElementsByClassName('itoolkit-loading')[0];
-
-        var img = childDom.querySelector('loading .itoolkit-loading img');
-        if (img) {
-            img.style.height = config.imgHeight || '50px';
-        }
-
-        var cellHeight = parseInt(window.getComputedStyle(childDom, null).height.replace('px', ''), 10);
-
         var parentDom = self.root.parentNode;
         var parentPosition = window.getComputedStyle(parentDom, null).position;
-
-        self.root.style.marginTop = '-' + cellHeight/2 + 'px';
         if (parentPosition === 'static') {
             parentDom.style.position = 'relative';
         }
+
+        self.childDom = self.root.getElementsByClassName('itoolkit-loading')[0];
+
+        if (self.childDom.innerHTML.trim()) {
+            self.default = false;
+            self.update();
+        }
+
+        var cellHeight = parseInt(window.getComputedStyle(self.childDom, null).height.replace('px', ''), 10);
+        self.root.style.marginTop = '-' + cellHeight/2 + 'px';
+        
     })
 
-    self.root.show = function(newrows){
-        if (childDom) {
-            childDom.style.display = 'block';
+    self.root.show = function(){
+        if (self.childDom) {
+            self.childDom.style.display = 'block';
         }
     }
 
-    self.root.hide = function(newrows){
-        if (childDom) {
-            childDom.style.display = 'none';
+    self.root.hide = function(){
+        if (self.childDom) {
+            self.childDom.style.display = 'none';
         }
     }
     
@@ -267,7 +260,7 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
 
 });
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" riot-type={"number"} style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
+riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" type="number" style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
     
     var self = this;
     var EL = self.root;
@@ -861,8 +854,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         if (!validArr.length) {
             try {
                 config.beforeSubmit && config.beforeSubmit(validArr);
-            }
-            catch (e) {
+            }catch (e) {
                 validArr.push(e);
             }
         }

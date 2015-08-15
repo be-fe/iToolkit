@@ -839,7 +839,9 @@ riot.mount('.demo tab', tabOpts);
                     </super-div>
 
                     <div class="wrap" style="float: left;">
-                        <loading></loading>
+                        <loading>
+                            <img src="http://thinkfuture.com/wp-content/uploads/2013/10/loading_spinner.gif" height="70">
+                        </loading>
                     </div>
                     <div class="clearfix"></div>
 
@@ -847,17 +849,14 @@ riot.mount('.demo tab', tabOpts);
                     <pre><code class="language-markup"><script type="prism-html-markup">
 <div class="demo">
     <loading></loading>
+    <loading>
+        <img src="http://thinkfuture.com/wp-content/uploads/2013/10/loading_spinner.gif" height="70">
+    </loading>
 </div></script></code></pre>
 
                     <h5>JavaScript:</h5>
                     <pre><code class="language-javascript">
-riot.mount('.demo loading'); //不写config, 使用默认的CSS 3动画
-
-var loadingOpts = {
-    img: 'img/loading.gif',   //loading图片url
-    imgHeight: '60px';        //图片高度
-}
-riot.mount('.demo loading', loadingOpts);
+riot.mount('.demo loading');
                     </code></pre>
                 </section>
 

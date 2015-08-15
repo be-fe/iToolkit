@@ -440,8 +440,7 @@
         if (!validArr.length) {
             try {
                 config.beforeSubmit && config.beforeSubmit(validArr);
-            }
-            catch (e) {
+            }catch (e) {
                 validArr.push(e);
             }
         }
