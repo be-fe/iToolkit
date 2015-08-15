@@ -16,13 +16,13 @@
 		<script src="../src/iToolkit_pc.js"></script>
 	</head>
 	<body>
-		<button modal-open-target='modal-demo1' class="btn btn-primary">打开模态框</button>
 		<section id="super-form">
 			<h2>Super-form</h2><hr>
 			<p>可以提供ajax提交、防连击保护、表单校验、数据模板、常用指令等五大功能</p>
 			<h5>Example:</h5>
 			<div class="demo">
 				<super-form action="/test">
+				<div>{ data.title }</div>
 				<input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
 				<label>
 					Must be:
@@ -106,6 +106,7 @@
 				</super-form>
 				<button class="btn btn-primary" onclick="removeTip()">清除提示</button>
 				<button class="btn btn-primary" onclick="reload()">reload</button>
+				<button class="btn btn-primary" onclick="changeTitle()">changeTitle</button>
 			</div>
 		</section>
 		<script>
@@ -166,15 +167,22 @@
         		tipContainer.innerHTML = message;
         		context.appendChild(tipContainer);
 	        }
+
+	        function changeTitle () {
+	        	var elem = document.querySelector('super-form');
+	        	elem.loadData({a:'',b:'',title:''});
+	        }
 			/*
              *  super form 提交
              */
             var formOpts = {
                 data: {
-                    a: 1,
-                    b: 'he'
+                    a: 2,
+                    b: 'he',
+                    title: 'aaaa'
                 },
                 valid: true,       //是否执行校验
+                // normalSubmit: true,
                 realTime: true,    //是否实时验证
                 complete: function() {
                     alert('complete');
@@ -186,16 +194,18 @@
                     alert("error, params:" + params);
                 },
                 beforeSubmit: function($invalid) {//在提交前执行的额外操作
-                    removeThisTip('test');
-                    var passed = checkPass('test');
-                    if (passed) {
-                    	addThisTip('test', '通过', 'valid-pass');
-                    }
-                    else {
-                    	addThisTip('test', '值1不能小于值2', 'valid-failed')
-                    }
+                	$invalid.push(1);
+                	alert(1);
+                    // removeThisTip('test');
+                    // var passed = checkPass('test');
+                    // if (passed) {
+                    // 	addThisTip('test', '通过', 'valid-pass');
+                    // }
+                    // else {
+                    // 	addThisTip('test', '值1不能小于值2', 'valid-failed')
+                    // }
                 }
-            }
+            };
             riot.mount('.demo super-form', formOpts);
             var theForm = document.querySelector('.demo super-form');
             function load() {

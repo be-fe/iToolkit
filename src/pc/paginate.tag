@@ -37,7 +37,7 @@
     self.showItemCount = config.showItemCount || true;
     self.needInit = config.needInit || false;
 
-    EL.setCount = function (num) {
+    EL.addCount = function (num) {
         var count = self.count + num;
         var oldPageCount = self.pageCount;
         count < 0

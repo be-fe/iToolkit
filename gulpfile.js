@@ -6,6 +6,7 @@ var minifyCSS = require('gulp-minify-css');
 var uglify = require('gulp-uglify');
 var header = require('gulp-header');
 var pkg = require('./package.json');
+var jshint = require('gulp-jshint');
 
 gulp.task('riot_pc', function () {
     return gulp.src(['src/pc/*.tag'])
@@ -39,6 +40,8 @@ gulp.task('build', function () {
     gulp.src(['src/lib/riot.js', 'src/lib/common.js', 'src/iToolkit_pc.js'])
     .pipe(concat('iToolkit_pc.js'))
     .pipe(gulp.dest('build'))
+    // .pipe(jshint())
+    // .pipe(jshint.reporter('default'))
     .pipe(uglify())
     .pipe(rename({ suffix: '.min' }))
     .pipe(setHeader())

@@ -32,24 +32,29 @@
 
     close(e) {
         self.root.style.display = 'none';
+        self.onClose && self.onClose();
     }
+
     if (document.querySelector("[modal-open-target='" + self.root.id + "']")) {
         document.querySelector("[modal-open-target='" + self.root.id + "']").onclick = function() {
             self.root.style.display = 'block';
+            self.onOpen && self.onOpen();
         }
     }
 
     self.root.open = function() {
         self.root.style.display = 'block';
+        self.onOpen && self.onOpen();
     }
 
     self.root.close = function() {
         self.root.style.display = 'none';
+        self.onClose && self.onClose();
     }
 
     self.root.loadData = function(newData, colName){
         colName = colName || 'data';
-        self[colName] = newData
+        self[colName] = newData;
         self.update();
     }
 

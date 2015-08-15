@@ -184,6 +184,12 @@ var utils = {
     },
     isArray: function(value) {
         return toString.call(value) === '[object Array]';
+    },
+    isObject: function(obj) {
+        return toString.call(obj) === '[object Object]';
+    },
+    isFunction: function(fn) {
+        return toString.call(fn) === '[object Function]';
     }
 };
 
@@ -443,7 +449,7 @@ var utils = {
     function getCache(uri) {
         var src = getAlias(uri);
         return  src ? Script.get(src) : Script.get(uri);
-    };
+    }
 
     /**
      * 获取真实地址

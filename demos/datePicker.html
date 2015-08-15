@@ -16,35 +16,181 @@
         <script src="../src/lib/common.js"></script>
         <script src="../src/iToolkit_pc.js"></script>
 </head>
-<body>
-	<date-picker id="datepicker">
-	</date-picker>
+<body>	
+		<h5>自身作为选择器触发器</h5>
+		<date-picker id="d1">
+			<style>
+				#d1 div {
+					width: 200px;
+					height: 20px;
+					background: #ccc;
+				}
+			</style>
+			<div media>test</div>
+		</date-picker>
+
+		<h5>没有media 和属性抛错</5>
+		<date-picker id="d2">
+			<style>
+				#d2 div {
+					width: 200px;
+					height: 20px;
+					background: #ccc;
+				}
+			</style>
+			<div>test</div>
+		</date-picker>
+
+		<h5>使用按钮触发</h5>
+		<date-picker id="d3">
+			<style>
+				#d1 input {
+					width: 200px;
+					height: 20px;
+					background: #ccc;
+				}
+			</style>
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>只使用回调</h5>
+		<date-picker id="d4">
+			<div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>设置选择器开始时间</h5>
+		<date-picker id="d5">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>设置选择器选择范围</h5>
+		<date-picker id="d6">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>添加时分秒选择</h5>
+		<date-picker id="d7">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>添加确认清除今天按钮</h5>
+		<date-picker id="d8">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+
+		<h5>限制时间范围选择</h5>
+		<div>开始</div>
+		<date-picker id="d9">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
+		<div>结束</div>
+		<date-picker id="d0">
+			<input media /><div pTrigger class="btn btn-success">test</div>
+		</date-picker>
 	<script>
-
-		var dpOpt = {
-			path: '../src/plugins/datepicker/',
-			position: 'bottom left',
-			firstDay: 1,
-			minDate: new Date('2011-01-01'),
-			maxDate: new Date('2020-12-31'),
-			yearRange: [2011, 2020],
-			showMonthAfterYear: false,
-			theme: null,
-			onSelect: function (date) {
-				console.log('day is selected', date);
-			},
-			onOpen: function (d) {
-				console.log('picker is open', d);
-			},
-			onClose: function (d) {
-				console.log('picker is closed', d);
-			},
-			onDraw: function (d) {
-				console.log('going to other month', d);
+		var d1 = {
+			choose: function (d) {
+				alert(d);
 			}
-		}
+		};
+		riot.mount('#d1', d1);
 
-		riot.mount('date-picker', dpOpt);
+		var d2 = {
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d2', d2);
+
+		var d3 = {
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d3', d3);
+
+		var d4 = {
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d4', d4);
+
+		var d5 = {
+			start: '2014-01-01 00:00:00',
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d5', d5);
+
+		var d6 = {
+			min: '2014-01-01 00:00:00',
+			max: '2015-12-30 23:59:59',
+			start: '2014-01-01 00:00:00',
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d6', d6);
+
+		var d7 = {
+			istime: true,
+			format: 'YYYY-MM-DD hh:mm:ss',
+			min: '2014-01-01 00:00:00',
+			max: '2015-12-30 23:59:59',
+			start: '2014-01-01 00:00:00',
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d7', d7);
+
+		var d8 = {
+			istime: true,
+			issure: true,
+			istoday: true,
+			isclear: true,
+			format: 'YYYY-MM-DD hh:mm:ss',
+			min: '2014-01-01 00:00:00',
+			max: '2015-12-30 23:59:59',
+			start: '2014-01-01 00:00:00',
+			choose: function (d) {
+				alert(d);
+			}
+		};
+		riot.mount('#d8', d8);
+
+		var d9 = {
+			istime: true,
+			issure: true,
+			istoday: true,
+			isclear: true,
+			format: 'YYYY-MM-DD hh:mm:ss',
+			min: '2014-01-01 00:00:00',
+			max: '2015-12-30 23:59:59',
+			start: '2014-01-01 00:00:00',
+			choose: function (d) {
+				d0.min = d;
+				d0.start = d;
+			}
+		};
+		riot.mount('#d9', d9);
+
+		var d0 = {
+			istime: true,
+			issure: true,
+			istoday: true,
+			isclear: true,
+			format: 'YYYY-MM-DD hh:mm:ss',
+			min: '2014-01-01 00:00:00',
+			max: '2015-12-30 23:59:59',
+			start: '2014-01-01 00:00:00',
+			choose: function (d) {
+				d0.max = d;
+			}
+		};
+		riot.mount('#d0', d0);
 	</script>
 </body>
 </html>
