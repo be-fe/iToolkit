@@ -1940,8 +1940,6 @@ riot.tag('goto-top', '<div class="itoolkit-goto-top" show="{ showGotoTop }" oncl
     self.on('mount', function() {
         self.root.querySelector('.itoolkit-goto-top').style.bottom = self.config.bottom;
         self.root.querySelector('.itoolkit-goto-top').style.right = self.config.right;
-        console.log(EL.querySelector('.itoolkit-goto-top').firstElementChild);
-        console.log(EL.querySelector('.itoolkit-goto-top').childNodes);
         if (EL.querySelector('.itoolkit-goto-top').firstElementChild.className === 'itoolkit-goto-top-icon') {
             self.showDefault = true;
         }
