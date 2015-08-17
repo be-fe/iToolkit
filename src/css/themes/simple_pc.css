@@ -1,3 +1,106 @@
+/*
+ * common.css
+ */
+
+super-div {
+    display: none;
+}
+
+super-form {
+    display: none;
+}
+
+.inline-form > * {
+    vertical-align: center;
+    margin-bottom: 0;
+    display: inline-block;
+}
+
+.clearfix {
+    clear: both;
+}
+
+rcol {
+    display: none;
+}
+
+.icon {
+    line-height: 100%;
+    width: 1em;
+    height: 1em;
+    position: relative;
+    display: block;
+    float: left;
+}
+
+.icon-arrowRight,
+.icon-arrowLeft,
+.icon-arrowDown,
+.icon-arrowUp {
+    position: absolute;
+    width: .5em;
+    height: .5em;
+    background-color: rgb(102, 102, 102); /* #666 */
+}
+.icon-arrowRight:after,
+.icon-arrowLeft:after,
+.icon-arrowDown:after,
+.icon-arrowUp:after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-width: .5em;
+    border-style: solid;
+}
+/* Arrows - Left and Right */
+.icon-arrowRight,
+.icon-arrowLeft {
+    top: .25em;
+}
+.icon-arrowRight {
+    left: 0;
+}
+.icon-arrowLeft {
+    right: 0;
+}
+.icon-arrowRight:after,
+.icon-arrowLeft:after {
+    top: -.25em;
+}
+.icon-arrowRight:after {
+    left: .5em;
+    border-color: transparent transparent transparent rgb(102, 102, 102); /* #666 */
+}
+.icon-arrowLeft:after {
+    right: .5em;
+    border-color: transparent rgb(102, 102, 102) transparent transparent; /* #666 */
+}
+/* Arrows -  Down and Up */
+.icon-arrowDown,
+.icon-arrowUp {
+    left: .25em;
+}
+.icon-arrowDown {
+    top: 0;
+}
+.icon-arrowUp,
+.icon-arrowDown:after {
+    top: .5em;
+}
+.icon-arrowDown:after,
+.icon-arrowUp:after {
+    left: -.25em;
+}
+.icon-arrowDown:after {
+    border-color: rgb(102, 102, 102) transparent transparent transparent; /* #666 */
+}
+.icon-arrowUp:after {
+    top: -1em;
+    border-color: transparent transparent rgb(102, 102, 102) transparent; /* #666 */
+}
+
+
 /* 
  *  Tab style
  */

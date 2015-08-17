@@ -12,24 +12,28 @@
             opicity: 0.5;
             cursor: pointer;
         }
-        goto-top .itoolkit-goto-top .icon{
+        goto-top .itoolkit-goto-top .itoolkit-goto-top-icon{
             font-size: 3em;
             margin: auto;
             float: none;
         }
     </style>
     <div class="itoolkit-goto-top" show={ showGotoTop } onclick={ gotoTop }>
-        <span class="icon" if={ !config.img }><span class="icon-arrowUp"></span></span>
-        <img src={ config.img } if={ config.img }>
+        <yield>
+        <span class="itoolkit-goto-top-icon" show={ showDefault }><span class="icon-arrowUp"></span></span>
     </div>
 
     var self = this;
     self.config = self.opts.opts || self.opts;
     var avalibleHeight = window.screen.availHeight;
+    var EL = self.root;
     
     self.on('mount', function() {
         self.root.querySelector('.itoolkit-goto-top').style.bottom = self.config.bottom;
         self.root.querySelector('.itoolkit-goto-top').style.right = self.config.right;
+        if (EL.querySelector('.itoolkit-goto-top').firstElementChild.className === 'itoolkit-goto-top-icon') {
+            self.showDefault = true;
+        }
         window.addEventListener('scroll', self.controlGotoTop);
     })
     
@@ -54,10 +58,5 @@
             }
         }, 16);
     }
-    window.test = self;
-    // self.on('unmount', function() {
-    //     self.test = '1111';
-    // });
-    // self.unmount();
     
 </goto-top>

@@ -9,7 +9,7 @@
 
 <div class="demo">
     <goto-top>
-        gotoTop
+        <div>gotoTop</div>
     </goto-top>
 </div>
 ```
