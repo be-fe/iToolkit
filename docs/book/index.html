@@ -34,7 +34,7 @@
     <body>
         
         
-    <div class="book" data-level="0" data-basepath="." data-revision="Sun Aug 16 2015 00:54:58 GMT+0800 (CST)">
+    <div class="book" data-level="0" data-basepath="." data-revision="Mon Aug 17 2015 12:38:48 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -367,6 +367,57 @@
                     
                         <h2 id="%E5%85%B3%E4%BA%8Eitoolkit">&#x5173;&#x4E8E;iToolkit</h2>
 <p>iToolkit&#x662F;&#x4E00;&#x7CFB;&#x5217;&#x5E38;&#x7528;&#x63A7;&#x4EF6;&#x7684;&#x96C6;&#x5408;&#xFF0C;&#x57FA;&#x4E8E;<a href="">Riot</a>&#x6846;&#x67B6;&#x8FDB;&#x884C;&#x6784;&#x5EFA;, &#x4E3B;&#x8981;&#x4E3A;&#x4E86;&#x5FEB;&#x901F;&#x6784;&#x5EFA;&#x540E;&#x53F0;&#x7CFB;&#x7EDF;&#xFF0C;&#x9488;&#x5BF9;&#x540E;&#x53F0;&#x7CFB;&#x7EDF;&#x4E2D;&#x5E38;&#x7528;&#x7684;&#x8868;&#x683C;&#x3001;&#x8868;&#x5355;&#x3001;&#x6811;&#x3001;&#x5206;&#x9875;&#x7B49;&#x5E94;&#x7528;&#x573A;&#x666F;&#x8FDB;&#x884C;&#x5C01;&#x88C5;, &#x53EF;&#x4EE5;&#x6839;&#x636E;&#x540E;&#x53F0;&#x6570;&#x636E;&#x76F4;&#x63A5;&#x751F;&#x6210;&#x89C6;&#x56FE;&#x3002;</p>
+<h4 id="%E5%A6%82%E4%BD%95%E5%BC%95%E7%94%A8">&#x5982;&#x4F55;&#x5F15;&#x7528;</h4>
+<ul>
+<li>&#x5F15;&#x5165;&#x6838;&#x5FC3;&#x6837;&#x5F0F;&#x6587;&#x4EF6;</li>
+<li>&#x5F15;&#x5165;JS&#x6587;&#x4EF6;<pre><code class="lang-html">  <span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">&quot;stylesheet&quot;</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">&quot;build/themes/simple_pc.css&quot;</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">&quot;build/iToolkit_pc.js&quot;</span>&gt;</span><span class="undefined">
+</span></code></pre>
+</li>
+</ul>
+<h4 id="%E5%9F%BA%E6%9C%AC%E8%B0%83%E7%94%A8%E6%96%B9%E5%BC%8F">&#x57FA;&#x672C;&#x8C03;&#x7528;&#x65B9;&#x5F0F;</h4>
+<ul>
+<li>&#x4F7F;&#x7528;&#x76F8;&#x5E94;&#x7684;HTML&#x6807;&#x7B7E;</li>
+<li>riot.mount()&#x7684;&#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#x4E32;&#xFF0C;&#x5199;&#x6CD5;&#x7B49;&#x540C;&#x4E8E;css&#x9009;&#x62E9;&#x5668;&#x3002;</li>
+<li>riot.mount()&#x7684;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;&#x7EDF;&#x4E00;&#x662F;&#x4E00;&#x4E2A;object&#x3002;</li>
+<li>&#x6570;&#x636E;&#x7EDF;&#x4E00;&#x4F7F;&#x7528;data&#x5B57;&#x6BB5;&#xFF0C;&#x5176;&#x4ED6;&#x914D;&#x7F6E;&#x9879;&#x8BF7;&#x53C2;&#x8003;&#x6587;&#x6863;&#x3002;</li>
+</ul>
+<pre><code class="lang-html">    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">&quot;tree-wrap&quot;</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">&quot;demo&quot;</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">tree</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">tree</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+<pre><code class="lang-JS">    $.ajax({
+        url: <span class="hljs-string">&apos;/test&apos;</span>,
+        success: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) </span>{
+            riot.mount(<span class="hljs-string">&apos;#tree-wrap tree&apos;</span>, {data: data, root: <span class="hljs-literal">true</span>});
+        }
+    })
+    <span class="hljs-comment">//&#x6CE8;&#xFF1A;&#x8FD9;&#x91CC;&#x5047;&#x8BBE;&#x7528;&#x6237;&#x4F7F;&#x7528;jQuery&#x8FDB;&#x884C;ajax&#x8BF7;&#x6C42;&#xFF0C;iToolkit&#x672C;&#x8EAB;&#x4E0D;&#x63D0;&#x4F9B;&#x8BE5;api</span>
+</code></pre>
+<h4 id="%E5%BE%AA%E7%8E%AF%E5%92%8C%E8%A1%A8%E8%BE%BE%E5%BC%8F">&#x5FAA;&#x73AF;&#x548C;&#x8868;&#x8FBE;&#x5F0F;</h4>
+<p>&#x5728;&#x8BF8;&#x5982;super-div, super-form, modal&#x7B49;&#x7EC4;&#x4EF6;&#x4E2D;&#xFF0C;&#x7528;&#x6237;&#x53EF;&#x4EE5;&#x5728;&#x5176;&#x4E2D;&#x586B;&#x5165;&#x81EA;&#x5DF1;&#x9700;&#x8981;&#x7684;&#x5185;&#x5BB9;&#xFF0C;&#x5E76;&#x4E14;&#x53EF;&#x4EE5;&#x6839;&#x636E;&#x4F20;&#x5165;&#x7684;data&#x6765;&#x8FDB;&#x884C;&#x5C55;&#x793A;&#x548C;&#x63A7;&#x5236;&#x3002;</p>
+<p>&#x76EE;&#x524D;&#x652F;&#x6301;if&#x3001;show&#x3001;hide&#x3001;each&#x56DB;&#x79CD;&#x6307;&#x4EE4;</p>
+<pre><code class="lang-html">    <span class="hljs-tag">&lt;<span class="hljs-title">super-div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">if</span>=<span class="hljs-value">&quot;{ data.exist }&quot;</span>&gt;</span>&#x53EA;&#x6709;&#x7BA1;&#x7406;&#x5458;&#x80FD;&#x770B;<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">show</span>=<span class="hljs-value">&quot;{ data.exist }&quot;</span>&gt;</span>&#x60F3;&#x770B;&#x5176;&#x5B9E;&#x4E5F;&#x80FD;&#x770B;<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">hide</span>=<span class="hljs-value">&quot;{ !data.exist }&quot;</span>&gt;</span>&#x4F60;&#x770B;&#x4E0D;&#x89C1;&#x6211;<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">table</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">tr</span> <span class="hljs-attribute">each</span>=<span class="hljs-value">&quot;{ data.data }&quot;</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">td</span>&gt;</span>{ name }<span class="hljs-tag">&lt;/<span class="hljs-title">td</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">td</span>&gt;</span>{ age }<span class="hljs-tag">&lt;/<span class="hljs-title">td</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">td</span>&gt;</span>{ score }<span class="hljs-tag">&lt;/<span class="hljs-title">td</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-title">tr</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">table</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">each</span>=<span class="hljs-value">&quot;{ name, value in obj }&quot;</span>&gt;</span>{ name } = { value }<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">super-div</span>&gt;</span>
+</code></pre>
+<p>&#x652F;&#x6301;&#x7EDD;&#x5927;&#x90E8;&#x5206;&#x5F62;&#x5F0F;&#x7684;&#x8868;&#x8FBE;&#x5F0F;&#xFF1A;</p>
+<pre><code class="lang-JS">    { title || <span class="hljs-string">&apos;Untitled&apos;</span> }
+    { results ? <span class="hljs-string">&apos;ready&apos;</span> : <span class="hljs-string">&apos;loading&apos;</span> }
+    { <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>() }
+    { message.length &gt; <span class="hljs-number">140</span> &amp;&amp; <span class="hljs-string">&apos;Message is too long&apos;</span> }
+    { <span class="hljs-built_in">Math</span>.round(rating) }
+</code></pre>
 
                     
                     </section>

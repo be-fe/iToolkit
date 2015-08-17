@@ -7,6 +7,7 @@ var uglify = require('gulp-uglify');
 var header = require('gulp-header');
 var pkg = require('./package.json');
 var jshint = require('gulp-jshint');
+var process = require('child_process');
 
 gulp.task('riot_pc', function () {
     return gulp.src(['src/pc/*.tag'])
@@ -46,6 +47,14 @@ gulp.task('build', function () {
     .pipe(rename({ suffix: '.min' }))
     .pipe(setHeader())
     .pipe(gulp.dest('build'));
+});
+
+gulp.task('docs', function () {
+    process.exec('gitbook build ./' ,{ cwd : (__dirname + '/docs')}, function (error, stdout, stderr) {
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
+    })
 });
 
 gulp.task('default', ['riot_pc', 'riot_mobile', 'riot_plugins', 'build'], function () {

@@ -36,7 +36,7 @@
     <body>
         
         
-    <div class="book" data-level="1.4" data-basepath=".." data-revision="Sun Aug 16 2015 00:54:58 GMT+0800 (CST)">
+    <div class="book" data-level="1.4" data-basepath=".." data-revision="Mon Aug 17 2015 12:38:48 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -370,17 +370,20 @@
                         <h2 id="goto-top">goto-top</h2>
 <p>&#x8FD4;&#x56DE;&#x9876;&#x90E8;&#x529F;&#x80FD;&#xFF0C;&#x6709;&#x6ED1;&#x52A8;&#x8FC7;&#x7A0B;</p>
 <h4 id="html">HTML</h4>
+<p>&#x5982;&#x679C;<code>&lt;goto-top&gt;</code>&#x6807;&#x7B7E;&#x5185;&#x65E0;&#x5185;&#x5BB9;&#xFF0C;&#x5219;&#x4F7F;&#x7528;&#x9ED8;&#x8BA4;&#x7684;&#x56FE;&#x6807;&#xFF0C;&#x5982;&#x679C;&#x63D2;&#x5165;&#x5176;&#x4ED6;&#x6807;&#x7B7E;&#xFF0C;&#x5219;&#x4F7F;&#x7528;&#x7528;&#x6237;&#x81EA;&#x5B9A;&#x4E49;&#x7684;&#x5185;&#x5BB9;&#x3002;</p>
 <pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">&quot;demo&quot;</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-title">goto-top</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">goto-top</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
 
 <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">&quot;demo&quot;</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-title">goto-top</span>&gt;</span>
-        gotoTop
+        <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>gotoTop<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
     <span class="hljs-tag">&lt;/<span class="hljs-title">goto-top</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
 </code></pre>
-<pre><code class="lang-JS">    riot.mount(<span class="hljs-string">&apos;goto-top&apos;</span>);
+<h4 id="javascript">JavaScript</h4>
+<p>&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<code>bottom</code>&#x548C;<code>right</code>&#x914D;&#x7F6E;&#x4F4D;&#x7F6E;</p>
+<pre><code class="lang-JS">    riot.mount(<span class="hljs-string">&apos;goto-top&apos;</span>, { bottom: <span class="hljs-string">&apos;10px&apos;</span>, right: <span class="hljs-string">&apos;4px&apos;</span> });
 </code></pre>
 
                     
