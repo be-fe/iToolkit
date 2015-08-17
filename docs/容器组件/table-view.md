@@ -61,3 +61,4 @@ dom.show('city'); //show 'city' col
 ```
 
 ####Demo
+[Table](../../../demos/Table.html)

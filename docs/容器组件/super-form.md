@@ -220,3 +220,7 @@ EC.on('submit_success', function(result) {
     console.log(result);                   
 }); //提交成功(状态码200)后会抛出'submit_success'这个事件，监听该事件，执行一些公共的处理方法。
 ```
+
+####Demo
+[FormInModal](../../../demos/FormInModal.html)  
+[formWithBeforeSubmit](../../../demos/formWithBeforeSubmit.html)  

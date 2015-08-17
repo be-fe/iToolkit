@@ -27,4 +27,4 @@ riot.mount('.demo paginate', pageOpts);
 
 ####Demo
 
-[Example]()
+[Example](../../../demos/paginate.html)

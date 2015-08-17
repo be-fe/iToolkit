@@ -70,3 +70,7 @@ super-div还内置了httpGet和jsonp两种自动映射接口数据的方式：
 riot.mount('#http-get', {params: {name: "Tom"}}); //params里填写url query参数
 riot.mount('#jsonp', {params: {name: "Tom"}});
 ```
+
+####Demo
+[DivGetData](../../../demos/DivGetData.html)    
+[TableInDiv](../../../demos/TableInDiv.html)  
