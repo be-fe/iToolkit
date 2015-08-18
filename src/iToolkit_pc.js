@@ -33,22 +33,19 @@ riot.tag('date-picker', '<yield>', function(opts) {
         path + '/skins/' + theme + '/laydate.css'
     ], function () {
         for (var i = 0; i < EL.children.length; i++) {
-                var child = EL.children[i];
-                if (child.attributes['pTrigger']) {
-                    self.pTrigger = child;
-                }
-                if (child.attributes['media']) {
-                    self.media = child;
-                }
+            var child = EL.children[i];
+            if (child.attributes['pTrigger']) {
+                self.pTrigger = child;
             }
-            resolve();
-            self.update();
+            if (child.attributes['media']) {
+                self.media = child;
+            }
+        }
+        self.resolve();
+        self.update();
     });
 
-
-    
-
-    function resolve() {
+    this.resolve = function() {
         if (self.pTrigger || self.media) {
             if (self.pTrigger === self.media) {
                 config.elem = config.pTrigger = self.media;
@@ -80,12 +77,15 @@ riot.tag('date-picker', '<yield>', function(opts) {
             return;
         }
         laydate(config);
-    }
+    }.bind(this);
     
 });
 
-riot.tag('dropdown', '', function(opts) {
-
+riot.tag('dropdown', '<yield> <div class="r-dropdown">{ title }</div> <ul class="r-downdown-menu"> <li class="r-dropdown-list" each="{ data }"><a href="{ link|\'javascript:void(0)\' }">{ name }</a></li> </ul>', function(opts) {
+	var self = this;
+    var EL = self.root;
+    var config = self.opts.opts || self.opts;
+	
 });
 riot.tag('editable-link', '<a href="javascript:void(0);" if="{ !editable }" onclick="{ open }">{ value }</a> <super-form if="{ editable }" action="{ action }" opts="{ formOpts }"> <input type="text" value="{ parent.value }" name="{ parent.name }" class="editable-link-input"> <input type="submit" value="提交"> <button onclick="{ parent.close }">取消</button> </super-form>', function(opts) {
 
@@ -259,7 +259,7 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
 
 });
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" type="number" style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
+riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" riot-type={"number"} style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
     
     var self = this;
     var EL = self.root;
@@ -395,10 +395,79 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
 
 
 });
-riot.tag('select-box', '', function(opts) {
+riot.tag('select-box', '<div class="r-select" onclick="{ clicked }">{ placeholder }</div> <ul class="r-select-body" hide="{ hide }"> <li each="{ data }" index="{ index }" value="{ value }" class="r-select-item { selected }" onclick="{ parent.clickItem }">{ innerText }</li> </ul>', function(opts) {
+    var self = this;
+    var EL = self.root;
+    self.config = self.opts.opts || self.opts;
 
+    self.data = [];
 
+    self.placeholder = self.config.placeholder;
 
+    self.callback = self.config.callback;
+
+    self.name = self.config.name;
+
+    self.value = [];
+
+    self.prevNode = null;
+
+    EL.getValue = function () {
+        return self.value;
+    };
+
+    self.hide = true;
+
+    this.clicked = function(e) {
+        self.hide = false;
+        self.update();
+    }.bind(this);
+
+    this.updateValue = function(item) {
+        for (var i = 0; i < self.data.length; i++) {
+            if (self.data[i].selected) {
+                self.value.push(self.data[i].value);
+                self.placeholder.push(self.data[i].innerText);
+            }
+        }
+        if (self.value.length == self.size) {
+            self.hide = true;
+        }
+        self.placeholder = self.placeholder.join(',');
+        self.prevNode = item;
+        self.callback && self.callback(self);
+        self.update();
+    }.bind(this);
+ 
+    this.clickItem = function(e) {
+        var item = e.target || e.srcElement;
+        var index = +item.getAttribute('index');
+        self.value.length = 0;
+        self.placeholder = [];
+        if (self.mutiple) {
+            self.data[index].selected = self.data[index].selected ? '' : 'selected';
+            self.updateValue(null);
+            return;
+        }
+        if (self.prevNode) {
+            self.data[+self.prevNode.getAttribute('index')].selected = '';
+        }
+        self.data[index].selected = 'selected';
+        self.updateValue(item);
+    }.bind(this);
+
+    self.one('mount', function () {
+        for (var i = 0; i < self.config.data.length; i++) {
+            var child = self.config.data[i];
+            child.selected = '',
+            child.index = i;
+            self.data.push(child);
+        }
+        self.mutiple = self.config.mutiple || false;
+        self.size = self.mutiple ? (self.config.size ? self.config.size : self.data.length) : 1;
+        self.update();
+    });
+    
 });
 riot.tag('side-list', '<ul > <li each="{ data }"> <img riot-src="{ logoUrl }" if="{ isLogo }"> <span>{ name }</span> </li> </ul>', function(opts) {
 
@@ -407,7 +476,7 @@ riot.tag('slide', '', function(opts) {
 
 
 });
-riot.tag('super-div', '<style scope> super-div{ display: block; } </style> <yield>', function(opts) {
+riot.tag('super-div', '<yield>', 'super-div{ display: block; }', function(opts) {
     
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -586,29 +655,11 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
     }
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
     self.one('mount', function() {
         EL.style.display = 'block';
-
-
-
         if (config.realTime && config.valid) {
             var elems = self.root.getElementsByTagName('form')[0].elements;
             for (var i = 0, len = elems.length; i < len; i ++) {
-
                 elems[i].addEventListener('input', valueOnChange, false);
             }
         }
@@ -619,16 +670,16 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         doCheck([], this);
     }
 
-    function isType(obj) {
-        return toString.call(obj).match(/ (.*)]/)[1];
-    }
     function dif(obj) {
-        var constructor = isType(obj);
+        var constructor = utils.isType(obj);
+        if (constructor === 'Null' || constructor === 'Undefined' || constructor === 'Function') {
+            return obj;
+        }
         return new window[constructor](obj);
     }
 
     EL.loadData = function(newData, colName){
-        if (isType(newData) === 'Object') {
+        if (utils.isObject(newData)) {
             for(var i in newData) {
                 newData[i] = dif(newData[i]);
             }
@@ -853,7 +904,8 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         if (!validArr.length) {
             try {
                 config.beforeSubmit && config.beforeSubmit(validArr);
-            }catch (e) {
+            }
+            catch (e) {
                 validArr.push(e);
             }
         }
@@ -885,24 +937,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         var v = elem.value; 
         var name = elem.name;
         var dom = elem;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         if (
             allowEmpty === null
             && isNaN(max)
@@ -950,14 +984,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     validArr.push(name);
                     self.onValidRefuse(dom, self.presentWarning);
                 }
-
-
-
-
-
-
                 else {
-
                     comparator('string').handler(min, max, dom, v, validArr, name);
                 }
             }
@@ -966,7 +993,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 valid = valid.replace(/\/$/, '');
                 var reg = new RegExp(valid);
                 if (reg.test(v)) {
-
                     comparator('string').handler(min, max, dom, v, validArr, name);
                 }
                 else {
@@ -985,12 +1011,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 }
             }
         }
-
-
-
-
-
-
         else if (name && !valid) {
             if (customValid) {
                 if (window[customValid]) {
@@ -1008,23 +1028,8 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             }
             else {
                 comparator('string').handler(min, max, dom, v, validArr, name);
-            }
-                    
+            }           
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 

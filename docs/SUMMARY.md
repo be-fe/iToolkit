@@ -7,6 +7,7 @@ This is the summary of my book.
     * [Paginate](功能组件/paginate.md)   
     * [Loading](功能组件/loading.md)   
     * [Goto-Top](功能组件/goto-top.md)   
+    * [Select-box](功能组件/select-box.md)  
 * 容器组件
     * [Super-div](容器组件/super-div.md)   
     * [Super-form](容器组件/super-form.md)  

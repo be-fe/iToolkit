@@ -1,106 +1,3 @@
-/*
- * common.css
- */
-
-super-div {
-    display: none;
-}
-
-super-form {
-    display: none;
-}
-
-.inline-form > * {
-    vertical-align: center;
-    margin-bottom: 0;
-    display: inline-block;
-}
-
-.clearfix {
-    clear: both;
-}
-
-rcol {
-    display: none;
-}
-
-.icon {
-    line-height: 100%;
-    width: 1em;
-    height: 1em;
-    position: relative;
-    display: block;
-    float: left;
-}
-
-.icon-arrowRight,
-.icon-arrowLeft,
-.icon-arrowDown,
-.icon-arrowUp {
-    position: absolute;
-    width: .5em;
-    height: .5em;
-    background-color: rgb(102, 102, 102); /* #666 */
-}
-.icon-arrowRight:after,
-.icon-arrowLeft:after,
-.icon-arrowDown:after,
-.icon-arrowUp:after {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-width: .5em;
-    border-style: solid;
-}
-/* Arrows - Left and Right */
-.icon-arrowRight,
-.icon-arrowLeft {
-    top: .25em;
-}
-.icon-arrowRight {
-    left: 0;
-}
-.icon-arrowLeft {
-    right: 0;
-}
-.icon-arrowRight:after,
-.icon-arrowLeft:after {
-    top: -.25em;
-}
-.icon-arrowRight:after {
-    left: .5em;
-    border-color: transparent transparent transparent rgb(102, 102, 102); /* #666 */
-}
-.icon-arrowLeft:after {
-    right: .5em;
-    border-color: transparent rgb(102, 102, 102) transparent transparent; /* #666 */
-}
-/* Arrows -  Down and Up */
-.icon-arrowDown,
-.icon-arrowUp {
-    left: .25em;
-}
-.icon-arrowDown {
-    top: 0;
-}
-.icon-arrowUp,
-.icon-arrowDown:after {
-    top: .5em;
-}
-.icon-arrowDown:after,
-.icon-arrowUp:after {
-    left: -.25em;
-}
-.icon-arrowDown:after {
-    border-color: rgb(102, 102, 102) transparent transparent transparent; /* #666 */
-}
-.icon-arrowUp:after {
-    top: -1em;
-    border-color: transparent transparent rgb(102, 102, 102) transparent; /* #666 */
-}
-
-
 /* 
  *  Tab style
  */
@@ -475,3 +372,58 @@ loading{
   }
 }
 
+/*
+ * sel component
+ */
+select-box {
+  position: relative;
+  display: block;
+}
+.r-select {
+  position: relative;
+  padding-right: 1em;
+  height: 1.7em;
+  line-height: 1.7em;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.r-select:after {
+  content: "";
+  position: absolute;
+  border-width: 0.5em;
+  border-style: solid;
+  border-right-color: transparent;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  top: 0.5em;
+  right: 0;
+}
+.r-select-body {
+  position: absolute;
+  z-index: 9999;
+  top: 1.7em;
+  background: #fff;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-top: none;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  width: 100%;
+}
+.r-select,
+.r-select-item {
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+.r-select-item.selected {
+  background: #ccc;
+}
