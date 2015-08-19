@@ -35,22 +35,19 @@
         path + '/skins/' + theme + '/laydate.css'
     ], function () {
         for (var i = 0; i < EL.children.length; i++) {
-                var child = EL.children[i];
-                if (child.attributes['pTrigger']) {
-                    self.pTrigger = child;
-                }
-                if (child.attributes['media']) {
-                    self.media = child;
-                }
+            var child = EL.children[i];
+            if (child.attributes['pTrigger']) {
+                self.pTrigger = child;
             }
-            resolve();
-            self.update();
+            if (child.attributes['media']) {
+                self.media = child;
+            }
+        }
+        self.resolve();
+        self.update();
     });
 
-
-    
-
-    function resolve() {
+    resolve() {
         if (self.pTrigger || self.media) {
             if (self.pTrigger === self.media) {
                 config.elem = config.pTrigger = self.media;
@@ -82,7 +79,7 @@
             return;
         }
         laydate(config);
-    }
+    };
     </script>
 
 </date-picker>
