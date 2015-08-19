@@ -151,33 +151,11 @@
         }
     }
 
-    /**
-     * getEvent
-     * @description 用于一次判断获取事件函数
-     * @return {Function}
-     */
-    // function getEvent() {
-    //     if (window.addEventListener) {
-    //         return function (elem, events, handler) {
-    //             elem.addEventListener(events, handler, false);
-    //         }
-    //     }
-    //     else {
-    //         return function (elem, events, handler) {
-    //             elem['on' + events] = handler;
-    //         }
-    //     }
-    // }
-
     self.one('mount', function() {
         EL.style.display = 'block';
-        // if ie <= 8
-        // var events = '\v' == 'v' ? 'propertychange' : 'input';
-        // var addEvent = getEvent();
         if (config.realTime && config.valid) {
             var elems = self.root.getElementsByTagName('form')[0].elements;
             for (var i = 0, len = elems.length; i < len; i ++) {
-                // addEvent(elems[i], events, valueOnChange);
                 elems[i].addEventListener('input', valueOnChange, false);
             }
         }
@@ -193,16 +171,16 @@
         doCheck([], this);
     }
 
-    function isType(obj) {
-        return toString.call(obj).match(/ (.*)]/)[1];
-    }
     function dif(obj) {
-        var constructor = isType(obj);
+        var constructor = utils.isType(obj);
+        if (constructor === 'Null' || constructor === 'Undefined' || constructor === 'Function') {
+            return obj;
+        }
         return new window[constructor](obj);
     }
 
     EL.loadData = function(newData, colName){
-        if (isType(newData) === 'Object') {
+        if (utils.isObject(newData)) {
             for(var i in newData) {
                 newData[i] = dif(newData[i]);
             }
@@ -440,7 +418,8 @@
         if (!validArr.length) {
             try {
                 config.beforeSubmit && config.beforeSubmit(validArr);
-            }catch (e) {
+            }
+            catch (e) {
                 validArr.push(e);
             }
         }
@@ -477,25 +456,6 @@
         var v = elem.value; 
         var name = elem.name;
         var dom = elem;
-                // var validMin = function() {
-                //     if (v.length < min) {
-                //         validArr.push(name);
-                //         self.onValidRefuse(dom, self.minWarning(min));
-                //     }
-                //     else {
-                //         self.onValidPass(dom, self.successTips);
-                //     }
-                // }
-
-                // var validMax = function() {
-                //     if (v.length > max) {
-                //         validArr.push(name);
-                //         self.onValidRefuse(dom, self.maxWarning(max));
-                //     }
-                //     else {
-                //         self.onValidPass(dom, self.successTips);
-                //     }
-                // }
         if (
             allowEmpty === null
             && isNaN(max)
@@ -543,14 +503,7 @@
                     validArr.push(name);
                     self.onValidRefuse(dom, self.presentWarning);
                 }
-                        // else if (max && type!== 'number'){
-                        //     validMax();
-                        // }
-                        // else if (min && type!== 'number'){
-                        //     validMin();
-                        // }
                 else {
-                            // self.onValidPass(dom, self.successTips);
                     comparator('string').handler(min, max, dom, v, validArr, name);
                 }
             }
@@ -559,7 +512,6 @@
                 valid = valid.replace(/\/$/, '');
                 var reg = new RegExp(valid);
                 if (reg.test(v)) {
-                            // self.onValidPass(dom, self.successTips); 
                     comparator('string').handler(min, max, dom, v, validArr, name);
                 }
                 else {
@@ -578,12 +530,6 @@
                 }
             }
         }
-                // else if (name && max && type!== 'number') {
-                //     validMax();
-                // }
-                // else if (name && min && type!== 'number') {
-                //     validMin();
-                // }
         else if (name && !valid) {
             if (customValid) {
                 if (window[customValid]) {
@@ -601,23 +547,8 @@
             }
             else {
                 comparator('string').handler(min, max, dom, v, validArr, name);
-            }
-                    
+            }           
         }
-                // else if (name && customValid) {
-                //     if (window[customValid]) {
-                //             var reg = window[customValid].regExp;
-                //             var tips = window[customValid].message || self.regWarning;
-                //             if (reg && reg.test(v)) {
-                //                 // self.onValidPass(dom, self.successTips);
-                //                 comparator('string').handler(min, max, dom, v, validArr, name); 
-                //             }
-                //             else {
-                //                 validArr.push(name);
-                //                 self.onValidRefuse(dom, tips);
-                //             }
-                //         }
-                // }
     }
 
 </super-form>
