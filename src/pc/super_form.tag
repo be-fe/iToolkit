@@ -6,7 +6,17 @@
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
-    var keyWords = ['insertTip', 'ajaxSubmit', 'submit'];   //保留字，不被覆盖
+    var keyWords = [
+        'insertTip',
+        'ajaxSubmit',
+        'submit',
+        'removeTips',
+        'insertTip',
+        'removeTip',
+        'loadData',
+        'getData',
+        'setData'
+    ];   //保留字，不被覆盖
 
     // 正则
     var NUMBER_REGEXP = {
@@ -151,34 +161,21 @@
         }
     }
 
-    /**
-     * getEvent
-     * @description 用于一次判断获取事件函数
-     * @return {Function}
-     */
-    // function getEvent() {
-    //     if (window.addEventListener) {
-    //         return function (elem, events, handler) {
-    //             elem.addEventListener(events, handler, false);
-    //         }
-    //     }
-    //     else {
-    //         return function (elem, events, handler) {
-    //             elem['on' + events] = handler;
-    //         }
-    //     }
-    // }
-
     self.one('mount', function() {
         EL.style.display = 'block';
-        // if ie <= 8
-        // var events = '\v' == 'v' ? 'propertychange' : 'input';
-        // var addEvent = getEvent();
         if (config.realTime && config.valid) {
             var elems = self.root.getElementsByTagName('form')[0].elements;
             for (var i = 0, len = elems.length; i < len; i ++) {
-                // addEvent(elems[i], events, valueOnChange);
-                elems[i].addEventListener('input', valueOnChange, false);
+                var type = elems[i].type;
+                if (type !== 'submit' || type !== 'button') {
+                    elems[i].addEventListener('input', valueOnChange, false);
+                    if (type === 'checkbox' || type === 'radio') {
+                        elems[i].addEventListener('change', valueOnChange, false);
+                        
+                    }
+                    elems[i].addEventListener('input', valueOnChange, false);
+                }
+                
             }
         }
     });
@@ -194,23 +191,40 @@
     }
 
     function isType(obj) {
-        return toString.call(obj).match(/ (.*)]/)[1];
+        return toString.call(obj).match(/\ (.*)\]/)[1];
     }
+
     function dif(obj) {
         var constructor = isType(obj);
+        if (constructor === 'Null' || constructor === 'Undefined' || constructor === 'Function') {
+            return obj;
+        }
         return new window[constructor](obj);
     }
 
     EL.loadData = function(newData, colName){
-        if (isType(newData) === 'Object') {
+        if (utils.isObject(newData)) {
             for(var i in newData) {
                 newData[i] = dif(newData[i]);
             }
         }
+        else {
+            newData = dif(newData);
+        }
         colName = colName || 'data';
         self[colName] = newData;
+        // if (utils.isObject(newData) && utils.isObject(self[colName])) {
+        //     for (var i in newData) {
+        //         self[colName][i] = dif(newData[i]);
+        //     };
+        // }
         self.update();
-    }
+    };
+
+    EL.setData = function(newData, name){
+        self.data[name] = dif(newData);
+        self.update();
+    };
 
     //获取表单的obj
     self.checkExistKey = function(obj, key, value) {
@@ -325,7 +339,16 @@
     /*
      *  插入提示
      */
-    self.insertTip = function(dom, message, className){
+    self.removeTip = EL.removeTip = function(dom){
+        var tip = dom.nextElementSibling;
+        if (tip && tip.className.match(/tip-container/)) {
+            dom.parentNode.removeChild(tip);
+        }
+        utils.removeClass(dom, self.passClass);
+        utils.removeClass(dom, self.failedClass);
+    };
+
+    self.insertTip = EL.insertTip = function(dom, message, className){
         var tip = dom.nextElementSibling;
         if (tip && tip.className.match(/tip-container/)) {
             dom.parentNode.removeChild(tip);
@@ -333,20 +356,20 @@
         var tipContainer = document.createElement('span');
         tipContainer.className = className;
         tipContainer.innerHTML = message;
-        utils.insertAfter(tipContainer, dom);
-    }
+        utils.insertAfterText(tipContainer, dom);
+    };
 
-    self.onValidRefuse = config.onValidRefuse || function(dom, errorTips) {
+    self.onValidRefuse = EL.onValidRefuse = config.onValidRefuse || function(dom, errorTips) {
         self.insertTip(dom, errorTips, 'tip-container');
         utils.removeClass(dom, self.passClass);
         utils.addClass(dom, self.failedClass);
-    }
+    };
 
-    self.onValidPass = config.onValidPass || function(dom, successTips) {
+    self.onValidPass = EL.onValidPass = config.onValidPass || function(dom, successTips) {
         self.insertTip(dom, successTips, 'tip-container success');
         utils.removeClass(dom, self.failedClass);
         utils.addClass(dom, self.passClass);
-    }
+    };
 
     /*
      * ajax提交
@@ -440,7 +463,8 @@
         if (!validArr.length) {
             try {
                 config.beforeSubmit && config.beforeSubmit(validArr);
-            }catch (e) {
+            }
+            catch (e) {
                 validArr.push(e);
             }
         }
@@ -468,40 +492,27 @@
      * @return {[type]}          [description]
      */
     function doCheck(validArr, elem) {
+        var elem = elem;
         var valid = elem.getAttribute('valid');
         var customValid = elem.getAttribute('customValid');
+        var vr = elem.getAttribute('vr');
+        var orient = elem.getAttribute('orient');
         var max = parseInt(elem.getAttribute('max'), 10);
         var min = parseInt(elem.getAttribute('min'), 10);
-        var type = elem.getAttribute('type');
+        var type = elem.type;
         var allowEmpty = elem.getAttribute('allowEmpty');
         var v = elem.value; 
         var name = elem.name;
         var dom = elem;
-                // var validMin = function() {
-                //     if (v.length < min) {
-                //         validArr.push(name);
-                //         self.onValidRefuse(dom, self.minWarning(min));
-                //     }
-                //     else {
-                //         self.onValidPass(dom, self.successTips);
-                //     }
-                // }
 
-                // var validMax = function() {
-                //     if (v.length > max) {
-                //         validArr.push(name);
-                //         self.onValidRefuse(dom, self.maxWarning(max));
-                //     }
-                //     else {
-                //         self.onValidPass(dom, self.successTips);
-                //     }
-                // }
         if (
             allowEmpty === null
             && isNaN(max)
             && isNaN(min)
             && valid === null
             && customValid === null
+            && vr === null
+            && orient === null
         ) {
             return;
         }
@@ -543,14 +554,7 @@
                     validArr.push(name);
                     self.onValidRefuse(dom, self.presentWarning);
                 }
-                        // else if (max && type!== 'number'){
-                        //     validMax();
-                        // }
-                        // else if (min && type!== 'number'){
-                        //     validMin();
-                        // }
                 else {
-                            // self.onValidPass(dom, self.successTips);
                     comparator('string').handler(min, max, dom, v, validArr, name);
                 }
             }
@@ -559,7 +563,6 @@
                 valid = valid.replace(/\/$/, '');
                 var reg = new RegExp(valid);
                 if (reg.test(v)) {
-                            // self.onValidPass(dom, self.successTips); 
                     comparator('string').handler(min, max, dom, v, validArr, name);
                 }
                 else {
@@ -578,19 +581,12 @@
                 }
             }
         }
-                // else if (name && max && type!== 'number') {
-                //     validMax();
-                // }
-                // else if (name && min && type!== 'number') {
-                //     validMin();
-                // }
         else if (name && !valid) {
             if (customValid) {
                 if (window[customValid]) {
                     var reg = window[customValid].regExp;
                     var tips = window[customValid].message || self.regWarning;
                     if (reg && reg.test(v)) {
-                                // self.onValidPass(dom, self.successTips);
                         comparator('string').handler(min, max, dom, v, validArr, name); 
                     }
                     else {
@@ -600,24 +596,37 @@
                 }
             }
             else {
-                comparator('string').handler(min, max, dom, v, validArr, name);
+                if (type === 'text') {
+                    comparator('string').handler(min, max, dom, v, validArr, name);
+                }
             }
-                    
         }
-                // else if (name && customValid) {
-                //     if (window[customValid]) {
-                //             var reg = window[customValid].regExp;
-                //             var tips = window[customValid].message || self.regWarning;
-                //             if (reg && reg.test(v)) {
-                //                 // self.onValidPass(dom, self.successTips);
-                //                 comparator('string').handler(min, max, dom, v, validArr, name); 
-                //             }
-                //             else {
-                //                 validArr.push(name);
-                //                 self.onValidRefuse(dom, tips);
-                //             }
-                //         }
-                // }
+        if (orient) {
+            var newEle = EL.querySelector(orient);
+            if (elem === newEle || !newEle) {
+                return;
+            }
+            elem = newEle;
+            vr = elem.getAttribute('vr');
+        }
+        if (!validArr.length && vr) {
+            var arr = vr.split('::');
+            var method = arr[0];
+            var params = arr[1] ? arr[1].split(',') : undefined;
+            var flag = false;
+            try {
+                if (iToolkit[method]) {
+                    flag = iToolkit[method].apply(elem, params);
+                }
+            }
+            catch (e) {
+                flag = false;
+                throw e;
+            }
+            if (!flag) {
+                validArr.push('fail');
+            }
+        }
     }
 
 </super-form>

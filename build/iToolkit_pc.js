@@ -1497,6 +1497,7 @@ var utils = {
             obj.className += " " + cls;
         }
     },
+
     insertAfter: function(newElement, targetElement){
         var parent = targetElement.parentNode;
         if (parent.lastChild == targetElement) {
@@ -1506,289 +1507,289 @@ var utils = {
             parent.insertBefore(newElement, targetElement.nextSibling);
         }
     },
-    isArray: function(value) {
-        return toString.call(value) === '[object Array]';
-    },
-    isObject: function(obj) {
-        return toString.call(obj) === '[object Object]';
-    },
-    isFunction: function(fn) {
-        return toString.call(fn) === '[object Function]';
-    }
-};
 
-(function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define(function () {
-            // Also create a global in case some scripts
-            // that are loaded still are looking for
-            // a global even when an AMD loader is in use.
-            return (root.jsLoader = factory());
-        });
-    } else {
-        // Browser globals
-        root.jsLoader = factory();
-    }
-}(utils, function () {
-
-    var cache = {};
-    var _cid = 0;
-    var tasks = [];
-    var toString = Object.prototype.toString;
-    var isArray = isType('Array');
-    var isFunction = isType('Function');
-    var HEAD_NODE = document.head || document.getElementsByTagName('head')[0];
-    var DONE = 'done';
-    var INPROCESS = 'inprocess';
-    var REJECTED = 'rejected';
-    var PENDING = 'pending';
-    var processCache = {};
-
-    /**
-     * 产生客户端id
-     * @return {Number} [description]
-     */
-    function cid() {
-        return _cid++;
-    }
-
-    function isCSS(css) {
-        return css.match(/\.css\??/);
-    }
-
-    /**
-     * Script对象，储存需要加载的脚本的基本信息
-     * @param {String} uri 地址
-     */
-    function Script(uri) {
-        this.uri = uri;
-        this.cid = cid();
-        this.status = PENDING;
-    }
-
-    /**
-     * 从缓存中获取需要的Script对象
-     * @param  {String} uri [description]
-     * @return {Object}     需要的Script对象
-     */
-    Script.get = function (uri) {
-        // 如果不存在于缓存中，创建一个新的Script对象
-        return cache[uri] || (cache[uri] = new Script(uri));
-    };
-
-    /**
-     * 当加载完成或失败时调用的处理函数
-     * @param  {Object} js Script对象
-     * @return {[type]}    [description]
-     */
-    Script.resolve = function (js) {
-        var self = this;
-        self.status++;
-        if (js && js.status === REJECTED) {
-            var error = Error('Source: ' + js.uri + ' load failed');
-            reject(error);
+    insertAfterText: function(newElement, targetElement) {
+        var parent = targetElement.parentNode;
+        if (parent.lastChild == targetElement) {
+            parent.appendChild(newElement);
         }
-        if (self.status === self.task.length) {
-            setTimeout(function () {
-                self.callback && self.callback();
-                self = null;
-                resolve(tasks.shift());
-            }, 7);
+        else {
+            var next = targetElement.nextSibling;
+            if (next.nodeType === 3) {
+                next = next.nextSibling;
+            }
+            parent.insertBefore(newElement, next);
         }
-    };
+    },
 
-    /**
-     * 用于获取类型的方法
-     * @param  {String}  type [description]
-     * @return {Boolean}      [description]
-     */
-    function isType(type) {
+    isType: function (type) {
         return function (obj) {
             return toString.call(obj) === '[object ' + type + ']';
         }
-    }
+    },
 
-    /**
-     * 将传入参数处理成数组形式
-     * @param  {[type]} obj [description]
-     * @return {Array}      [description]
-     */
-    function makeArray(obj) {
+    makeArray: function () {
         return Array.prototype.concat(obj);
-    }
+    },
 
-    /**
-     * jsLoader
-     * @param  {[type]}   js       function or string or array
-     * @param  {Function} callback 加载完成后的回调
-     * @return {Function}          
-     */
-    function jsLoader(js, callback) {
-        jsLoader.then(js, callback).start();
-        return jsLoader;
+    extend: function(src, obj) {
+        for (var key in obj) {
+            if (!src[key]) {
+                src[key] = obj[key];
+            }
+        }
     }
+};
 
-    /**
-     * then方法用于向任务列表增加任务
-     * @param  {[type]}   js       function or string or array
-     * @param  {Function} callback [description]
-     * @return {Function}          [description]
-     */
-    jsLoader.then = function (js, callback) {
-        if (!js) {
+utils.extend(utils, {
+    isArray: utils.isType('Array'),
+    isObject: utils.isType('Object'),
+    isFunction: utils.isType('Function'),
+    isElement: function (obj) {
+        return toString.call(obj).indexOf('Element') !== -1;
+    },
+});
+
+utils.extend(utils, {
+    jsLoader: (function () {
+        var HEAD_NODE = document.head || document.getElementsByTagName('head')[0];
+        var cache = {};
+        var _cid = 0;
+        var tasks = [];
+        var isArray = utils.isArray;
+        var isFunction = utils.isFunction;
+        var makeArray = utils.makeArray;
+        var DONE = 'done';
+        var INPROCESS = 'inprocess';
+        var REJECTED = 'rejected';
+        var PENDING = 'pending';
+        var processCache = {};
+
+        /**
+         * 产生客户端id
+         * @return {Number} [description]
+         */
+        function cid() {
+            return _cid++;
+        }
+
+        function isCSS(css) {
+            return css.match(/\.css\??/);
+        }
+
+        /**
+         * Script对象，储存需要加载的脚本的基本信息
+         * @param {String} uri 地址
+         */
+        function Script(uri) {
+            this.uri = uri;
+            this.cid = cid();
+            this.status = PENDING;
+        }
+
+        /**
+         * 从缓存中获取需要的Script对象
+         * @param  {String} uri [description]
+         * @return {Object}     需要的Script对象
+         */
+        Script.get = function (uri) {
+            // 如果不存在于缓存中，创建一个新的Script对象
+            return cache[uri] || (cache[uri] = new Script(uri));
+        };
+
+        /**
+         * 当加载完成或失败时调用的处理函数
+         * @param  {Object} js Script对象
+         * @return {[type]}    [description]
+         */
+        Script.resolve = function (js) {
+            var self = this;
+            self.status++;
+            if (js && js.status === REJECTED) {
+                var error = Error('Source: ' + js.uri + ' load failed');
+                reject(error);
+            }
+            if (self.status === self.task.length) {
+                setTimeout(function () {
+                    self.callback && self.callback();
+                    self = null;
+                    resolve(tasks.shift());
+                }, 7);
+            }
+        };
+
+        /**
+         * jsLoader
+         * @param  {[type]}   js       function or string or array
+         * @param  {Function} callback 加载完成后的回调
+         * @return {Function}          
+         */
+        function jsLoader(js, callback) {
+            jsLoader.then(js, callback).start();
             return jsLoader;
         }
-        if (!isArray(js)) {
-            js = makeArray(js);
-        }
-        var resolver = {
-            task: [],
-            callback: callback,
-            status: 0
+
+        /**
+         * then方法用于向任务列表增加任务
+         * @param  {[type]}   js       function or string or array
+         * @param  {Function} callback [description]
+         * @return {Function}          [description]
+         */
+        jsLoader.then = function (js, callback) {
+            if (!js) {
+                return jsLoader;
+            }
+            if (!isArray(js)) {
+                js = makeArray(js);
+            }
+            var resolver = {
+                task: [],
+                callback: callback,
+                status: 0
+            };
+            for (var i = 0; i < js.length; i++) {
+                resolver.task.push(getCache(js[i]));
+            }
+            tasks.push(resolver);
+            // jsLoader.resolve();
+            return jsLoader;
         };
-        for (var i = 0; i < js.length; i++) {
-            resolver.task.push(getCache(js[i]));
+
+        /**
+         * [reject description]
+         * @param  {Object} e Object Error
+         * @return {[type]}   [description]
+         */
+        function reject(e) {
+            throw e;
         }
-        tasks.push(resolver);
-        // jsLoader.resolve();
-        return jsLoader;
-    };
 
-    /**
-     * [reject description]
-     * @param  {Object} e Object Error
-     * @return {[type]}   [description]
-     */
-    function reject(e) {
-        throw e;
-    }
+        /**
+         * 执行任务序列中的任务
+         * @param  {Object} resolver [description]
+         * @return {[type]}          [description]
+         */
+        function resolve(resolver) {
+            if (!resolver) {
+                if (!tasks.length) {
+                    return;
+                }
+            }
+            for (var i = 0; i < resolver.task.length; i++) {
+                var js = resolver.task[i];
+                request(js, resolver);
+            }
+        }
 
-    /**
-     * 执行任务序列中的任务
-     * @param  {Object} resolver [description]
-     * @return {[type]}          [description]
-     */
-    function resolve(resolver) {
-        if (!resolver) {
-            if (!tasks.length) {
+        /**
+         * 开始
+         * @return {[type]} [description]
+         */
+        jsLoader.start = function () {
+            resolve(tasks.shift());
+            return jsLoader;
+        }
+
+        function loadStyles(script, resolver) {
+            var node = document.createElement('link');
+            node.type = 'text/css';
+            node.rel = 'stylesheet';
+            node.href = script.uri;
+            HEAD_NODE.appendChild(node);
+            node = null;
+            script.status = DONE;
+            Script.resolve.call(resolver);
+        }
+
+        /**
+         * [request description]
+         * @param  {[type]} js       [description]
+         * @param  {[type]} resolver [description]
+         * @return {[type]}          [description]
+         */
+        function request(js, resolver) {
+            if (isFunction(js.uri)) {
+                try {
+                    js.uri();
+                    js.status = DONE;
+                    Script.resolve.call(resolver);
+                }
+                catch (e) {
+                    js.status = REJECTED;
+                    Script.resolve.call(resolver);
+                }
                 return;
             }
-        }
-        for (var i = 0; i < resolver.task.length; i++) {
-            var js = resolver.task[i];
-            request(js, resolver);
-        }
-    }
-
-    /**
-     * 开始
-     * @return {[type]} [description]
-     */
-    jsLoader.start = function () {
-        resolve(tasks.shift());
-        return jsLoader;
-    }
-
-    function loadStyles(script, resolver) {
-        var node = document.createElement('link');
-        node.type = 'text/css';
-        node.rel = 'stylesheet';
-        node.href = script.uri;
-        HEAD_NODE.appendChild(node);
-        node = null;
-        script.status = DONE;
-        Script.resolve.call(resolver);
-    }
-
-    /**
-     * [request description]
-     * @param  {[type]} js       [description]
-     * @param  {[type]} resolver [description]
-     * @return {[type]}          [description]
-     */
-    function request(js, resolver) {
-        if (isFunction(js.uri)) {
-            try {
-                js.uri();
-                js.status = DONE;
+            if (js.status === DONE) {
                 Script.resolve.call(resolver);
+                return;
             }
-            catch (e) {
-                js.status = REJECTED;
-                Script.resolve.call(resolver);
+            if (isCSS(js.uri)) {
+                loadStyles(js, resolver);
+                return;
             }
-            return;
-        }
-        if (js.status === DONE) {
-            Script.resolve.call(resolver);
-            return;
-        }
-        if (isCSS(js.uri)) {
-            loadStyles(js, resolver);
-            return;
-        }
-        if (js.status === INPROCESS) {
-            // 在loading过程中，标记遇到的resolver
-            js.changeStatus = true;
-            processCache[js.cid] = processCache[js.cid] || [];
-            processCache[js.cid].push({js:js, resolver:resolver});
-            return;
-        }
-        js.status = INPROCESS;
-        var node = document.createElement('script');
-        node.async = true;
-        node.src = js.uri;
-        node.onload = node.onerror = onloadResolve;
-        HEAD_NODE.appendChild(node);
+            if (js.status === INPROCESS) {
+                // 在loading过程中，标记遇到的resolver
+                js.changeStatus = true;
+                processCache[js.cid] = processCache[js.cid] || [];
+                processCache[js.cid].push({js:js, resolver:resolver});
+                return;
+            }
+            js.status = INPROCESS;
+            var node = document.createElement('script');
+            node.async = true;
+            node.src = js.uri;
+            node.onload = node.onerror = onloadResolve;
+            HEAD_NODE.appendChild(node);
 
-        function onloadResolve(evt) {
-            if (evt.type === 'error') {
-                js.status = REJECTED;
-            }
-            if (evt.type === 'load') {
-                js.status = DONE;
-            }
-            Script.resolve.call(resolver, js);
-            if (js.changeStatus) {
-                // 如果加载完成，处理处在waiting状态下的任务
-                js.changeStatus = false;
-                for (var i = 0; i < processCache[js.cid].length; i++) {
-                    var tmp = processCache[js.cid][i];
-                    Script.resolve.call(tmp.resolver, tmp.js);
+            function onloadResolve(evt) {
+                if (evt.type === 'error') {
+                    js.status = REJECTED;
                 }
-                processCache[js.cid] = null;
+                if (evt.type === 'load') {
+                    js.status = DONE;
+                }
+                Script.resolve.call(resolver, js);
+                if (js.changeStatus) {
+                    // 如果加载完成，处理处在waiting状态下的任务
+                    js.changeStatus = false;
+                    for (var i = 0; i < processCache[js.cid].length; i++) {
+                        var tmp = processCache[js.cid][i];
+                        Script.resolve.call(tmp.resolver, tmp.js);
+                    }
+                    processCache[js.cid] = null;
+                }
+                node.onload = node.onerror = null;
+                HEAD_NODE.removeChild(node);
+                node = null;
             }
-            node.onload = node.onerror = null;
-            HEAD_NODE.removeChild(node);
-            node = null;
         }
-    }
 
-    /**
-     * 获取可能存在别名的Script对象
-     * @param  {String} uri [description]
-     * @return {Object}     Script Object
-     */
-    function getCache(uri) {
-        var src = getAlias(uri);
-        return  src ? Script.get(src) : Script.get(uri);
-    }
+        /**
+         * 获取可能存在别名的Script对象
+         * @param  {String} uri [description]
+         * @return {Object}     Script Object
+         */
+        function getCache(uri) {
+            var src = getAlias(uri);
+            return  src ? Script.get(src) : Script.get(uri);
+        }
 
-    /**
-     * 获取真实地址
-     * @param  {String} str [description]
-     * @return {[type]}     [description]
-     */
-    function getAlias(str) {
-        return jsLoader.alias[str];
-    }
+        /**
+         * 获取真实地址
+         * @param  {String} str [description]
+         * @return {[type]}     [description]
+         */
+        function getAlias(str) {
+            return jsLoader.alias[str];
+        }
 
-    jsLoader.alias = {};
+        jsLoader.alias = {};
 
-    return jsLoader;
+        return jsLoader;
 
-}));
+    })()
+});
 
 /*
  * 全局事件监控
@@ -1799,6 +1800,14 @@ var EventCtrl = EC = riot.observable();
  * 外部方法传入
  */
 var iToolkit = {};
+iToolkit.methodRegister = function (name, fn) {
+    for (var i in iToolkit) {
+        if (name === i) {
+            return;
+        }
+    }
+    iToolkit[name] = fn;
+};
 iToolkit.tableExtend = {};
 
 riot.tag('date-picker', '<yield>', function(opts) {
@@ -1836,22 +1845,19 @@ riot.tag('date-picker', '<yield>', function(opts) {
         path + '/skins/' + theme + '/laydate.css'
     ], function () {
         for (var i = 0; i < EL.children.length; i++) {
-                var child = EL.children[i];
-                if (child.attributes['pTrigger']) {
-                    self.pTrigger = child;
-                }
-                if (child.attributes['media']) {
-                    self.media = child;
-                }
+            var child = EL.children[i];
+            if (child.attributes['pTrigger']) {
+                self.pTrigger = child;
             }
-            resolve();
-            self.update();
+            if (child.attributes['media']) {
+                self.media = child;
+            }
+        }
+        self.resolve();
+        self.update();
     });
 
-
-    
-
-    function resolve() {
+    this.resolve = function() {
         if (self.pTrigger || self.media) {
             if (self.pTrigger === self.media) {
                 config.elem = config.pTrigger = self.media;
@@ -1883,12 +1889,15 @@ riot.tag('date-picker', '<yield>', function(opts) {
             return;
         }
         laydate(config);
-    }
+    }.bind(this);
     
 });
 
-riot.tag('dropdown', '', function(opts) {
-
+riot.tag('dropdown', '<yield> <div class="r-dropdown">{ title }</div> <ul class="r-downdown-menu"> <li class="r-dropdown-list" each="{ data }"><a href="{ link|\'javascript:void(0)\' }">{ name }</a></li> </ul>', function(opts) {
+	var self = this;
+    var EL = self.root;
+    var config = self.opts.opts || self.opts;
+	
 });
 riot.tag('editable-link', '<a href="javascript:void(0);" if="{ !editable }" onclick="{ open }">{ value }</a> <super-form if="{ editable }" action="{ action }" opts="{ formOpts }"> <input type="text" value="{ parent.value }" name="{ parent.name }" class="editable-link-input"> <input type="submit" value="提交"> <button onclick="{ parent.close }">取消</button> </super-form>', function(opts) {
 
@@ -2062,7 +2071,7 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
 
 });
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" type="number" style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
+riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" riot-type={"number"} style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
     
     var self = this;
     var EL = self.root;
@@ -2198,10 +2207,79 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
 
 
 });
-riot.tag('select-box', '', function(opts) {
+riot.tag('select-box', '<div class="r-select" onclick="{ clicked }">{ placeholder }</div> <ul class="r-select-body" hide="{ hide }"> <li each="{ data }" index="{ index }" value="{ value }" class="r-select-item { selected }" onclick="{ parent.clickItem }">{ innerText }</li> </ul> <div style="display:none" class="inputHide"></div>', function(opts) {
+    var self = this;
+    var EL = self.root;
+    self.config = self.opts.opts || self.opts;
 
+    self.data = [];
 
+    self.placeholder = self.config.placeholder;
 
+    self.callback = self.config.callback;
+
+    self.name = self.config.name;
+
+    self.value = [];
+
+    self.prevNode = null;
+
+    EL.getValue = function () {
+        return self.value;
+    };
+
+    self.hide = true;
+
+    this.clicked = function(e) {
+        self.hide = false;
+        self.update();
+    }.bind(this);
+
+    this.updateValue = function(item) {
+        for (var i = 0; i < self.data.length; i++) {
+            if (self.data[i].selected) {
+                self.value.push(self.data[i].value);
+                self.placeholder.push(self.data[i].innerText);
+            }
+        }
+        if (self.value.length == self.size) {
+            self.hide = true;
+        }
+        self.placeholder = self.placeholder.join(',');
+        self.prevNode = item;
+        self.callback && self.callback(self);
+        self.update();
+    }.bind(this);
+ 
+    this.clickItem = function(e) {
+        var item = e.target || e.srcElement;
+        var index = +item.getAttribute('index');
+        self.value.length = 0;
+        self.placeholder = [];
+        if (self.mutiple) {
+            self.data[index].selected = self.data[index].selected ? '' : 'selected';
+            self.updateValue(null);
+            return;
+        }
+        if (self.prevNode) {
+            self.data[+self.prevNode.getAttribute('index')].selected = '';
+        }
+        self.data[index].selected = 'selected';
+        self.updateValue(item);
+    }.bind(this);
+
+    self.one('mount', function () {
+        for (var i = 0; i < self.config.data.length; i++) {
+            var child = self.config.data[i];
+            child.selected = '',
+            child.index = i;
+            self.data.push(child);
+        }
+        self.mutiple = self.config.mutiple || false;
+        self.size = self.mutiple ? (self.config.size ? self.config.size : self.data.length) : 1;
+        self.update();
+    });
+    
 });
 riot.tag('side-list', '<ul > <li each="{ data }"> <img riot-src="{ logoUrl }" if="{ isLogo }"> <span>{ name }</span> </li> </ul>', function(opts) {
 
@@ -2210,7 +2288,7 @@ riot.tag('slide', '', function(opts) {
 
 
 });
-riot.tag('super-div', '<style scope> super-div{ display: block; } </style> <yield>', function(opts) {
+riot.tag('super-div', '<yield>', 'super-div{ display: block; }', function(opts) {
     
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -2270,7 +2348,17 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
-    var keyWords = ['insertTip', 'ajaxSubmit', 'submit'];   //保留字，不被覆盖
+    var keyWords = [
+        'insertTip',
+        'ajaxSubmit',
+        'submit',
+        'removeTips',
+        'insertTip',
+        'removeTip',
+        'loadData',
+        'getData',
+        'setData'
+    ];   //保留字，不被覆盖
 
     var NUMBER_REGEXP = {
         NON_NEGATIVE_INT: /^0$|^-[1-9]\d*$/,                            //非负整数（正整数 + 0） 
@@ -2389,30 +2477,21 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
     }
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
     self.one('mount', function() {
         EL.style.display = 'block';
-
-
-
         if (config.realTime && config.valid) {
             var elems = self.root.getElementsByTagName('form')[0].elements;
             for (var i = 0, len = elems.length; i < len; i ++) {
-
-                elems[i].addEventListener('input', valueOnChange, false);
+                var type = elems[i].type;
+                if (type !== 'submit' || type !== 'button') {
+                    elems[i].addEventListener('input', valueOnChange, false);
+                    if (type === 'checkbox' || type === 'radio') {
+                        elems[i].addEventListener('change', valueOnChange, false);
+                        
+                    }
+                    elems[i].addEventListener('input', valueOnChange, false);
+                }
+                
             }
         }
     });
@@ -2423,23 +2502,40 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
 
     function isType(obj) {
-        return toString.call(obj).match(/ (.*)]/)[1];
+        return toString.call(obj).match(/\ (.*)\]/)[1];
     }
+
     function dif(obj) {
         var constructor = isType(obj);
+        if (constructor === 'Null' || constructor === 'Undefined' || constructor === 'Function') {
+            return obj;
+        }
         return new window[constructor](obj);
     }
 
     EL.loadData = function(newData, colName){
-        if (isType(newData) === 'Object') {
+        if (utils.isObject(newData)) {
             for(var i in newData) {
                 newData[i] = dif(newData[i]);
             }
         }
+        else {
+            newData = dif(newData);
+        }
         colName = colName || 'data';
         self[colName] = newData;
+
+
+
+
+
         self.update();
-    }
+    };
+
+    EL.setData = function(newData, name){
+        self.data[name] = dif(newData);
+        self.update();
+    };
 
     self.checkExistKey = function(obj, key, value) {
         if (obj.hasOwnProperty(key)) {
@@ -2545,7 +2641,16 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
     
     
-    self.insertTip = function(dom, message, className){
+    self.removeTip = EL.removeTip = function(dom){
+        var tip = dom.nextElementSibling;
+        if (tip && tip.className.match(/tip-container/)) {
+            dom.parentNode.removeChild(tip);
+        }
+        utils.removeClass(dom, self.passClass);
+        utils.removeClass(dom, self.failedClass);
+    };
+
+    self.insertTip = EL.insertTip = function(dom, message, className){
         var tip = dom.nextElementSibling;
         if (tip && tip.className.match(/tip-container/)) {
             dom.parentNode.removeChild(tip);
@@ -2553,20 +2658,20 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         var tipContainer = document.createElement('span');
         tipContainer.className = className;
         tipContainer.innerHTML = message;
-        utils.insertAfter(tipContainer, dom);
-    }
+        utils.insertAfterText(tipContainer, dom);
+    };
 
-    self.onValidRefuse = config.onValidRefuse || function(dom, errorTips) {
+    self.onValidRefuse = EL.onValidRefuse = config.onValidRefuse || function(dom, errorTips) {
         self.insertTip(dom, errorTips, 'tip-container');
         utils.removeClass(dom, self.passClass);
         utils.addClass(dom, self.failedClass);
-    }
+    };
 
-    self.onValidPass = config.onValidPass || function(dom, successTips) {
+    self.onValidPass = EL.onValidPass = config.onValidPass || function(dom, successTips) {
         self.insertTip(dom, successTips, 'tip-container success');
         utils.removeClass(dom, self.failedClass);
         utils.addClass(dom, self.passClass);
-    }
+    };
 
     
     self.ajaxSubmit = function(elems, url) {
@@ -2656,7 +2761,8 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         if (!validArr.length) {
             try {
                 config.beforeSubmit && config.beforeSubmit(validArr);
-            }catch (e) {
+            }
+            catch (e) {
                 validArr.push(e);
             }
         }
@@ -2679,32 +2785,18 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
     
     function doCheck(validArr, elem) {
+        var elem = elem;
         var valid = elem.getAttribute('valid');
         var customValid = elem.getAttribute('customValid');
+        var vr = elem.getAttribute('vr');
+        var orient = elem.getAttribute('orient');
         var max = parseInt(elem.getAttribute('max'), 10);
         var min = parseInt(elem.getAttribute('min'), 10);
-        var type = elem.getAttribute('type');
+        var type = elem.type;
         var allowEmpty = elem.getAttribute('allowEmpty');
         var v = elem.value; 
         var name = elem.name;
         var dom = elem;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         if (
             allowEmpty === null
@@ -2712,6 +2804,8 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             && isNaN(min)
             && valid === null
             && customValid === null
+            && vr === null
+            && orient === null
         ) {
             return;
         }
@@ -2753,14 +2847,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     validArr.push(name);
                     self.onValidRefuse(dom, self.presentWarning);
                 }
-
-
-
-
-
-
                 else {
-
                     comparator('string').handler(min, max, dom, v, validArr, name);
                 }
             }
@@ -2769,7 +2856,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 valid = valid.replace(/\/$/, '');
                 var reg = new RegExp(valid);
                 if (reg.test(v)) {
-
                     comparator('string').handler(min, max, dom, v, validArr, name);
                 }
                 else {
@@ -2788,19 +2874,12 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 }
             }
         }
-
-
-
-
-
-
         else if (name && !valid) {
             if (customValid) {
                 if (window[customValid]) {
                     var reg = window[customValid].regExp;
                     var tips = window[customValid].message || self.regWarning;
                     if (reg && reg.test(v)) {
-
                         comparator('string').handler(min, max, dom, v, validArr, name); 
                     }
                     else {
@@ -2810,24 +2889,37 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 }
             }
             else {
-                comparator('string').handler(min, max, dom, v, validArr, name);
+                if (type === 'text') {
+                    comparator('string').handler(min, max, dom, v, validArr, name);
+                }
             }
-                    
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        if (orient) {
+            var newEle = EL.querySelector(orient);
+            if (elem === newEle || !newEle) {
+                return;
+            }
+            elem = newEle;
+            vr = elem.getAttribute('vr');
+        }
+        if (!validArr.length && vr) {
+            var arr = vr.split('::');
+            var method = arr[0];
+            var params = arr[1] ? arr[1].split(',') : undefined;
+            var flag = false;
+            try {
+                if (iToolkit[method]) {
+                    flag = iToolkit[method].apply(elem, params);
+                }
+            }
+            catch (e) {
+                flag = false;
+                throw e;
+            }
+            if (!flag) {
+                validArr.push('fail');
+            }
+        }
     }
 
 
@@ -3099,7 +3191,7 @@ riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ sho
 
 
 });
-riot.tag('tree', '<div class="tree-item-wrap" each="{ data }" onselectstart="return false" ondragstart="return false"> <input type="checkbox" onchange="{ parent.checkHandle }" if="{ parent.rootConfig.showCheck }"> <i class="{ tree-item-arrow: true, open: opened, empty: !children }" onclick="{ parent.toggle }"></i> <i class="tree-item-icon"></i> <div onclick="{ parent.leftClick }" class="{ tree-item-name : true }" title="{ name }">{ name }</div>  <ul class="tree-child-wrap" if="{ children }"> <tree data="{ children }" if="{ children }"></tree> </ul> </div>', function(opts) {
+riot.tag('tree', '<div class="tree-item-wrap" each="{ data }" onselectstart="return false" ondragstart="return false"> <input type="checkbox" onchange="{ parent.checkHandle }" if="{ parent.rootConfig.showCheck }"> <i class="{ tree-item-arrow: true, open: opened, empty: !children }" onclick="{ parent.toggle }"></i> <div onclick="{ parent.leftClick }" style="display: inline;"> <i class="tree-item-icon" if="{ !parent.children }"></i> <i class="tree-item-icon" if="{ parent.children }"></i> <div class="{ tree-item-name : true }" title="{ name }">{ name }</div>  </div> <ul class="tree-child-wrap" if="{ children }"> <tree data="{ children }" if="{ children }"></tree> </ul> </div>', function(opts) {
 
     var self = this;
     self.config = self.opts.opts || self.opts;
@@ -3131,18 +3223,18 @@ riot.tag('tree', '<div class="tree-item-wrap" each="{ data }" onselectstart="ret
                 tree.push(node);
             }
         });
-
         return tree;
     };
     
     
     if (self.config.handleData) {
-        self.data = self.dataHandle(self.config.data);
+        var tree = self.dataHandle(self.config.data);
+        self.data = tree;
     }
     else {
         self.data = self.config.data;
     }
-    
+
     
     if (self.config.root) {
         self.rootConfig = self.config;
@@ -3153,9 +3245,19 @@ riot.tag('tree', '<div class="tree-item-wrap" each="{ data }" onselectstart="ret
     
     
     this.leftClick = function(e) {
-        var leftClick = self.rootConfig.onLeftClick;
-        if (leftClick) {
-            leftClick(e.item, e.target);
+        if (self.rootConfig.folder && e.item.children) {
+            if (e.item.opened === true) {
+                e.item.opened = false;
+            }
+            else {
+                e.item.opened = true;
+            }
+        }
+        else {
+            var leftClick = self.rootConfig.onLeftClick;
+            if (leftClick) {
+                leftClick(e.item, e.target);
+            }
         }
     }.bind(this);
 
@@ -3170,6 +3272,8 @@ riot.tag('tree', '<div class="tree-item-wrap" each="{ data }" onselectstart="ret
             uncheckItem(e.item, e.target);
         }
     }.bind(this);
+
+
 
     
     

@@ -31,3 +31,4 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
 ```
 
 ####Demo
+[FormInModal](../../../demos/FormInModal.html)
