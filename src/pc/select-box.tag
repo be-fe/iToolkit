@@ -3,6 +3,7 @@
     <ul class="r-select-body" hide={ hide }>
         <li each={ data } index={ index } value={ value } class="r-select-item { selected }" onclick={ parent.clickItem }>{ innerText }</li>
     </ul>
+    <div style="display:none" class="inputHide"></div>
     <script>
     var self = this;
     var EL = self.root;

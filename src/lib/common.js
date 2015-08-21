@@ -180,7 +180,21 @@ var utils = {
             parent.appendChild(newElement);
         }
         else {
-            parent.insertBefore(newElement, targetElement.nextSibling);
+            parent.insertBefore(newElement, next);
+        }
+    },
+
+    insertAfterText: function(newElement, targetElement) {
+        var parent = targetElement.parentNode;
+        if (parent.lastChild == targetElement) {
+            parent.appendChild(newElement);
+        }
+        else {
+            var next = targetElement.nextSibling;
+            if (next.nodeType === 3) {
+                next = next.nextSibling;
+            }
+            parent.insertBefore(newElement, next);
         }
     },
 
@@ -206,7 +220,10 @@ var utils = {
 utils.extend(utils, {
     isArray: utils.isType('Array'),
     isObject: utils.isType('Object'),
-    isFunction: utils.isType('Function')
+    isFunction: utils.isType('Function'),
+    isElement: function (obj) {
+        return toString.call(obj).indexOf('Element') !== -1;
+    },
 });
 
 utils.extend(utils, {
@@ -459,4 +476,12 @@ var EventCtrl = EC = riot.observable();
  * 外部方法传入
  */
 var iToolkit = {};
+iToolkit.methodRegister = function (name, fn) {
+    for (var i in iToolkit) {
+        if (name === i) {
+            return;
+        }
+    }
+    iToolkit[name] = fn;
+};
 iToolkit.tableExtend = {};

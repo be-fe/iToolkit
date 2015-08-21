@@ -21,7 +21,7 @@
             <super-form opts="{ formData }" action="{ url }" class="form-horizontal">
                 <div class="form-group">
                     <label for="exampleInputIP">IP address</label>
-                    <input type="text" name="ip" class="form-control" id="exampleInputIP" placeholder="0.0.0.0" value="" customValid="isIP">
+                    <input type="text" name="ip" class="form-control" id="exampleInputIP" placeholder="{ data.rip }" value="{ data.ip }" customValid="isIP">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Email address</label>
@@ -34,19 +34,21 @@
                 <input class="btn btn-primary" value="提交" type="submit"/>
             </super-form>
             <button onclick="test()">reset</button>
-            <button onclick="test1()">reset</button>
+            <button onclick="test1()">重设data中某一值</button>
         </modal>
 
         <script>
+            var data = {
+                ip: '1.1.1.1',
+                email: 'zhangsan@baidu.com',
+                password: 'zhangsan@baidu.com'
+            };
             var config = {
                 width: 600,
                 url: '/submit/handle',
                 formData: {
                     realTime: true,
-                    data: {
-                        email: 'zhangsan@baidu.com',
-                        password: 'zhangsan@baidu.com'
-                    },
+                    data: data,
                     action: '/submit/pass/handle',   //如果配置该参数，form的action会优先使用该值
                     callback: function() {      //提交成功的回调
                         alert('success');      
@@ -58,13 +60,14 @@
             };
 
             function test () {
-                var dom = document.querySelector('#modal-demo1').querySelector('super-form');
-                dom.loadData({email: 'zhangsan@baidu.com'});
+                var dom = document.querySelector('super-form');
+                dom.removeTips();
+                dom.loadData(data);
             }
 
             function test1 () {
-                var dom = document.querySelector('#modal-demo1').querySelector('super-form');
-                dom.loadData({email: 'fdsfds'});
+                var dom = document.querySelector('super-form');
+                dom.setData('2.2.2.2','ip');
             }
 
             var empRegExp = {

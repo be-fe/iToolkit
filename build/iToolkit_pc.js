@@ -1504,7 +1504,21 @@ var utils = {
             parent.appendChild(newElement);
         }
         else {
-            parent.insertBefore(newElement, targetElement.nextSibling);
+            parent.insertBefore(newElement, next);
+        }
+    },
+
+    insertAfterText: function(newElement, targetElement) {
+        var parent = targetElement.parentNode;
+        if (parent.lastChild == targetElement) {
+            parent.appendChild(newElement);
+        }
+        else {
+            var next = targetElement.nextSibling;
+            if (next.nodeType === 3) {
+                next = next.nextSibling;
+            }
+            parent.insertBefore(newElement, next);
         }
     },
 
@@ -1530,7 +1544,10 @@ var utils = {
 utils.extend(utils, {
     isArray: utils.isType('Array'),
     isObject: utils.isType('Object'),
-    isFunction: utils.isType('Function')
+    isFunction: utils.isType('Function'),
+    isElement: function (obj) {
+        return toString.call(obj).indexOf('Element') !== -1;
+    },
 });
 
 utils.extend(utils, {
@@ -1783,6 +1800,14 @@ var EventCtrl = EC = riot.observable();
  * 外部方法传入
  */
 var iToolkit = {};
+iToolkit.methodRegister = function (name, fn) {
+    for (var i in iToolkit) {
+        if (name === i) {
+            return;
+        }
+    }
+    iToolkit[name] = fn;
+};
 iToolkit.tableExtend = {};
 
 riot.tag('date-picker', '<yield>', function(opts) {
@@ -2323,7 +2348,17 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
-    var keyWords = ['insertTip', 'ajaxSubmit', 'submit'];   //保留字，不被覆盖
+    var keyWords = [
+        'insertTip',
+        'ajaxSubmit',
+        'submit',
+        'removeTips',
+        'insertTip',
+        'removeTip',
+        'loadData',
+        'getData',
+        'setData'
+    ];   //保留字，不被覆盖
 
     var NUMBER_REGEXP = {
         NON_NEGATIVE_INT: /^0$|^-[1-9]\d*$/,                            //非负整数（正整数 + 0） 
@@ -2447,7 +2482,16 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         if (config.realTime && config.valid) {
             var elems = self.root.getElementsByTagName('form')[0].elements;
             for (var i = 0, len = elems.length; i < len; i ++) {
-                elems[i].addEventListener('input', valueOnChange, false);
+                var type = elems[i].type;
+                if (type !== 'submit' || type !== 'button') {
+                    elems[i].addEventListener('input', valueOnChange, false);
+                    if (type === 'checkbox' || type === 'radio') {
+                        elems[i].addEventListener('change', valueOnChange, false);
+                        
+                    }
+                    elems[i].addEventListener('input', valueOnChange, false);
+                }
+                
             }
         }
     });
@@ -2457,8 +2501,12 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         doCheck([], this);
     }
 
+    function isType(obj) {
+        return toString.call(obj).match(/\ (.*)\]/)[1];
+    }
+
     function dif(obj) {
-        var constructor = utils.isType(obj);
+        var constructor = isType(obj);
         if (constructor === 'Null' || constructor === 'Undefined' || constructor === 'Function') {
             return obj;
         }
@@ -2471,10 +2519,23 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 newData[i] = dif(newData[i]);
             }
         }
+        else {
+            newData = dif(newData);
+        }
         colName = colName || 'data';
         self[colName] = newData;
+
+
+
+
+
         self.update();
-    }
+    };
+
+    EL.setData = function(newData, name){
+        self.data[name] = dif(newData);
+        self.update();
+    };
 
     self.checkExistKey = function(obj, key, value) {
         if (obj.hasOwnProperty(key)) {
@@ -2580,7 +2641,16 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
     
     
-    self.insertTip = function(dom, message, className){
+    self.removeTip = EL.removeTip = function(dom){
+        var tip = dom.nextElementSibling;
+        if (tip && tip.className.match(/tip-container/)) {
+            dom.parentNode.removeChild(tip);
+        }
+        utils.removeClass(dom, self.passClass);
+        utils.removeClass(dom, self.failedClass);
+    };
+
+    self.insertTip = EL.insertTip = function(dom, message, className){
         var tip = dom.nextElementSibling;
         if (tip && tip.className.match(/tip-container/)) {
             dom.parentNode.removeChild(tip);
@@ -2588,20 +2658,20 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         var tipContainer = document.createElement('span');
         tipContainer.className = className;
         tipContainer.innerHTML = message;
-        utils.insertAfter(tipContainer, dom);
-    }
+        utils.insertAfterText(tipContainer, dom);
+    };
 
-    self.onValidRefuse = config.onValidRefuse || function(dom, errorTips) {
+    self.onValidRefuse = EL.onValidRefuse = config.onValidRefuse || function(dom, errorTips) {
         self.insertTip(dom, errorTips, 'tip-container');
         utils.removeClass(dom, self.passClass);
         utils.addClass(dom, self.failedClass);
-    }
+    };
 
-    self.onValidPass = config.onValidPass || function(dom, successTips) {
+    self.onValidPass = EL.onValidPass = config.onValidPass || function(dom, successTips) {
         self.insertTip(dom, successTips, 'tip-container success');
         utils.removeClass(dom, self.failedClass);
         utils.addClass(dom, self.passClass);
-    }
+    };
 
     
     self.ajaxSubmit = function(elems, url) {
@@ -2715,21 +2785,27 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
     
     function doCheck(validArr, elem) {
+        var elem = elem;
         var valid = elem.getAttribute('valid');
         var customValid = elem.getAttribute('customValid');
+        var vr = elem.getAttribute('vr');
+        var orient = elem.getAttribute('orient');
         var max = parseInt(elem.getAttribute('max'), 10);
         var min = parseInt(elem.getAttribute('min'), 10);
-        var type = elem.getAttribute('type');
+        var type = elem.type;
         var allowEmpty = elem.getAttribute('allowEmpty');
         var v = elem.value; 
         var name = elem.name;
         var dom = elem;
+
         if (
             allowEmpty === null
             && isNaN(max)
             && isNaN(min)
             && valid === null
             && customValid === null
+            && vr === null
+            && orient === null
         ) {
             return;
         }
@@ -2804,7 +2880,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     var reg = window[customValid].regExp;
                     var tips = window[customValid].message || self.regWarning;
                     if (reg && reg.test(v)) {
-
                         comparator('string').handler(min, max, dom, v, validArr, name); 
                     }
                     else {
@@ -2814,8 +2889,36 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 }
             }
             else {
-                comparator('string').handler(min, max, dom, v, validArr, name);
-            }           
+                if (type === 'text') {
+                    comparator('string').handler(min, max, dom, v, validArr, name);
+                }
+            }
+        }
+        if (orient) {
+            var newEle = EL.querySelector(orient);
+            if (elem === newEle || !newEle) {
+                return;
+            }
+            elem = newEle;
+            vr = elem.getAttribute('vr');
+        }
+        if (!validArr.length && vr) {
+            var arr = vr.split('::');
+            var method = arr[0];
+            var params = arr[1] ? arr[1].split(',') : undefined;
+            var flag = false;
+            try {
+                if (iToolkit[method]) {
+                    flag = iToolkit[method].apply(elem, params);
+                }
+            }
+            catch (e) {
+                flag = false;
+                throw e;
+            }
+            if (!flag) {
+                validArr.push('fail');
+            }
         }
     }
 
