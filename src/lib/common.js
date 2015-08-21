@@ -180,7 +180,7 @@ var utils = {
             parent.appendChild(newElement);
         }
         else {
-            parent.insertBefore(newElement, next);
+            parent.insertBefore(newElement, targetElement.nextSibling);
         }
     },
 

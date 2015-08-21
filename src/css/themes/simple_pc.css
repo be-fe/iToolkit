@@ -157,7 +157,9 @@ modal {
 }
 
 .tree-item-wrap input {
-  vertical-align: top;
+    vertical-align: top;
+    z-index: 2;
+    position: relative;
 }
 
 .tree-item-name {
