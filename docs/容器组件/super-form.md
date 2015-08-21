@@ -223,4 +223,105 @@ EC.on('submit_success', function(result) {
 
 ####Demo
 [FormInModal](../../../demos/FormInModal.html)  
-[formWithBeforeSubmit](../../../demos/formWithBeforeSubmit.html)  
+[formWithBeforeSubmit](../../../demos/formWithBeforeSubmit.html) 
+
+
+另外，我们提供了verification resolev属性和orient属性以实现联合验证。
+
+#### HTML
+```html
+<div class="demo">
+    <super-form action="/test">
+        <div>
+            <input type="checkbox" vr="test::c[],required" id="orient">
+            点击测试，如果必选其中之一
+            <div>
+                <input type="checkbox" name="c[]" id="checkbox1" orient="#orient">男
+                <input type="checkbox" name="c[]" id="checkbox2" orient="#orient">女
+            </div>
+        </div>
+        <div>
+            <div>
+                开始：<input type="text" name="intStart" valid="int" max="255" vr="test1::二要大于一" id="start">
+            </div>
+            <div>
+                结束：<input type="text" name="intEnd" valid="int" max="255" orient="#start" id="end">
+            </div>
+        </div>
+        <input type="submit" class="btn btn-primary" >提交</button>
+    </super-form>
+</div>
+```
+
+vr属性的值书写方式为vr="method::param1,param2,param3,...params"。使用vr属性调用的方法，内部this指向该元素。
+orient接受一个选择器，内部使用querySelector寻找节点。
+当orient与vr属性在同一dom节点上时，不会执行vr调用的方法。
+当orient指向的dom元素不存在于该super-form中时，不执行vr调用的方法。
+####JavaScript
+
+```JavaScript
+/*
+ *  super form 提交
+ */
+var formOpts = {
+    normalSubmit: false,
+    realTime: true,    //是否实时验证
+    complete: function() {
+        alert('complete');
+    },
+    callback: function() {
+        alert('success');
+    },
+    errCallback: function(params) {
+        alert("error, params:" + params);
+    },
+    beforeSubmit: function($invalid) {//在提交前执行的额外操作
+        $invalid.push(2);
+    }
+};
+riot.mount('.demo super-form', formOpts);
+
+iToolkit.methodRegister('test', function (target, tips) {
+    var form = this.form;
+    var parent = form.parentNode;
+    var elems = form[target];
+    if (!this.checked) {
+        for (var i = 0; i < elems.length; i++) {
+            elems[i].checked = false;
+            parent.removeTip(elems[i]);
+        }
+        return true;
+    }
+    var v = 0;
+    for (var i = 0; i < elems.length; i++) {
+        parent.removeTip(elems[i]);
+        if (elems[i].checked) {
+            v++;
+        }
+    }
+    if (v === 0) {
+        parent.insertTip(elems[elems.length - 1], tips, 'tip-container');
+        return false;
+    }
+    parent.insertTip(elems[elems.length - 1], 'passed', 'tip-container success');
+    return true;
+});
+
+iToolkit.methodRegister('test1', function (tips) {
+    var start = this;
+    var form = start.form;
+    var parent = form.parentNode;
+    var end = form.querySelector('#end');
+    end.setAttribute('min', start.value);
+    if (end.value <= start.value) {
+        parent.onValidRefuse(end, tips);
+        return false;
+    }
+    parent.onValidPass(start, '');
+    parent.onValidPass(end, 'passed');
+    return true;
+});
+```
+
+####Demo 
+[formWithVerificationResolve](../../../demos/formWithVerificationResolve.html) 

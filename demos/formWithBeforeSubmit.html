@@ -170,6 +170,7 @@
 
 	        function changeTitle () {
 	        	var elem = document.querySelector('super-form');
+	        	console.log(elem.querySelector('form').elements);
 	        	elem.loadData({a:'',b:'',title:''});
 	        }
 			/*
@@ -196,14 +197,14 @@
                 beforeSubmit: function($invalid) {//在提交前执行的额外操作
                 	$invalid.push(1);
                 	alert(1);
-                    // removeThisTip('test');
-                    // var passed = checkPass('test');
-                    // if (passed) {
-                    // 	addThisTip('test', '通过', 'valid-pass');
-                    // }
-                    // else {
-                    // 	addThisTip('test', '值1不能小于值2', 'valid-failed')
-                    // }
+                    removeThisTip('test');
+                    var passed = checkPass('test');
+                    if (passed) {
+                    	addThisTip('test', '通过', 'valid-pass');
+                    }
+                    else {
+                    	addThisTip('test', '值1不能小于值2', 'valid-failed')
+                    }
                 }
             };
             riot.mount('.demo super-form', formOpts);

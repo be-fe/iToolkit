@@ -1,0 +1,110 @@
+<html>
+	<head>
+		<meta charset='utf-8'>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>formWithVerificationResolve</title>
+		<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+		<link rel="stylesheet" href="../src/css/common.css">
+		<link rel="stylesheet" href="../src/css/themes/simple_pc.css">
+		<!-- IE兼容  -->
+		<!--[if lt IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.5/es5-shim.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+		<script>html5.addElements('test')</script>
+		<![endif]-->
+		<script src="../src/lib/riot.js"></script>
+		<script src="../src/lib/common.js"></script>
+		<script src="../src/iToolkit_pc.js"></script>
+	</head>
+	<body>
+		<section id="super-form">
+			<h2>Super-form</h2><hr>
+			<p>使用verification resolve功能</p>
+			<h5>Example:</h5>
+			<div class="demo">
+				<super-form action="/test">
+					<div>
+						<input type="checkbox" vr="test::c[],required" id="orient">
+                        点击测试，如果必选其中之一
+						<div>
+                            <input type="checkbox" name="c[]" id="checkbox1" orient="#orient">男
+                            <input type="checkbox" name="c[]" id="checkbox2" orient="#orient">女
+                        </div>
+					</div>
+					<div>
+                        <div>
+                            开始：<input type="text" name="intStart" valid="int" max="255" vr="test1::二要大于一" id="start">
+                        </div>
+                        <div>
+                            结束：<input type="text" name="intEnd" valid="int" max="255" orient="#start" id="end">
+                        </div>
+                    </div>
+					<input type="submit" class="btn btn-primary" />
+				</super-form>
+			</div>
+		</section>
+		<script>
+			/*
+             *  super form 提交
+             */
+            var formOpts = {
+            	normalSubmit: false,
+                realTime: true,    //是否实时验证
+                complete: function() {
+                    alert('complete');
+                },
+                callback: function() {
+                    alert('success');
+                },
+                errCallback: function(params) {
+                    alert("error, params:" + params);
+                },
+                beforeSubmit: function($invalid) {//在提交前执行的额外操作
+                	$invalid.push(2);
+                }
+            };
+            riot.mount('.demo super-form', formOpts);
+
+            iToolkit.methodRegister('test', function (target, tips) {
+            	var form = this.form;
+            	var parent = form.parentNode;
+            	var elems = form[target];
+                if (!this.checked) {
+                    for (var i = 0; i < elems.length; i++) {
+                        elems[i].checked = false;
+                        parent.removeTip(elems[i]);
+                    }
+                    return true;
+                }
+            	var v = 0;
+            	for (var i = 0; i < elems.length; i++) {
+            		parent.removeTip(elems[i]);
+            		if (elems[i].checked) {
+            			v++;
+            		}
+            	}
+            	if (v === 0) {
+            		parent.insertTip(elems[elems.length - 1], tips, 'tip-container');
+            		return false;
+            	}
+            	parent.insertTip(elems[elems.length - 1], 'passed', 'tip-container success');
+            	return true;
+            });
+
+            iToolkit.methodRegister('test1', function (tips) {
+                var start = this;
+                var form = start.form;
+                var parent = form.parentNode;
+                var end = form.querySelector('#end');
+                end.setAttribute('min', start.value);
+                if (end.value <= start.value) {
+                    parent.onValidRefuse(end, tips);
+                    return false;
+                }
+                parent.onValidPass(start, '');
+                parent.onValidPass(end, 'passed');
+                return true;
+            })
+		</script>
+	</body>
+</html>
