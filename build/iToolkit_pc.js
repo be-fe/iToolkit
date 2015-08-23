@@ -2747,7 +2747,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
     }.bind(this);
 
-
+    
     self.Validation = function(validArr, name, dom) {
         this.msg = [];        
         this.validTip = function() {
