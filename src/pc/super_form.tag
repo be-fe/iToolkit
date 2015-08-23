@@ -49,15 +49,15 @@
      * @param  {string} type 比较器类型
      * @return {Function}
      */
-    var comparator = function (type) {
+    self.comparator = function (type) {
         return {
-            handler: function (min, max, dom, value, validArr, name) {
+            handler: function (validation, min, max, value) {
                 switch (type) {
                     case 'number':
-                        return numComparator(min, max, dom, value, validArr, name);
+                        return self.numComparator(validation, min, max, value);
                     case 'string':
                     default:
-                        return strCompatator(min, max, dom, value, validArr, name);
+                        return self.strCompatator(validation, min, max, value);
                 }
             }
         };
@@ -74,42 +74,24 @@
      * @param  {string} name     参数名
      * @return {[type]}          [description]
      */
-    function strCompatator(min, max, dom, value, validArr, name) {
+    self.strCompatator = function(validation, min, max, value) {
         var nMin = isNaN(min);
         var nMax = isNaN(max);
         var len = value.length;
         if (!nMin && !nMax) {
             if (len > max || len < min) {
-                validArr.push(name);
-                self.onValidRefuse(dom, self.bpWarning(min, max));
-            }
-            else {
-                self.onValidPass(dom, self.successTips);
+                validation.msg.push(self.bpWarning(min, max));
             }
         }
         else {
-            if (!nMin) {
-                if (len < min) {
-                    validArr.push(name);
-                    self.onValidRefuse(dom, self.minWarning(min));
-                }
-                else {
-                    self.onValidPass(dom, self.successTips);
-                }
+            if (!nMin && len < min) {
+                validation.msg.push(self.minWarning(min));
             }
-            if (!nMax) {
-                if (len > max) {
-                    validArr.push(name);
-                    self.onValidRefuse(dom, self.maxWarning(max));
-                }
-                else {
-                    self.onValidPass(dom, self.successTips);
-                }
-            }
-            if (nMax && nMin) {
-                self.onValidPass(dom, self.successTips);
+            if (!nMax && len > max) {
+                validation.msg.push(self.maxWarning(max));
             }
         }
+        return validation;
     }
 
     /**
@@ -123,42 +105,24 @@
      * @param  {string} name     参数名
      * @return {[type]}          [description]
      */
-    function numComparator(min, max, dom, value, validArr, name) {
+    self.numComparator = function(validation, min, max, value) {
         var nMin = isNaN(min);
         var nMax = isNaN(max);
         var value = +value;
         if (!nMin && !nMax) {
             if (value > max || value < min) {
-                validArr.push(name);
-                self.onValidRefuse(dom, self.numBpWarning(min, max));
-            }
-            else {
-                self.onValidPass(dom, self.successTips);
+                validation.msg.push(self.numBpWarning(min, max));
             }
         }
         else {
-            if (!nMin) {
-                if (value < min) {
-                    validArr.push(name);
-                    self.onValidRefuse(dom, self.minNumWarning(min));
-                }
-                else {
-                    self.onValidPass(dom, self.successTips);
-                }
+            if (!nMin && value < min) {
+                validation.msg.push(self.minNumWarning(min));
             }
-            if (!nMax) {
-                if (value > max) {
-                    validArr.push(name);
-                    self.onValidRefuse(dom, self.maxNumWarning(max));
-                }
-                else {
-                    self.onValidPass(dom, self.successTips);
-                }
-            }
-            if (nMax && nMin) {
-                self.onValidPass(dom, self.successTips);
+            if (!nMax && value > max) {
+                validation.msg.push(self.maxNumWarning(max));
             }
         }
+        return validation;
     }
 
     self.one('mount', function() {
@@ -485,6 +449,89 @@
         }
     }
 
+
+    self.Validation = function(validArr, name, dom) {
+        this.msg = [];        
+        this.validTip = function() {
+            if (this.msg.length) {
+                self.onValidRefuse(dom, this.msg[0]);
+                validArr.push(name)
+            }
+            else {
+                self.onValidPass(dom, self.successTips);
+            }
+        }
+    }
+
+    self.validEmail = function(validation, v) {
+        if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
+            validation.msg.push(self.emailWarning);
+        }
+        return validation;
+    }
+
+    self.validUrl = function(validation, v) {
+        if (!v.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
+            validation.msg.push(self.emailWarning);
+        }
+        return validation;
+    }
+
+    self.validMobile = function(validation, v) {
+        if (!v.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
+            validation.msg.push(self.mobileWarning);
+        }
+        return validation;
+    }
+
+    self.validPresent = function(validation, v) {
+        v = v.replace(' ', '');
+        if (!v.length) {
+            validation.msg.push(self.presentWarning);
+        }
+        return validation;
+    }
+
+    self.validRegExp = function(validation, valid, v, min, max) {
+        valid = valid.replace(/^\//, '');
+        valid = valid.replace(/\/$/, '');
+        var reg = new RegExp(valid);
+        if (reg.test(v)) {
+            self.comparator('string').handler(validation, min, max, v);
+        }
+        else {
+            validation.msg.push(self.presentWarning);
+        }
+        return validation;
+    }
+
+    self.validNumRange = function(validation, valid, v, min, max) {
+        var reg = NUMBER_REGEXP[valid.toUpperCase()];
+        if (reg.test(v)) {
+            self.comparator('number').handler(validation, min, max, v);
+        }
+        else {
+            validation.msg.push(self.numWarning);
+        }
+        return validation;
+    }
+
+    self.validCustom = function(validation, customValid, v, min, max) {
+        if (window[customValid]) {
+            var reg = window[customValid].regExp;
+            var tips = window[customValid].message || self.regWarning;
+            if (reg && reg.test(v)) {
+                self.comparator('string').handler(validation, min, max, v); 
+            }
+            else {
+                validation.msg.push(tips);
+            }
+        }
+        return validation;
+    }
+
+
+
     /**
      * doCheck
      * @param  {Array} validArr  用于验证是否通过的数组
@@ -504,6 +551,7 @@
         var v = elem.value; 
         var name = elem.name;
         var dom = elem;
+        var validation = new self.Validation(validArr, name, dom);
 
         if (
             allowEmpty === null
@@ -521,86 +569,37 @@
             return;
         }
         if (name && valid) {
-            if (valid === 'email') {
-                if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
-                    validArr.push(name);
-                    self.onValidRefuse(dom, self.emailWarning);
-                }
-                else {
-                    self.onValidPass(dom, self.successTips); 
-                }
+            if (valid === 'present') {
+                self.validPresent(validation, v);
             }
             else if (valid === 'mobile') {
-                if (!v.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
-                    validArr.push(name);
-                    self.onValidRefuse(dom, self.mobileWarning);
-                }
-                else {
-                    self.onValidPass(dom, self.successTips); 
-                }
+                self.validMobile(validation, v);
             }
             else if (valid === 'url') {
-                if (!v.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
-                    validArr.push(name);
-                    self.onValidRefuse(dom, self.urlWarning);
-                }
-                else {
-                    self.onValidPass(dom, self.successTips); 
-                }
+                self.validUrl(validation, v);
             }
-            else if (valid === 'present') {
-                v = v.replace(' ', '');
-                if (!v.length) {
-                    validArr.push(name);
-                    self.onValidRefuse(dom, self.presentWarning);
-                }
-                else {
-                    comparator('string').handler(min, max, dom, v, validArr, name);
-                }
+            else if (valid === 'email') {
+                self.validEmail(validation, v);
             }
             else if (valid.match(/^\/\S+\/$/)) {
-                valid = valid.replace(/^\//, '');
-                valid = valid.replace(/\/$/, '');
-                var reg = new RegExp(valid);
-                if (reg.test(v)) {
-                    comparator('string').handler(min, max, dom, v, validArr, name);
-                }
-                else {
-                    validArr.push(name);
-                    self.onValidRefuse(dom, self.regWarning);
-                }
+                self.validRegExp(validation, valid, v, min, max);
             }
             else if (NUMBER_REGEXP[valid.toUpperCase()]) {
-                var reg = NUMBER_REGEXP[valid.toUpperCase()];
-                if (reg.test(v)) {
-                    comparator('number').handler(min, max, dom, v, validArr, name);
-                }
-                else {
-                    validArr.push(name);
-                    self.onValidRefuse(dom, self.numWarning);
-                }
+                self.validNumRange(validation, valid, v, min, max);
             }
         }
         else if (name && !valid) {
             if (customValid) {
-                if (window[customValid]) {
-                    var reg = window[customValid].regExp;
-                    var tips = window[customValid].message || self.regWarning;
-                    if (reg && reg.test(v)) {
-                        comparator('string').handler(min, max, dom, v, validArr, name); 
-                    }
-                    else {
-                        validArr.push(name);
-                        self.onValidRefuse(dom, tips);
-                    }
-                }
+                self.validCustom(validation, customValid, v, min, max);
             }
             else {
                 if (type === 'text') {
-                    comparator('string').handler(min, max, dom, v, validArr, name);
+                    self.comparator('string').handler(validation, min, max, v); 
                 }
             }
         }
+        validation.validTip();
+
         if (orient) {
             var newEle = EL.querySelector(orient);
             if (elem === newEle || !newEle) {
