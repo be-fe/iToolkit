@@ -2752,7 +2752,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         this.msg = [];        
         this.validTip = function() {
             if (this.msg.length) {
-                self.onValidRefuse(dom, msg[0]);
+                self.onValidRefuse(dom, this.msg[0]);
                 validArr.push(name)
             }
             else {

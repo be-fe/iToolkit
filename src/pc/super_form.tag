@@ -449,7 +449,12 @@
         }
     }
 
-
+    /**
+     * Validation 校验构造函数
+     * @validArr 校验不通过时将name压入
+     * @name  表单name
+     * @dom   对应的表单dom元素
+     */
     self.Validation = function(validArr, name, dom) {
         this.msg = [];        
         this.validTip = function() {
