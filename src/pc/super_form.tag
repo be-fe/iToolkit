@@ -505,7 +505,7 @@
             self.comparator('string').handler(validation, min, max, v);
         }
         else {
-            validation.msg.push(self.presentWarning);
+            validation.msg.push(self.regWarning);
         }
         return validation;
     }
