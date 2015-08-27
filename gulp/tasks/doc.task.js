@@ -1,4 +1,4 @@
-module.exports = function (gulp, plugin, pkg) {
+module.exports = function (gulp, plugin, pkg, childProcess) {
     gulp.task('docs', function () {
         childProcess.exec(
             'gitbook build ./' ,
