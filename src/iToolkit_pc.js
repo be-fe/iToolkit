@@ -532,7 +532,6 @@ riot.tag('super-div', '<yield>', 'super-div{ display: block; }', function(opts) 
 
 });
 riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function(opts) {
-
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
@@ -690,12 +689,15 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
 
     function isType(obj) {
-        return toString.call(obj).match(/\ (.*)\]/)[1];
+        return Object.prototype.toString.call(obj).match(/\ (.*)\]/)[1];
     }
 
     function dif(obj) {
         var constructor = isType(obj);
-        if (constructor === 'Null' || constructor === 'Undefined' || constructor === 'Function') {
+        if (constructor === 'Null'
+            || constructor === 'Undefined'
+            || constructor === 'Function'
+        ) {
             return obj;
         }
         return new window[constructor](obj);
@@ -1105,12 +1107,11 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 throw e;
             }
             if (!flag) {
-                validArr.push('fail');
+                validArr.push(method + 'Error');
             }
         }
     }
-
-
+    
 });
 riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ active: parent.currentIndex==index }">{ title }</li> </ul> <div class="tab-content"> { content } </div>', function(opts) {
 

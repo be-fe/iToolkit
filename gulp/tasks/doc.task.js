@@ -1,6 +1,6 @@
 module.exports = function (gulp, plugin, pkg) {
     gulp.task('docs', function () {
-        process.exec(
+        childProcess.exec(
             'gitbook build ./' ,
             { cwd : (__dirname + '/docs')},
             function (error, stdout, stderr) {

@@ -2,7 +2,7 @@
     <form onsubmit={ submit } >
         <yield>
     </form>
-
+    <script>
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
@@ -191,12 +191,15 @@
     }
 
     function isType(obj) {
-        return toString.call(obj).match(/\ (.*)\]/)[1];
+        return Object.prototype.toString.call(obj).match(/\ (.*)\]/)[1];
     }
 
     function dif(obj) {
         var constructor = isType(obj);
-        if (constructor === 'Null' || constructor === 'Undefined' || constructor === 'Function') {
+        if (constructor === 'Null'
+            || constructor === 'Undefined'
+            || constructor === 'Function'
+        ) {
             return obj;
         }
         return new window[constructor](obj);
@@ -624,9 +627,9 @@
                 throw e;
             }
             if (!flag) {
-                validArr.push('fail');
+                validArr.push(method + 'Error');
             }
         }
     }
-
+    </script>
 </super-form>
