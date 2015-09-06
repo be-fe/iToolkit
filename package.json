@@ -8,15 +8,17 @@
     "gulp": "x",
     "gulp-concat": "x",
     "gulp-connect": "^2.2.0",
+    "gulp-header": "^1.2.2",
+    "gulp-jshint": "x",
+    "gulp-load-plugins": "^1.0.0-rc.1",
+    "gulp-minify-css": "x",
+    "gulp-rename": "x",
     "gulp-riot": "x",
+    "gulp-uglify": "x",
     "http-proxy": "^1.8.1",
     "proxy-middleware": "^0.11.0",
-    "url": "^0.10.3",
-    "gulp-rename": "x",
-    "gulp-minify-css": "x",
-    "gulp-uglify": "x",
-    "gulp-header": "^1.2.2",
-    "gulp-jshint": "x"
+    "require-dir": "^0.3.0",
+    "url": "^0.10.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

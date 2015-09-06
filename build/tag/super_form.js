@@ -1,8 +1,5 @@
-<super-form>
-    <form onsubmit={ submit } >
-        <yield>
-    </form>
-    <script>
+riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function(opts) {
+
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
@@ -18,7 +15,6 @@
         'setData'
     ];   //保留字，不被覆盖
 
-    // 正则
     var NUMBER_REGEXP = {
         NON_NEGATIVE_INT: /^0$|^-[1-9]\d*$/,                            //非负整数（正整数 + 0） 
         POSITIVE_INT: /^[1-9]\d*$/,                                     //正整数 
@@ -43,12 +39,7 @@
     self.passClass = config.passClass || 'valid-pass';
     self.failedClass = config.failedClass || 'valid-failed';
 
-    /**
-     * [comparator description]
-     * @description 选择比较器
-     * @param  {string} type 比较器类型
-     * @return {Function}
-     */
+    
     var comparator = function (type) {
         return {
             handler: function (min, max, dom, value, validArr, name) {
@@ -63,17 +54,7 @@
         };
     };
 
-    /**
-     * [strCompatator]
-     * @description 字符比较器，用于比较字符长度
-     * @param  {number} min      最小边界
-     * @param  {number} max      最大边界
-     * @param  {Object} dom      dom
-     * @param  {string} value    要比较的值
-     * @param  {Array}  validArr 验证数组，该数组为空，可submit
-     * @param  {string} name     参数名
-     * @return {[type]}          [description]
-     */
+    
     function strCompatator(min, max, dom, value, validArr, name) {
         var nMin = isNaN(min);
         var nMax = isNaN(max);
@@ -112,17 +93,7 @@
         }
     }
 
-    /**
-     * [numComparator]
-     * @description 字符比较器，用于比较字符长度
-     * @param  {number} min      最小边界
-     * @param  {number} max      最大边界
-     * @param  {Object} dom      dom
-     * @param  {string} value    要比较的值
-     * @param  {Array}  validArr 验证数组，该数组为空，可submit
-     * @param  {string} name     参数名
-     * @return {[type]}          [description]
-     */
+    
     function numComparator(min, max, dom, value, validArr, name) {
         var nMin = isNaN(min);
         var nMax = isNaN(max);
@@ -180,26 +151,18 @@
         }
     });
 
-    /**
-     * valueOnChange
-     * @description 实时监听值的变化的处理函数
-     * @param  {Object} e 事件
-     * @return {[type]}   [description]
-     */
+    
     function valueOnChange(e) {
         doCheck([], this);
     }
 
     function isType(obj) {
-        return Object.prototype.toString.call(obj).match(/\ (.*)\]/)[1];
+        return toString.call(obj).match(/\ (.*)\]/)[1];
     }
 
     function dif(obj) {
         var constructor = isType(obj);
-        if (constructor === 'Null'
-            || constructor === 'Undefined'
-            || constructor === 'Function'
-        ) {
+        if (constructor === 'Null' || constructor === 'Undefined' || constructor === 'Function') {
             return obj;
         }
         return new window[constructor](obj);
@@ -216,11 +179,11 @@
         }
         colName = colName || 'data';
         self[colName] = newData;
-        // if (utils.isObject(newData) && utils.isObject(self[colName])) {
-        //     for (var i in newData) {
-        //         self[colName][i] = dif(newData[i]);
-        //     };
-        // }
+
+
+
+
+
         self.update();
     };
 
@@ -229,7 +192,6 @@
         self.update();
     };
 
-    //获取表单的obj
     self.checkExistKey = function(obj, key, value) {
         if (obj.hasOwnProperty(key)) {
             if (utils.isArray(obj[key])) {
@@ -274,10 +236,7 @@
         return params;
     }
     
-    /*
-     *  将config中的属性浅拷贝到Tag对象上。
-     *  
-     */
+    
 
     for (i in config) {
         if (keyWords.indexOf(i) < 0) {
@@ -297,12 +256,11 @@
     self.minWarning = config.minWarning || function(n) {
         return '不得小于' + n + '个字符';
     }
-    // boundary point边界点
+
     self.bpWarning = config.bpWarning || function (min, max) {
         return '只允许' + min + '-' + max + '个字符';
     }
 
-    // 数字大小限制
     self.minNumWarning = config.minNumWarning || function (n) {
         return '不得小于' + n;
     }
@@ -313,9 +271,7 @@
         return '输入数字应在' + min + '-' + max + '之间';
     }
 
-    /*
-     * 移除提示
-     */
+    
     self.removeTips = EL.removeTips = function() {
         var root = self.root;
         var elems = root.getElementsByTagName('form')[0].elements;
@@ -339,9 +295,7 @@
         }
     }
     
-    /*
-     *  插入提示
-     */
+    
     self.removeTip = EL.removeTip = function(dom){
         var tip = dom.nextElementSibling;
         if (tip && tip.className.match(/tip-container/)) {
@@ -374,9 +328,7 @@
         utils.addClass(dom, self.passClass);
     };
 
-    /*
-     * ajax提交
-     */
+    
     self.ajaxSubmit = function(elems, url) {
         var params = '';
         for (var i = 0; i < elems.length; i++) {
@@ -448,10 +400,8 @@
         };
     }
     
-    /*
-     * 提交动作，校验流程
-     */
-    submit(e) {
+    
+    this.submit = function(e) {
         var validArr = [];
         var elems = self.root.getElementsByTagName('form')[0].elements;
         var action = self.action || self.root.getAttribute('action');
@@ -486,14 +436,9 @@
         else {
             return false;
         }
-    }
+    }.bind(this);
 
-    /**
-     * doCheck
-     * @param  {Array} validArr  用于验证是否通过的数组
-     * @param  {Object} elem     需要验证的节点对象
-     * @return {[type]}          [description]
-     */
+    
     function doCheck(validArr, elem) {
         var elem = elem;
         var valid = elem.getAttribute('valid');
@@ -627,9 +572,10 @@
                 throw e;
             }
             if (!flag) {
-                validArr.push(method + 'Error');
+                validArr.push('fail');
             }
         }
     }
-    </script>
-</super-form>
+
+
+});
