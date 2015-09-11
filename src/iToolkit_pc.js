@@ -291,7 +291,6 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
                 self.pages.push({page: i + 1});
                 self.update();
             }
-            
         }
         else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
             self.pages = [];

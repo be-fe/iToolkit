@@ -2088,6 +2088,32 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
     self.showItemCount = config.showItemCount || true;
     self.needInit = config.needInit || false;
 
+    self.updateCurrentPage = function () {
+        if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
+            self.pages = [];
+            if (self.pageCount - self.currentPage > 2) {
+                var origin = self.currentPage - Math.ceil(self.showNumber/2);
+                var last = self.currentPage + Math.floor(self.showNumber/2);
+            }
+            else {
+                var last = self.pageCount;
+                var origin = self.pageCount - self.showNumber;
+            }
+            for (i = origin; i < last; i++) {
+                self.pages.push({page: i + 1});
+                self.update();
+            }
+            
+        }
+        else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
+            self.pages = [];
+            for (i = 0; i < self.showNumber; i++) {
+                self.pages.push({page: i + 1});
+            }
+            self.pages.push({page: '...'});
+        }
+    };
+
     EL.addCount = function (num) {
         var count = self.count + num;
         var oldPageCount = self.pageCount;
@@ -2182,31 +2208,6 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
         self.updateCurrentPage();
     };
 
-    self.updateCurrentPage = function () {
-        if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
-            self.pages = [];
-            if (self.pageCount - self.currentPage > 2) {
-                var origin = self.currentPage - Math.ceil(self.showNumber/2);
-                var last = self.currentPage + Math.floor(self.showNumber/2);
-            }
-            else {
-                var last = self.pageCount;
-                var origin = self.pageCount - self.showNumber;
-            }
-            for (i = origin; i < last; i++) {
-                self.pages.push({page: i + 1});
-                self.update();
-            }
-            
-        }
-        else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
-            self.pages = [];
-            for (i = 0; i < self.showNumber; i++) {
-                self.pages.push({page: i + 1});
-            }
-            self.pages.push({page: '...'});
-        }
-    }
     
 });
 riot.tag('select-box', '<div class="r-select" onclick="{ clicked }">{ placeholder }</div> <ul class="r-select-body" hide="{ hide }"> <li each="{ data }" index="{ index }" value="{ value }" class="r-select-item { selected }" onclick="{ parent.clickItem }">{ innerText }</li> </ul> <div style="display:none" class="inputHide"></div>', function(opts) {
