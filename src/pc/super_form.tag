@@ -618,16 +618,14 @@
             var params = arr[1] ? arr[1].split(',') : undefined;
             var flag = false;
             try {
-                if (iToolkit[method]) {
-                    flag = iToolkit[method].apply(elem, params);
-                }
+                flag = iToolkit[method].apply(elem, params);
             }
             catch (e) {
                 flag = false;
                 throw e;
             }
             if (!flag) {
-                validArr.push(method + 'Error');
+                validArr.push('method:' + method + ' error.');
             }
         }
     }
