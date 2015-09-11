@@ -20,7 +20,7 @@
             </form>
         </div>
     </div>
-    
+    <script>
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
@@ -36,6 +36,32 @@
     self.showPageCount = config.showPageCount || true;
     self.showItemCount = config.showItemCount || true;
     self.needInit = config.needInit || false;
+
+    self.updateCurrentPage = function () {
+        if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
+            self.pages = [];
+            if (self.pageCount - self.currentPage > 2) {
+                var origin = self.currentPage - Math.ceil(self.showNumber/2);
+                var last = self.currentPage + Math.floor(self.showNumber/2);
+            }
+            else {
+                var last = self.pageCount;
+                var origin = self.pageCount - self.showNumber;
+            }
+            for (i = origin; i < last; i++) {
+                self.pages.push({page: i + 1});
+                self.update();
+            }
+            
+        }
+        else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
+            self.pages = [];
+            for (i = 0; i < self.showNumber; i++) {
+                self.pages.push({page: i + 1});
+            }
+            self.pages.push({page: '...'});
+        }
+    };
 
     EL.addCount = function (num) {
         var count = self.count + num;
@@ -65,10 +91,6 @@
         self.pageChange(self.currentPage)
         self.update();
     };
-    
-    if (self.needInit) {
-        config.callback(self.currentPage);
-    }
 
     self.pages = [];
     
@@ -82,6 +104,11 @@
             self.pages.push({page: i + 1});
         }
         self.pages.push({page: '...'});
+    }
+
+    if (self.needInit) {
+        config.callback(self.currentPage);
+        self.updateCurrentPage();
     }
     self.update();
 
@@ -127,30 +154,9 @@
             self.currentPage = page;
             config.callback(page);
         }
-        if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
-            self.pages = [];
-            if (self.pageCount - self.currentPage > 2) {
-                var origin = self.currentPage - Math.ceil(self.showNumber/2);
-                var last = self.currentPage + Math.floor(self.showNumber/2);
-            }
-            else {
-                var last = self.pageCount;
-                var origin = self.pageCount - self.showNumber;
-            }
-            for (i = origin; i < last; i++) {
-                self.pages.push({page: i + 1});
-                self.update();
-            }
-            
-        }
-        else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
-            self.pages = [];
-            for (i = 0; i < self.showNumber; i++) {
-                self.pages.push({page: i + 1});
-            }
-            self.pages.push({page: '...'});
-        }
+        self.updateCurrentPage();
     };
 
+    </script>
 
 </paginate>

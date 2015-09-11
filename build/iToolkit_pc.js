@@ -2072,7 +2072,6 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
 });
 riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" riot-type={"number"} style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
-    
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
@@ -2117,10 +2116,6 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
         self.pageChange(self.currentPage)
         self.update();
     };
-    
-    if (self.needInit) {
-        config.callback(self.currentPage);
-    }
 
     self.pages = [];
     
@@ -2134,6 +2129,11 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
             self.pages.push({page: i + 1});
         }
         self.pages.push({page: '...'});
+    }
+
+    if (self.needInit) {
+        config.callback(self.currentPage);
+        self.updateCurrentPage();
     }
     self.update();
 
@@ -2179,6 +2179,10 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
             self.currentPage = page;
             config.callback(page);
         }
+        self.updateCurrentPage();
+    };
+
+    self.updateCurrentPage = function () {
         if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
             self.pages = [];
             if (self.pageCount - self.currentPage > 2) {
@@ -2202,10 +2206,8 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
             }
             self.pages.push({page: '...'});
         }
-    };
-
-
-
+    }
+    
 });
 riot.tag('select-box', '<div class="r-select" onclick="{ clicked }">{ placeholder }</div> <ul class="r-select-body" hide="{ hide }"> <li each="{ data }" index="{ index }" value="{ value }" class="r-select-item { selected }" onclick="{ parent.clickItem }">{ innerText }</li> </ul> <div style="display:none" class="inputHide"></div>', function(opts) {
     var self = this;
@@ -2910,16 +2912,14 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             var params = arr[1] ? arr[1].split(',') : undefined;
             var flag = false;
             try {
-                if (iToolkit[method]) {
-                    flag = iToolkit[method].apply(elem, params);
-                }
+                flag = iToolkit[method].apply(elem, params);
             }
             catch (e) {
                 flag = false;
                 throw e;
             }
             if (!flag) {
-                validArr.push(method);
+                validArr.push('method:' + method + ' error.');
             }
         }
     }
