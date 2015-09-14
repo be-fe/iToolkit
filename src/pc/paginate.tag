@@ -107,8 +107,8 @@
 
     if (self.needInit) {
         config.callback(self.currentPage);
-        self.updateCurrentPage();
     }
+    self.updateCurrentPage();
     self.update();
 
     goFirst(e) {
