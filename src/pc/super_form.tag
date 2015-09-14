@@ -142,7 +142,6 @@
                     elems[i].addEventListener('input', valueOnChange, false);
                     elems[i].addEventListener('change', valueOnChange, false);
                 }
-                
             }
         }
     });
@@ -599,8 +598,8 @@
                 self.onValidPass(dom, self.successTips);
                 return;
             }
+            self.validEmpty(validation, attrs);
             if (attrs.valid) {
-                self.validEmpty(validation, attrs);
                 if (attrs.valid === 'present') {
                     self.validPresent(validation, attrs);
                 }
