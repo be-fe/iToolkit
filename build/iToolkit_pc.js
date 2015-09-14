@@ -2467,7 +2467,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                     elems[i].addEventListener('input', valueOnChange, false);
                     elems[i].addEventListener('change', valueOnChange, false);
                 }
-                
             }
         }
     });
@@ -2896,8 +2895,8 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 self.onValidPass(dom, self.successTips);
                 return;
             }
+            self.validEmpty(validation, attrs);
             if (attrs.valid) {
-                self.validEmpty(validation, attrs);
                 if (attrs.valid === 'present') {
                     self.validPresent(validation, attrs);
                 }
