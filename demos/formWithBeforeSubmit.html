@@ -205,7 +205,8 @@
                     else {
                     	addThisTip('test', '值1不能小于值2', 'valid-failed')
                     }
-                }
+                },
+                forbidTips:true
             };
             riot.mount('.demo super-form', formOpts);
             var theForm = document.querySelector('.demo super-form');

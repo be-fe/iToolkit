@@ -29,12 +29,10 @@
     			count: 120,     //总条目数
     			pagesize: 10,   //每页的条目数
     			showNumber: 5,  //分页格的最大数量
-    			currentPage: 12, //初始化的页码，默认是1
+    			currentPage: 5, //初始化的页码，默认是1
     			needInit: true,  //初始化时是否执行callback，默认false
     			callback: function(index) {
-                    console.log(index);
-    			    document.getElementById('page-number').innerHTML = index;
-    			}               //页数变化时的回调，会将跳转页码作为参数传入
+                        			}               //页数变化时的回调，会将跳转页码作为参数传入
 			}
 			riot.mount('paginate', pageOpts);
 			var p = document.querySelector('paginate');
