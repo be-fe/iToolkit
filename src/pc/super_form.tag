@@ -213,11 +213,14 @@
         var params = {};
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
+                var value;
                 if (elems[i].tagName === "SELECT") {
-                    var selected = elems[i].selectedOptions;
-                    for (j = 0; j < selected.length; j++) {
-                        value = selected[j].value;
-                        self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
+                    var options = elems[i].options;
+                    for (var j = 0; j < options.length; j++) {
+                        if (options[j].selected) {
+                           value = options[j].value;
+                           self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
+                        }
                     }
                 } 
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
@@ -343,13 +346,16 @@
         var params = '';
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
+                var value;
                 if (elems[i].tagName === "SELECT") {
-                    var selected = elems[i].selectedOptions;
-                    for (j = 0; j < selected.length; j++) {
-                        value = selected[j].value;
-                        params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    var options = elems[i].options;
+                    for (var j = 0; j < options.length; j++) {
+                        if (options[j].selected) {
+                           value = options[j].value;
+                           params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                        }
                     }
-                } 
+                }
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
                         value = elems[i].value;
@@ -425,7 +431,6 @@
         }
 
         if (!validArr.length) {
-
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
                 return true;
@@ -489,12 +494,18 @@
         if (!attrs.value.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
             validation.msg.push(self.emailWarning);
         }
+        else {
+            self.comparator('string').handler(validation, attrs);
+        }
         return validation;
     }
 
     self.validUrl = function(validation, attrs) {
         if (!attrs.value.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
             validation.msg.push(self.emailWarning);
+        }
+        else {
+            self.comparator('string').handler(validation, attrs);
         }
         return validation;
     }
@@ -503,6 +514,9 @@
         if (!attrs.value.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
             validation.msg.push(self.mobileWarning);
         }
+        else {
+            self.comparator('string').handler(validation, attrs);
+        }
         return validation;
     }
 
@@ -510,6 +524,9 @@
         var v = attrs.value.replace(' ', '');
         if (!v.length) {
             validation.msg.push(self.presentWarning);
+        }
+        else {
+            self.comparator('string').handler(validation, attrs);
         }
         return validation;
     }
@@ -529,11 +546,11 @@
 
     self.validNumRange = function(validation, attrs) {
         var reg = NUMBER_REGEXP[attrs.valid.toUpperCase()];
-        if (reg.test(attrs.value)) {
-            self.comparator('number').handler(validation, attrs);
+        if (!reg.test(attrs.value)) {
+            validation.msg.push(self.numWarning);
         }
         else {
-            validation.msg.push(self.numWarning);
+            self.comparator('number').handler(validation, attrs);
         }
         return validation;
     }
