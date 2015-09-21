@@ -377,6 +377,7 @@
                 submitbtn[attr] = self.submitingText;
             }
         }
+        try {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.open("POST", url, true);
         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -404,6 +405,10 @@
                 }
             } 
         };
+        }
+        catch (e) {
+            
+        }
     }
     
     /*
@@ -491,7 +496,7 @@
     }
 
     self.validEmail = function(validation, attrs) {
-        if (!attrs.value.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
+        if (!attrs.value.match(/^([a-zA-Z0-9_\-\.])+\@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
             validation.msg.push(self.emailWarning);
         }
         else {

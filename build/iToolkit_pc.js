@@ -2686,6 +2686,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 submitbtn[attr] = self.submitingText;
             }
         }
+        try {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.open("POST", url, true);
         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -2713,6 +2714,10 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 }
             } 
         };
+        }
+        catch (e) {
+            
+        }
     }
     
     
@@ -2793,7 +2798,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
 
     self.validEmail = function(validation, attrs) {
-        if (!attrs.value.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
+        if (!attrs.value.match(/^([a-zA-Z0-9_\-\.])+\@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
             validation.msg.push(self.emailWarning);
         }
         else {
