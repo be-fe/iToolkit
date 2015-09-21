@@ -2793,7 +2793,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
 
     self.validEmail = function(validation, attrs) {
-        if (!attrs.value.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
+        if (!attrs.value.match(/^([a-zA-Z0-9_\-\.])+\@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
             validation.msg.push(self.emailWarning);
         }
         else {
