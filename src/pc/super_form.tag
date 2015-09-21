@@ -377,7 +377,6 @@
                 submitbtn[attr] = self.submitingText;
             }
         }
-        try {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.open("POST", url, true);
         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -405,10 +404,6 @@
                 }
             } 
         };
-        }
-        catch (e) {
-            
-        }
     }
     
     /*
