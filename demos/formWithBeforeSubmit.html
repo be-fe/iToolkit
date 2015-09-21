@@ -21,7 +21,7 @@
 			<p>可以提供ajax提交、防连击保护、表单校验、数据模板、常用指令等五大功能</p>
 			<h5>Example:</h5>
 			<div class="demo">
-				<super-form action="/test">
+				<super-form action="http://www.baidu.com/test">
 				<div>{ data.title }</div>
 				<input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
 				<label>
@@ -50,7 +50,7 @@
 				</label><br>
 				<label>
 					text more than 3:
-					<input type="text" name="t4" value="3" min="3">
+					<input type="text" name="t4" value="aaa" min="3">
 				</label><br>
 				<label>
 					text less than 9:
@@ -86,7 +86,7 @@
 				</label><br>
 				<label>
 					is ip?:
-					<input type="text" name="n6" customValid="isIP">
+					<input type="text" name="n6" customValid="isIP" value="1.1.1.1">
 				</label><br>
 				<label>
 					select:
