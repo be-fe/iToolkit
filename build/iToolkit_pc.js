@@ -2135,10 +2135,9 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
 
         if (
 
+            self.needInit
 
-
-
-            self.pageCount < oldPageCount && self.currentPage <= self.pageCount
+            || (self.pageCount < oldPageCount && self.currentPage <= self.pageCount)
         ) {
             config.callback(self.currentPage);
         }
