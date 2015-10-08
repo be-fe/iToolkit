@@ -61,7 +61,6 @@
             self.pages.push({page: '...'});
         }
     };
-
     EL.addCount = function (num) {
         var count = self.count + num;
         var oldPageCount = self.pageCount;
@@ -82,8 +81,14 @@
                 self.pages.push({page: i + 1});
             }
         }
-
-        if (self.needInit) {
+        
+        // 当以下两种情况，执行回调
+        if (
+            // 需要实时初始化时
+            self.needInit
+            // 减少到前一页时
+            || (self.pageCount < oldPageCount && self.currentPage <= self.pageCount)
+        ) {
             config.callback(self.currentPage);
         }
 

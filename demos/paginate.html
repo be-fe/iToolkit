@@ -16,6 +16,7 @@
         <script src="../src/iToolkit_pc.js"></script>
     </head>
     <body>
+        <ul id="container"></ul>
         <paginate></paginate>
         <p>The page number is <b id="page-number"></b></p>
         <div>
@@ -25,23 +26,55 @@
         	<button onclick="addItem(-10)">减少十条条目</button>
         </div>
         <script>
-            var pageOpts = {
-    			count: 120,     //总条目数
-    			pagesize: 10,   //每页的条目数
-    			showNumber: 5,  //分页格的最大数量
-    			currentPage: 5, //初始化的页码，默认是1
-    			needInit: true,  //初始化时是否执行callback，默认false
-    			callback: function(index) {
-                        			}               //页数变化时的回调，会将跳转页码作为参数传入
-			}
-			riot.mount('paginate', pageOpts);
-			var p = document.querySelector('paginate');
-			function addItem(num) {
-				if (typeof num !== 'number') {
-					return;
-				}
-				p.addCount(num);
-			}
+            utils.httpGet('./data/pagenate.json', {
+                currentPage: 1
+            }, function (data) {
+                window.data = data.data;
+                var count = window.data.length;
+                var pageOpts = {
+                    count: count,     //总条目数
+                    pagesize: 10,   //每页的条目数
+                    showNumber: 5,  //分页格的最大数量
+                    currentPage: 3, //初始化的页码，默认是1
+                    needInit: true,  //初始化时是否执行callback，默认false
+                    callback: function(index) {
+                        console.log(1);
+                        var container = document.getElementById('container');
+                        var html = '';
+                        var items = window.data.slice(
+                            (index - 1) * 10,
+                            index * 10
+                        );
+                        for (var i = 0; i < items.length; i++) {
+                            html += ''
+                                + '<li>name:'
+                                + items[i].name
+                                + ' score:'
+                                + items[i].score
+                                + '</li>';
+                        };
+                        container.innerHTML = html;
+                    }               //页数变化时的回调，会将跳转页码作为参数传入
+                }
+                riot.mount('paginate', pageOpts);
+            });
+            var p = document.querySelector('paginate');
+            function addItem(num) {
+                if (typeof num !== 'number') {
+                    return;
+                }
+                if (num < 0) {
+                    for (var i = 0; i < -num; i++) {
+                        window.data.length && window.data.pop();
+                    }
+                }
+                if (num > 0) {
+                    for (var i = 0; i < num; i++) {
+                        window.data.push({"name": "test", "score": 100})
+                    };
+                }
+                p.addCount(num);
+            }
         </script>
     </body>
 </html>

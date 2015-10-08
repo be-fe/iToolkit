@@ -2112,7 +2112,6 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
             self.pages.push({page: '...'});
         }
     };
-
     EL.addCount = function (num) {
         var count = self.count + num;
         var oldPageCount = self.pageCount;
@@ -2134,7 +2133,12 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
             }
         }
 
-        if (self.needInit) {
+        if (
+
+            self.needInit
+
+            || (self.pageCount < oldPageCount && self.currentPage <= self.pageCount)
+        ) {
             config.callback(self.currentPage);
         }
 
