@@ -5,6 +5,8 @@
         padding: 5px;
         border: 1px solid #ddd;
         background-color: #fff;
+        -webkit-box-shadow: 0 0 10px #ccc;
+        box-shadow: 0 0 10px #ccc;
     }
     .paginate .paginate-tips:before {
         content: "";
