@@ -95,6 +95,9 @@
 						<option value="{ data.b }">{ data.b }</option>
 					</select>
 				</label><br>
+				<date-picker opts={picker}>
+                    <input media name="picker" valid="present">
+                </date-picker>
 				<button type="submit" class="btn btn-primary" >提交</button>
 				</super-form>
 				<button class="btn btn-primary" onclick="removeTip()">清除提示</button>
@@ -141,7 +144,13 @@
                 errCallback: function(params) {
                     alert("error, params:" + params);
                 },
-                forbidTips:true
+                forbidTips:true,
+                picker: {
+                    choose: function (v) {
+                        console.log(v)
+                    }
+                }
+
             };
             riot.mount('.demo super-form', formOpts);
             var theForm = document.querySelector('.demo super-form');
