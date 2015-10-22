@@ -1010,7 +1010,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
 
     self.validUrl = function(validation, attrs) {
         if (!attrs.value.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
-            validation.msg.push(self.emailWarning);
+            validation.msg.push(self.urlWarning);
         }
         else {
             self.comparator('string').handler(validation, attrs);
