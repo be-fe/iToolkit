@@ -1155,7 +1155,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
     
 });
-riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ active: parent.currentIndex==index }">{ title }</li> </ul> <div class="tab-content"> { content } </div>', function(opts) {
+riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ active: parent.currentIndex==index }">{ title }</li> </ul> <div class="tab-content" riot-tag="tab-content"></div>', function(opts) {
 
     var self = this
     var config = self.opts.opts || self.opts;
@@ -1175,6 +1175,15 @@ riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ a
         self.currentIndex = e.item.index;
         self.update();
     }.bind(this);
+
+});
+
+riot.tag('tab-content', '', function(opts) {
+    var self = this;
+   
+    self.parent.on('update', function() {
+        self.root.innerHTML = self.parent.content;
+    });
 
 });
 riot.tag('tree-item', '<input type="checkbox" __checked="{ selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-arrow { open: opened }" onclick="{ toggle }" if="{ children }"></i> <i class="tree-item-icon" if="{ children }"></i> <div onclick="{ leftClick }">{ name }</div>', function(opts) {
