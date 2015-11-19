@@ -21,7 +21,7 @@
 			<p>可以提供ajax提交、防连击保护、表单校验、数据模板、常用指令等五大功能</p>
 			<h5>Example:</h5>
 			<div class="demo">
-				<super-form action="/test">
+				<super-form action="http://www.baidu.com/test">
 				<div>{ data.title }</div>
 				<input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
 				<label>
@@ -46,19 +46,19 @@
 				</label><br>
 				<label>
 					RegExp2:
-					<input type="text" name="idcard" value="41030319880612000" customValid="isIDCard" allowEmpty="true">
+					<input type="text" name="idcard" value="410303198806120000" customValid="isIDCard" allowEmpty="true">
 				</label><br>
 				<label>
-					text more than 2:
-					<input type="text" name="t4" value="{ data.b }" min="3">
+					text more than 3:
+					<input type="text" name="t4" value="aaa" min="3">
 				</label><br>
 				<label>
 					text less than 9:
-					<input type="text" name="t5" value="good! There it is!" max="9">
+					<input type="text" name="t5" value="goo" max="9">
 				</label><br>
 				<label>
 					text less than 9 and more than 2:
-					<input type="text" name="t6" value="good! There it is!" max="9" min="2">
+					<input type="text" name="t6" value="go" max="9" min="2">
 				</label><br>
 				<label>
 					text allow empty:
@@ -74,34 +74,30 @@
 				</label><br>
 				<label>
 					int more than 2:
-					<input type="text" name="n3" value="1" valid="int" min="2">
+					<input type="text" name="n3" value="2" valid="int" min="2">
 				</label><br>
 				<label>
 					int less than 9:
-					<input type="text" name="n4" value="1" valid="int" max="9">
+					<input type="text" name="n4" value="3" valid="int" max="9">
 				</label><br>
 				<label>
 					int less than 9 and more than 2:
-					<input type="text" name="n5" value="1" valid="int" max="9" min="2">
+					<input type="text" name="n5" value="4" valid="int" max="9" min="2">
 				</label><br>
 				<label>
 					is ip?:
-					<input type="text" name="n6" customValid="isIP">
-				</label><br>
-				<label id="test">
-					beforeSubmit:
-					<input type="text" name="n7" > <input type="text" name="n8">
+					<input type="text" name="n6" customValid="isIP" value="1.1.1.1">
 				</label><br>
 				<label>
 					select:
 					<select name="select">
 						<option value="{ data.a }">{ data.a }</option>
 						<option value="{ data.b }">{ data.b }</option>
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
 					</select>
 				</label><br>
+				<date-picker opts={picker}>
+                    <input media name="picker" valid="present">
+                </date-picker>
 				<button type="submit" class="btn btn-primary" >提交</button>
 				</super-form>
 				<button class="btn btn-primary" onclick="removeTip()">清除提示</button>
@@ -121,52 +117,6 @@
                 elem.loadData({});
                 elem.loadData(data);
             }
-
-	        function removeThisTip(id) {
-	        	var context = document.getElementById(id);
-	        	var elems = context.getElementsByTagName('input');
-
-	        	var tips = context.getElementsByClassName('tip-container');
-	        	if (tips && tips.length) {
-		            del();
-		        }
-		        function del() {
-		            for (i = 0; i < tips.length; i++) {
-		                tips[i].parentNode.removeChild(tips[i]);
-		                if (tips.length) {
-		                    del();
-		                }
-		            }
-		        }
-
-		        for (var i = 0; i < elems.length; i++) {
-		            utils.removeClass(elems[i], 'valid-pass');
-		            utils.removeClass(elems[i], 'valid-failed');
-		        }
-	        }
-
-	        function checkPass(id) {
-	        	var context = document.getElementById(id);
-	        	var elems = context.getElementsByTagName('input');
-	        	var first = elems[0];
-	        	var second = elems[1];
-	        	if (parseInt(first.value, 10) < parseInt(second.value, 10)) {
-	        		return false;
-	        	}
-	        	return true;
-	        }
-
-	        function addThisTip(id, message, className) {
-	        	var context = document.getElementById(id);
-	        	var elems = context.getElementsByTagName('input');
-	        	for (var i = 0; i < elems.length; i++) {
-	        		elems[i].className = className;
-	        	};
-	        	var tipContainer = document.createElement('span');
-        		tipContainer.className = className === 'valid-pass' ? 'tip-container success' : 'tip-container';
-        		tipContainer.innerHTML = message;
-        		context.appendChild(tipContainer);
-	        }
 
 	        function changeTitle () {
 	        	var elem = document.querySelector('super-form');
@@ -194,18 +144,13 @@
                 errCallback: function(params) {
                     alert("error, params:" + params);
                 },
-                beforeSubmit: function($invalid) {//在提交前执行的额外操作
-                	$invalid.push(1);
-                	alert(1);
-                    removeThisTip('test');
-                    var passed = checkPass('test');
-                    if (passed) {
-                    	addThisTip('test', '通过', 'valid-pass');
-                    }
-                    else {
-                    	addThisTip('test', '值1不能小于值2', 'valid-failed')
+                forbidTips:true,
+                picker: {
+                    choose: function (v) {
+                        console.log(v)
                     }
                 }
+
             };
             riot.mount('.demo super-form', formOpts);
             var theForm = document.querySelector('.demo super-form');

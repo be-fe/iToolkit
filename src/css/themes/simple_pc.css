@@ -188,16 +188,6 @@ modal {
     background: #d6d7dc;
 }
 
-.tree-item-back {
-    position: absolute;
-    z-index: 1;
-    width: 200%;
-    height: 30px;
-    top: -4px;
-    left: -100%;
-    cursor: pointer;
-}
-
 selector .tree-item-back.active,
 selector .tree-item-back:hover {
     background: #eff3f8;
@@ -217,7 +207,7 @@ selector .tree-item-name.right-active + .tree-item-back {
 }
 
 .tree-child-wrap {
-    padding: 5px 0 5px 20px;
+    padding: 0;
     position: relative;
 }
 
@@ -237,6 +227,10 @@ selector .tree-item-name.right-active + .tree-item-back {
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-top: 10px solid #999999;
+}
+
+.tree-item-row > div {
+  display: inline-block;
 }
 
 .tree-item-arrow.empty {

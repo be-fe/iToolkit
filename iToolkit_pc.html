@@ -48,7 +48,6 @@
                     <h4>Common components</h4>
                     <a href="#tree" class="list-group-item">Tree</a>
                     <a href="#tab" class="list-group-item">Tab</a>
-                    <a href="#table" class="list-group-item">Table</a>
                     <a href="#paginate" class="list-group-item">Paginate</a>
                     <a href="#modal" class="list-group-item">Modal</a>
                     <a href="#super-form" class="list-group-item">Form</a>
@@ -161,7 +160,8 @@ var treeOpts = {
         {id: 6, pid: 3, title: 'item5'},
         {id: 7, pid: 2, title: 'item6'},
     ],
-    root: true,         //标示符，必须为true
+    link: true,   //checkbox是否联动
+    openLevel: 2, //默认展开多少层级，1为展开最外层，
     handleData: true,   //data为一维数组，选true, data为树结构，选false
     name: 'title',      //名称字段在接口中的字段名
     onLeftClick: function(item, target) {     
@@ -180,98 +180,6 @@ riot.mount('.demo tree', treeOpts);
                     </code></pre>
                 </section>
 
-<!-- ********************************** Table Start ************************************** -->
-                <section id="table">
-                    <h2>Table</h2><hr>
-                    <p>表格组件可以根据数据生成表格，使用rcol标签控制字段的排序、表头名、内容的拼接、列的宽度，使用参数配置表头展示、固定等。</p>
-                    <p>表格组件还支持加载、追加、情况、删除、排序等功能函数。</p>
-
-                    <h5>实例:</h5>
-                    <div class="demo">
-                        <table-view>
-                            <rcol name="city" width="200px" class="test test1">
-                                <div>
-                                    <a href="<%= testMethod(desc) %>" hide="<%= status==1%>" onclick="Test.test('<%= 'sss'||desc %>')"><%= city%></a>
-
-                                    <a href="<%= testMethod(desc) %>" hide="<%= !status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a>
-                                </div>
-                            </rcol>
-                            <rcol name="desc" width="200px"></rcol>
-                            <rcol name="name" alias="姓名"></rcol>
-                            <rcol alias="测试"><button class="btn btn-primary">测试</button></rcol>
-                            <rcol name="list" alias="列表">
-                                <ul if="<%=list%>">
-                                    <li each="<%=list%>"><%=a%></li>
-                                </ul>
-                            </rcol>
-                        </table-view>
-                    </div>
-                    <button class="btn btn-default" onclick="recoverTable()">恢复初始值</button>
-                    <button class="btn btn-default" onclick="reloadTable()">加载新数据</button>
-                    <button class="btn btn-default" onclick="appendCell()">追加数据</button>
-                    <button class="btn btn-default" onclick="deleteCell()">删除指定数据</button>
-                    <button class="btn btn-default" onclick="clearCell()">清空数据</button>
-                    <button class="btn btn-default" onclick="orderCell()">指定字段排序</button>
-                    <button class="btn btn-default" onclick="reverseCell()">指定字段倒序</button>
-                    <button class="btn btn-default" onclick="hideCell()">指定字段隐藏</button>
-                    <button class="btn btn-default" onclick="showCell()">指定字段展示</button>
-
-                    <h5>HTML:</h5>
-                    <pre><code class="language-markup"><script type="prism-html-markup">
-<div class="demo">
-    <table-view>
-        <rcol name="city">
-            <div>
-                <a href="<%= testMethod(desc) %>" hide="<%= status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a>
-                <a href="<%= testMethod(desc) %>" hide="<%= !status==1%>" onclick="Test.test('<%= 'sss'||desc%>')"><%= city%></a>
-            </div>
-        </rcol>
-        <rcol name="desc" width="200px"></rcol>
-        <rcol name="name" alias="姓名"></rcol>
-        <rcol alias="测试"><button class="btn btn-primary">测试</button></rcol> <!-- 不对应任何字段的情况-->
-        <rcol name="list" alias="列表">
-            <ul if="<%=list%>">
-                <li each="<%=list%>"><%=a%></li>
-            </ul>
-        </rcol>
-    </table-view>
-</div></script></code></pre>
-
-                    <h5>JavaScript:</h5>
-                    <pre><code class="language-javascript">
-var tableOpts = {
-    data: [
-        {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank'},
-        {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl'},
-        {city: 'ChengDu', name: 'Billy', desc: 'hehehe'},
-        {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!'}
-    ],
-    class: 'table',    //table上添加的class，可配合Bootstrap
-    showHeader: true,  //是否展示表头
-    cut: true,         //内容超长是否省略
-    newline: false,    //内容超长是否换行
-}
-iToolkit.tableExtend.testMethod = function(str) {
-    return str + 'aaaa';
-}  //table cell内的方法需要在该命名空间下注册，以处理相应列的数据,方法注册要在mount动作之前。
-
-riot.mount('.demo  table-view', tableOpts);
-riot.mount('rcol');
-                    </code></pre>
-
-                    <h5>Handle The Table:</h5>
-                    <pre><code class="language-javascript">
-var dom = document.querySelector('table-view');
-dom.loadData([{city: 'LuoYang', name: 'mudan', desc: 'It is pretty'}]);  //load new data
-dom.appendData({city: 'LuoYang', name: 'mudan', desc: 'It is pretty'}); //append data
-dom.deleteData('city', 'LuoYang'); //delete data
-dom.clearData();  //clear data
-dom.orderData('city'); //order by 'city'
-dom.reverseData('city'); //reverse by 'city'
-dom.hide('city'); //hide 'city' col
-dom.show('city'); //show 'city' col
-                    </code></pre>
-                </section>
  
 <!-- ********************************** Paginate Start ************************************** -->               
                 <section id="paginate">
@@ -1179,73 +1087,73 @@ riot.mount('#d0', d0);
             /*
              *  table
              */
-            var tableOpts = {
-                data: [
-                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank, wahahahahaha', list:[{a:1, b:2}, {a:3, b:4}]},
-                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl', list:[{a:1, b:2}, {a:3, b:4}]},
-                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe', list:[{a:1, b:2}, {a:3, b:4}]},
-                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!', list:[{a:1, b:2}, {a:3, b:4}]}
-                ],
-                class: 'table',
-                showHeader: true,
-                cut: true,
-                newline: false
-            }
+            // var tableOpts = {
+            //     data: [
+            //         {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank, wahahahahaha', list:[{a:1, b:2}, {a:3, b:4}]},
+            //         {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl', list:[{a:1, b:2}, {a:3, b:4}]},
+            //         {city: 'ChengDu', name: 'Billy', desc: 'hehehe', list:[{a:1, b:2}, {a:3, b:4}]},
+            //         {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!', list:[{a:1, b:2}, {a:3, b:4}]}
+            //     ],
+            //     class: 'table',
+            //     showHeader: true,
+            //     cut: true,
+            //     newline: false
+            // }
 
-            iToolkit.tableExtend.testMethod = function(str) {
-                return str + 'aaaa';
-            }
+            // iToolkit.tableExtend.testMethod = function(str) {
+            //     return str + 'aaaa';
+            // }
             
-            riot.mount('.demo  table-view', tableOpts);
+            // riot.mount('.demo  table-view', tableOpts);
 
-            function recoverTable() {
-                dom = document.querySelector('table-view');
-                dom.loadData([
-                    {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank' , list:[{a:1, b:2}, {a:3, b:4}]},
-                    {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl' , list:[{a:1, b:2}, {a:3, b:4}]},
-                    {city: 'ChengDu', name: 'Billy', desc: 'hehehe' , list:[{a:1, b:2}, {a:3, b:4}]},
-                    {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!', list:[{a:1, b:2}, {a:3, b:4}]}
-                ]);
-            }
+            // function recoverTable() {
+            //     dom = document.querySelector('table-view');
+            //     dom.loadData([
+            //         {city: 'BeiJing', name: 'Sherman', desc: 'he is a Tank' , list:[{a:1, b:2}, {a:3, b:4}]},
+            //         {city: 'ShangHai', name: 'Ruth', desc: 'she is a nice girl' , list:[{a:1, b:2}, {a:3, b:4}]},
+            //         {city: 'ChengDu', name: 'Billy', desc: 'hehehe' , list:[{a:1, b:2}, {a:3, b:4}]},
+            //         {city: 'GuangZhou', name: 'Silly', desc: 'bad weather!', list:[{a:1, b:2}, {a:3, b:4}]}
+            //     ]);
+            // }
 
-            function reloadTable() {
-                dom = document.querySelector('table-view');
-                dom.loadData([{city: 'LuoYang', name: 'mudan', desc: 'It is pretty'}]);
-            }
+            // function reloadTable() {
+            //     dom = document.querySelector('table-view');
+            //     dom.loadData([{city: 'LuoYang', name: 'mudan', desc: 'It is pretty'}]);
+            // }
 
-            function appendCell() {
-                dom = document.querySelector('table-view');
-                dom.appendData({city: 'LuoYang', name: 'mudan', desc: 'It is pretty'});
-            }
+            // function appendCell() {
+            //     dom = document.querySelector('table-view');
+            //     dom.appendData({city: 'LuoYang', name: 'mudan', desc: 'It is pretty'});
+            // }
 
-            function deleteCell() {
-                dom = document.querySelector('table-view');
-                dom.deleteData('city', 'LuoYang');
-            }
-            function clearCell() {
-                dom = document.querySelector('table-view');
-                dom.clearData();
-            }
+            // function deleteCell() {
+            //     dom = document.querySelector('table-view');
+            //     dom.deleteData('city', 'LuoYang');
+            // }
+            // function clearCell() {
+            //     dom = document.querySelector('table-view');
+            //     dom.clearData();
+            // }
 
-            function orderCell() {
-                dom = document.querySelector('table-view');
-                dom.orderData('city');
-            }
+            // function orderCell() {
+            //     dom = document.querySelector('table-view');
+            //     dom.orderData('city');
+            // }
 
-            function reverseCell() {
-                dom = document.querySelector('table-view');
-                dom.reverseData('city');
-            }
+            // function reverseCell() {
+            //     dom = document.querySelector('table-view');
+            //     dom.reverseData('city');
+            // }
 
-            function hideCell() {
-                dom = document.querySelector('table-view');
-                dom.hide('city');
-            }
+            // function hideCell() {
+            //     dom = document.querySelector('table-view');
+            //     dom.hide('city');
+            // }
 
-            function showCell() {
-                dom = document.querySelector('table-view');
-                dom.show('city');
-            }
+            // function showCell() {
+            //     dom = document.querySelector('table-view');
+            //     dom.show('city');
+            // }
 
             function removeTip() {
                 var elem = document.querySelector('super-form');
@@ -1310,18 +1218,19 @@ riot.mount('#d0', d0);
                     {id: 6, pid: 3, title: 'item5'},
                     {id: 7, pid: 2, title: 'item6'},
                 ],
-                root: true,
                 handleData: true,
                 name: 'title',
                 showCheck: true,
+                link: true,
+                openLevel: 1,
                 onLeftClick: function(item, target) {
                     alert('This item\'s id is: ' + item.id);
                 },
                 onCheck: function(item, target) {
-                    alert(item.id + 'checked');
+                    console.log(item.id + 'checked');
                 },
                 onUnCheck: function(item, target) {
-                    alert(item.id + 'unchecked');
+                    console.log(item.id + 'unchecked');
                 }
             }
             riot.mount('.demo tree', treeOpts);

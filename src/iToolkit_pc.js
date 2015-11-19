@@ -259,12 +259,11 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
 
 });
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }"> <span class="redirect" if="{ redirect }">跳转到<input name="page" riot-type={"number"} style="width: 40px;" min="1" max="{ pageCount }">页 </span> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
-    
+riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }" style="position:relative;"> <span class="redirect" if="{ redirect }">跳转到<input class="jumpPage" name="page" riot-type={"number"} style="width: 40px;">页 </span> <div class="paginate-tips" riot-style="top: { tipsTop }; left: { tipsLeft }; display: { showTip }"> 请输入1～{ pageCount }之间的数字 </div> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', '.paginate .paginate-tips{ position: absolute; padding: 5px; border: 1px solid #ddd; background-color: #fff; -webkit-box-shadow: 0 0 10px #ccc; box-shadow: 0 0 10px #ccc; } .paginate .paginate-tips:before { content: ""; position: absolute; width: 0; height: 0; top: -16px; left: 10px; border: 8px solid transparent; border-bottom-color: #ddd; } .paginate .paginate-tips:after { content: ""; position: absolute; width: 0; height: 0; top: -15px; left: 10px; border: 8px solid transparent; border-bottom-color: #fff; }', function(opts) {
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
-    
+    self.showTip = 'none';
     self.count = config.count || 0;
     self.pagesize = config.pagesize || 20;
     self.pageCount = config.pageCount || Math.ceil(self.count/self.pagesize) || 1;
@@ -277,6 +276,30 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
     self.showItemCount = config.showItemCount || true;
     self.needInit = config.needInit || false;
 
+    self.updateCurrentPage = function () {
+        if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
+            self.pages = [];
+            if (self.pageCount - self.currentPage > 2) {
+                var origin = self.currentPage - Math.ceil(self.showNumber/2);
+                var last = self.currentPage + Math.floor(self.showNumber/2);
+            }
+            else {
+                var last = self.pageCount;
+                var origin = self.pageCount - self.showNumber;
+            }
+            for (i = origin; i < last; i++) {
+                self.pages.push({page: i + 1});
+                self.update();
+            }
+        }
+        else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
+            self.pages = [];
+            for (i = 0; i < self.showNumber; i++) {
+                self.pages.push({page: i + 1});
+            }
+            self.pages.push({page: '...'});
+        }
+    };
     EL.addCount = function (num) {
         var count = self.count + num;
         var oldPageCount = self.pageCount;
@@ -298,17 +321,18 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
             }
         }
 
-        if (self.needInit) {
+        if (
+
+            self.needInit
+
+            || (self.pageCount < oldPageCount && self.currentPage <= self.pageCount)
+        ) {
             config.callback(self.currentPage);
         }
 
         self.pageChange(self.currentPage)
         self.update();
     };
-    
-    if (self.needInit) {
-        config.callback(self.currentPage);
-    }
 
     self.pages = [];
     
@@ -323,6 +347,11 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
         }
         self.pages.push({page: '...'});
     }
+
+    if (self.needInit) {
+        config.callback(self.currentPage);
+    }
+    self.updateCurrentPage();
     self.update();
 
     this.goFirst = function(e) {
@@ -346,9 +375,23 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
     }.bind(this);
 
     this.redirect = function(e) {
-        var index = self.page.value;
-        if (parseInt(index, 10) && parseInt(index, 10) < (self.pageCount + 1)) {
+        var index = parseInt(self.page.value, 10);
+        if (
+            index &&
+            index < (self.pageCount + 1) &&
+            index > 0
+        ) {
             self.pageChange(parseInt(index, 10));
+        }
+        else {
+            self.tipsLeft = self.page.offsetLeft;
+            self.tipsTop = self.page.offsetTop + self.page.offsetHeight + 8;
+            self.showTip = 'block';
+            setTimeout(function () {
+                self.showTip = 'none';
+                self.update();
+            }, 1500)
+            self.update();
         }
     }.bind(this);
 
@@ -367,33 +410,10 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
             self.currentPage = page;
             config.callback(page);
         }
-        if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
-            self.pages = [];
-            if (self.pageCount - self.currentPage > 2) {
-                var origin = self.currentPage - Math.ceil(self.showNumber/2);
-                var last = self.currentPage + Math.floor(self.showNumber/2);
-            }
-            else {
-                var last = self.pageCount;
-                var origin = self.pageCount - self.showNumber;
-            }
-            for (i = origin; i < last; i++) {
-                self.pages.push({page: i + 1});
-                self.update();
-            }
-            
-        }
-        else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
-            self.pages = [];
-            for (i = 0; i < self.showNumber; i++) {
-                self.pages.push({page: i + 1});
-            }
-            self.pages.push({page: '...'});
-        }
+        self.updateCurrentPage();
     };
 
-
-
+    
 });
 riot.tag('select-box', '<div class="r-select" onclick="{ clicked }">{ placeholder }</div> <ul class="r-select-body" hide="{ hide }"> <li each="{ data }" index="{ index }" value="{ value }" class="r-select-item { selected }" onclick="{ parent.clickItem }">{ innerText }</li> </ul> <div style="display:none" class="inputHide"></div>', function(opts) {
     var self = this;
@@ -532,7 +552,6 @@ riot.tag('super-div', '<yield>', 'super-div{ display: block; }', function(opts) 
 
 });
 riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function(opts) {
-
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
@@ -547,6 +566,17 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         'getData',
         'setData'
     ];   //保留字，不被覆盖
+
+    var checkList = [
+        'allowEmpty',
+        'allowempty',
+        'max',
+        'min',
+        'valid',
+        'customValid',
+        'customvalid',
+        'vr'
+    ];
 
     var NUMBER_REGEXP = {
         NON_NEGATIVE_INT: /^0$|^-[1-9]\d*$/,                            //非负整数（正整数 + 0） 
@@ -565,7 +595,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     self.emailWarning = '邮箱格式错误';
     self.mobileWarning = '手机格式错误';
     self.urlWarning = '网址格式错误';
-    self.successTips = '通过';
+    self.successTips = config.successTipsText || '通过';
     self.regWarning = '字段不符合验证规则';
     self.numWarning = '数字格式错误';
 
@@ -575,23 +605,25 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     
     self.comparator = function (type) {
         return {
-            handler: function (validation, min, max, value) {
+            handler: function (validation, attrs) {
                 switch (type) {
                     case 'number':
-                        return self.numComparator(validation, min, max, value);
+                        return self.numComparator(validation, attrs);
                     case 'string':
                     default:
-                        return self.strCompatator(validation, min, max, value);
+                        return self.strCompatator(validation, attrs);
                 }
             }
         };
     };
 
     
-    self.strCompatator = function(validation, min, max, value) {
+    self.strCompatator = function(validation, attrs) {
+        var min = parseInt(attrs.min, 10);
+        var max = parseInt(attrs.max, 10);
         var nMin = isNaN(min);
         var nMax = isNaN(max);
-        var len = value.length;
+        var len = attrs.value.length;
         if (!nMin && !nMax) {
             if (len > max || len < min) {
                 validation.msg.push(self.bpWarning(min, max));
@@ -606,13 +638,16 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             }
         }
         return validation;
-    }
+    };
 
     
-    self.numComparator = function(validation, min, max, value) {
+
+    self.numComparator = function(validation, attrs) {
+        var min = parseInt(attrs.min, 10);
+        var max = parseInt(attrs.max, 10);
         var nMin = isNaN(min);
         var nMax = isNaN(max);
-        var value = +value;
+        var value = +attrs.value;
         if (!nMin && !nMax) {
             if (value > max || value < min) {
                 validation.msg.push(self.numBpWarning(min, max));
@@ -627,7 +662,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             }
         }
         return validation;
-    }
+    };
 
     self.one('mount', function() {
         EL.style.display = 'block';
@@ -637,13 +672,8 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 var type = elems[i].type;
                 if (type !== 'submit' || type !== 'button') {
                     elems[i].addEventListener('input', valueOnChange, false);
-                    if (type === 'checkbox' || type === 'radio') {
-                        elems[i].addEventListener('change', valueOnChange, false);
-                        
-                    }
-                    elems[i].addEventListener('input', valueOnChange, false);
+                    elems[i].addEventListener('change', valueOnChange, false);
                 }
-                
             }
         }
     });
@@ -654,12 +684,15 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
 
     function isType(obj) {
-        return toString.call(obj).match(/\ (.*)\]/)[1];
+        return Object.prototype.toString.call(obj).match(/\ (.*)\]/)[1];
     }
 
     function dif(obj) {
         var constructor = isType(obj);
-        if (constructor === 'Null' || constructor === 'Undefined' || constructor === 'Function') {
+        if (constructor === 'Null'
+            || constructor === 'Undefined'
+            || constructor === 'Function'
+        ) {
             return obj;
         }
         return new window[constructor](obj);
@@ -676,11 +709,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
         colName = colName || 'data';
         self[colName] = newData;
-
-
-
-
-
         self.update();
     };
 
@@ -711,11 +739,14 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         var params = {};
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
+                var value;
                 if (elems[i].tagName === "SELECT") {
-                    var selected = elems[i].selectedOptions;
-                    for (j = 0; j < selected.length; j++) {
-                        value = selected[j].value;
-                        self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
+                    var options = elems[i].options;
+                    for (var j = 0; j < options.length; j++) {
+                        if (options[j].selected) {
+                           value = options[j].value;
+                           self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
+                        }
                     }
                 } 
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
@@ -793,20 +824,21 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
     
     
-    self.removeTip = EL.removeTip = function(dom){
+    
+    self.removeTipNode = function(dom) {
         var tip = dom.nextElementSibling;
         if (tip && tip.className.match(/tip-container/)) {
             dom.parentNode.removeChild(tip);
         }
+    };
+    self.removeTip = EL.removeTip = function(dom){
+        self.removeTipNode(dom);
         utils.removeClass(dom, self.passClass);
         utils.removeClass(dom, self.failedClass);
     };
 
     self.insertTip = EL.insertTip = function(dom, message, className){
-        var tip = dom.nextElementSibling;
-        if (tip && tip.className.match(/tip-container/)) {
-            dom.parentNode.removeChild(tip);
-        }
+        self.removeTipNode(dom);
         var tipContainer = document.createElement('span');
         tipContainer.className = className;
         tipContainer.innerHTML = message;
@@ -830,13 +862,16 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         var params = '';
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
+                var value;
                 if (elems[i].tagName === "SELECT") {
-                    var selected = elems[i].selectedOptions;
-                    for (j = 0; j < selected.length; j++) {
-                        value = selected[j].value;
-                        params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    var options = elems[i].options;
+                    for (var j = 0; j < options.length; j++) {
+                        if (options[j].selected) {
+                           value = options[j].value;
+                           params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                        }
                     }
-                } 
+                }
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
                         value = elems[i].value;
@@ -849,18 +884,13 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 }
             }
             if (elems[i].type === "submit") {
-                if (elems[i].tagName === 'BUTTON') {
-                    var submitbtn = elems[i];
-                    var submitText = submitbtn.innerHTML;
-                    submitbtn.disabled = 'disabled';
-                    submitbtn.innerHTML = self.submitingText;
-                }
-                else {
-                    var submitbtn = elems[i];
-                    var submitText = submitbtn.value;
-                    submitbtn.disabled = 'disabled';
-                    submitbtn.value = self.submitingText;
-                }
+                var submitbtn = elems[i];
+                var attr = submitbtn.tagName === 'BUTTON'
+                         ? 'innerHTML'
+                         : 'value';
+                var submitingText = submitbtn[attr];
+                submitbtn.disabled = 'disabled';
+                submitbtn[attr] = self.submitingText;
             }
         }
         var xmlhttp = new XMLHttpRequest();
@@ -870,12 +900,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
                 self.removeTips();
-                if (submitbtn.tagName === 'BUTTON') {
-                    submitbtn.innerHTML = submitText;
-                }
-                else {
-                    submitbtn.value = submitText;
-                }
+                submitbtn[attr] = submitingText;
                 submitbtn.disabled = false;
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
@@ -920,7 +945,6 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
 
         if (!validArr.length) {
-
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
                 return true;
@@ -935,7 +959,28 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         }
     }.bind(this);
 
+    function getCheckParam(elem) {
+        var elem = elem;
+        var attributes = elem.attributes;
+        var ret = {};
+        for (var i = 0; i < attributes.length; i++) {
+            var attr = attributes[i];
+            ret[attr.name] = attr.value;
+        }
+        ret.value = elem.value;
+        return ret;
+    }
 
+    function isNeedCheck(attrs) {
+        for (var i = 0; i < checkList.length; i++) {
+            if (attrs[checkList[i]]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    
     self.Validation = function(validArr, name, dom) {
         this.msg = [];        
         this.validTip = function() {
@@ -944,70 +989,88 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 validArr.push(name)
             }
             else {
-                self.onValidPass(dom, self.successTips);
+                if (config.forbidTips) {
+                    self.removeTip(dom);
+                }
+                else {
+                    self.onValidPass(dom, self.successTips);
+                }
             }
         }
     }
 
-    self.validEmail = function(validation, v) {
-        if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
+    self.validEmail = function(validation, attrs) {
+        if (!attrs.value.match(/^([a-zA-Z0-9_\-\.])+\@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
             validation.msg.push(self.emailWarning);
+        }
+        else {
+            self.comparator('string').handler(validation, attrs);
         }
         return validation;
     }
 
-    self.validUrl = function(validation, v) {
-        if (!v.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
-            validation.msg.push(self.emailWarning);
+    self.validUrl = function(validation, attrs) {
+        if (!attrs.value.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
+            validation.msg.push(self.urlWarning);
+        }
+        else {
+            self.comparator('string').handler(validation, attrs);
         }
         return validation;
     }
 
-    self.validMobile = function(validation, v) {
-        if (!v.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
+    self.validMobile = function(validation, attrs) {
+        if (!attrs.value.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
             validation.msg.push(self.mobileWarning);
         }
+        else {
+            self.comparator('string').handler(validation, attrs);
+        }
         return validation;
     }
 
-    self.validPresent = function(validation, v) {
-        v = v.replace(' ', '');
+    self.validPresent = function(validation, attrs) {
+        var v = attrs.value.replace(' ', '');
         if (!v.length) {
             validation.msg.push(self.presentWarning);
         }
+        else {
+            self.comparator('string').handler(validation, attrs);
+        }
         return validation;
     }
 
-    self.validRegExp = function(validation, valid, v, min, max) {
-        valid = valid.replace(/^\//, '');
+    self.validRegExp = function(validation, attrs) {
+        var valid = attrs.valid.replace(/^\//, '');
         valid = valid.replace(/\/$/, '');
         var reg = new RegExp(valid);
-        if (reg.test(v)) {
-            self.comparator('string').handler(validation, min, max, v);
+        if (reg.test(attrs.value)) {
+            self.comparator('string').handler(validation, attrs);
         }
         else {
-            validation.msg.push(self.presentWarning);
+            validation.msg.push(self.regWarning);
         }
         return validation;
     }
 
-    self.validNumRange = function(validation, valid, v, min, max) {
-        var reg = NUMBER_REGEXP[valid.toUpperCase()];
-        if (reg.test(v)) {
-            self.comparator('number').handler(validation, min, max, v);
-        }
-        else {
+    self.validNumRange = function(validation, attrs) {
+        var reg = NUMBER_REGEXP[attrs.valid.toUpperCase()];
+        if (!reg.test(attrs.value)) {
             validation.msg.push(self.numWarning);
         }
+        else {
+            self.comparator('number').handler(validation, attrs);
+        }
         return validation;
     }
 
-    self.validCustom = function(validation, customValid, v, min, max) {
+    self.validCustom = function(validation, attrs) {
+        var customValid = attrs.customValid || attrs.customvalid;
         if (window[customValid]) {
             var reg = window[customValid].regExp;
             var tips = window[customValid].message || self.regWarning;
-            if (reg && reg.test(v)) {
-                self.comparator('string').handler(validation, min, max, v); 
+            if (reg && reg.test(attrs.value)) {
+                self.comparator('string').handler(validation, attrs); 
             }
             else {
                 validation.msg.push(tips);
@@ -1016,100 +1079,82 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         return validation;
     }
 
-
-
-    
-    function doCheck(validArr, elem) {
-        var elem = elem;
-        var valid = elem.getAttribute('valid');
-        var customValid = elem.getAttribute('customValid');
-        var vr = elem.getAttribute('vr');
-        var orient = elem.getAttribute('orient');
-        var max = parseInt(elem.getAttribute('max'), 10);
-        var min = parseInt(elem.getAttribute('min'), 10);
-        var type = elem.type;
-        var allowEmpty = elem.getAttribute('allowEmpty');
-        var v = elem.value; 
-        var name = elem.name;
-        var dom = elem;
-        var validation = new self.Validation(validArr, name, dom);
-
-        if (
-            allowEmpty === null
-            && isNaN(max)
-            && isNaN(min)
-            && valid === null
-            && customValid === null
-            && vr === null
-            && orient === null
-        ) {
-            return;
-        }
-        if (allowEmpty && (v === '' || typeof v !== 'string')) {
-            self.onValidPass(dom, self.successTips);
-            return;
-        }
-        if (name && valid) {
-            if (valid === 'present') {
-                self.validPresent(validation, v);
-            }
-            else if (valid === 'mobile') {
-                self.validMobile(validation, v);
-            }
-            else if (valid === 'url') {
-                self.validUrl(validation, v);
-            }
-            else if (valid === 'email') {
-                self.validEmail(validation, v);
-            }
-            else if (valid.match(/^\/\S+\/$/)) {
-                self.validRegExp(validation, valid, v, min, max);
-            }
-            else if (NUMBER_REGEXP[valid.toUpperCase()]) {
-                self.validNumRange(validation, valid, v, min, max);
-            }
-        }
-        else if (name && !valid) {
-            if (customValid) {
-                self.validCustom(validation, customValid, v, min, max);
-            }
-            else {
-                if (type === 'text') {
-                    self.comparator('string').handler(validation, min, max, v); 
-                }
-            }
-        }
-        validation.validTip();
-
-        if (orient) {
-            var newEle = EL.querySelector(orient);
-            if (elem === newEle || !newEle) {
-                return;
-            }
-            elem = newEle;
-            vr = elem.getAttribute('vr');
-        }
-        if (!validArr.length && vr) {
-            var arr = vr.split('::');
+    self.validUnion = function (validation, validArr, elem, attrs) {
+        if (attrs.vr) {
+            var arr = attrs.vr.split('::');
             var method = arr[0];
             var params = arr[1] ? arr[1].split(',') : undefined;
             var flag = false;
             try {
-                if (iToolkit[method]) {
-                    flag = iToolkit[method].apply(elem, params);
-                }
+                flag = iToolkit[method].apply(elem, params);
             }
             catch (e) {
                 flag = false;
                 throw e;
             }
             if (!flag) {
-                validArr.push('fail');
+                validation.msg.push('');
             }
         }
+        return validation;
     }
 
+    self.validEmpty = function (validation, attrs) {
+        if (attrs.value === '') {
+            validation.msg.push(self.presentWarning);
+        }
+        return validation;
+    }
 
+    
+    function doCheck(validArr, elem) {
+        var dom = elem;
+        var attrs = getCheckParam(elem);
+        if (!isNeedCheck(attrs)) {
+            return;
+        }
+        var validation = new self.Validation(validArr, attrs.name, dom);
+        if (attrs.name) {
+            if ((attrs.allowEmpty || attrs.allowempty) && attrs.value === '') {
+                self.onValidPass(dom, self.successTips);
+                return;
+            }
+            self.validEmpty(validation, attrs);
+            if (attrs.valid) {
+                if (attrs.valid === 'present') {
+                    self.validPresent(validation, attrs);
+                }
+                else if (attrs.valid === 'mobile') {
+                    self.validMobile(validation, attrs);
+                }
+                else if (attrs.valid === 'url') {
+                    self.validUrl(validation, attrs);
+                }
+                else if (attrs.valid === 'email') {
+                    self.validEmail(validation, attrs);
+                }
+                else if (attrs.valid.match(/^\/\S+\/$/)) {
+                    self.validRegExp(validation, attrs);
+                }
+                else if (NUMBER_REGEXP[attrs.valid.toUpperCase()]) {
+                    self.validNumRange(validation, attrs);
+                }
+            }
+            else if (!attrs.valid) {
+                if (attrs.customValid || attrs.customvalid) {
+                    self.validCustom(validation, attrs);
+                }
+                else if (attrs.min || attrs.max){
+                    self.comparator('string').handler(validation, attrs);
+                }
+            }
+        }
+        if (!validArr.length) {
+            self.validUnion(validation, validArr, dom, attrs);
+        }
+        validation.validTip();
+    }
+    
 });
 riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ active: parent.currentIndex==index }">{ title }</li> </ul> <div class="tab-content"> { content } </div>', function(opts) {
 
@@ -1133,253 +1178,110 @@ riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ a
     }.bind(this);
 
 });
-riot.tag('table-view', '<yield> <table class="{ config.class }"> <tr show="{ showHeader }"> <th each="{ cols }" riot-style="{ style }" hide="{ hide }">{ alias || name }</th> </tr> <tr each="{ row in rows }" > <td each="{ colkey, colval in parent.cols }" class="{ newline: parent.parent.config.newline, cut: parent.parent.config.cut }" title="{ parent.row[colkey.name] }" hide="{ colkey.hide }"> { parent.parent.drawcell(parent.row, this, colkey) } </td> </tr> </table>', function(opts) {
-
+riot.tag('tree-item', '<input type="checkbox" __checked="{ selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-arrow { open: opened }" onclick="{ toggle }" if="{ children }"></i> <i class="tree-item-icon" if="{ children }"></i> <div onclick="{ leftClick }">{ name }</div>', function(opts) {
+    
     var self = this;
-    var EL = self.root;
-    self.config = self.opts.opts || self.opts;
-    if (self.config.showHeader===false) {
-        self.showHeader = false
-    }
-    else {
-        self.showHeader = true;
-    }
 
-    self.cols = [];
-    self.rows = [];
-
-    self.on('mount', function() {
-        self.rows = self.config.data;
-        if (EL.children.length > 1) {
-            for( i = 0; i < EL.children.length; i++){
-                var child = EL.children[i];
-                if(child.localName === 'rcol'){
-                    var col_style = ''    
-                    if(child.attributes['width'] != undefined) {
-                        col_style='width: '+ child.attributes['width'].value;
-                    }
-
-                    var col = {
-                        inner: child.innerHTML,
-                        style: col_style,
-                        index: i,
-                        attrs: child.attributes,
-                        hide: false
-                    }
-
-                    col.name = child.attributes['name'] ? child.attributes['name'].value : '';
-                    if (child.attributes['alias']) {
-                        col.alias = child.attributes['alias'].value || ''
-                    }
-
-                    self.cols.push(col);
-                }
-
+    self.originData = function(id) {
+        var originDatas = self.parent.data;
+        var originData;
+        for (i = 0; i < originDatas.length; i++) {
+            if (originDatas[i].id === id) {
+                originData = originDatas[i];
+                break;
             }
         }
-        else {
-
-            for (i in self.rows[0]) {
-                var col = {
-                    name: i,
-                    inner: '',
-                    style: col_style,
-                }
-                self.cols.push(col);
-            }
-        }
-        self.update()
-    })
-
-    self.compare = function(a, b) {
-        if (a[self.orderkeyName] > b[self.orderkeyName]) {
-            return 1;
-        } 
-        else if (a[self.orderkeyName] === b[self.orderkeyName]) {
-            return 0;
-        }
-        else {
-            return -1;
-        }
-    }
-
-    self.clearOrder = function() {
-        self.ordered = false;
-        self.reversed = false;
-    }
-
-
-    EL.loadData = function(newrows){
-        self.clearOrder();
-        self.rows = newrows
-        self.update()
-    }
-
-    EL.appendData = function(newrows){
-        self.clearOrder();
-        self.rows.push(newrows)
-        self.update()
-    }
-
-    EL.clearData = function(newrows){
-        self.clearOrder();
-        self.rows = [];
-        self.update()
-    }
-
-    EL.orderData = function(keyName){
-        self.orderkeyName = keyName;
-        if (self.ordered !== keyName) {
-            if (self.reversed !== keyName) {
-                self.rows = self.rows.sort(self.compare)
-            }
-            else {
-                self.rows = self.rows.reverse();
-            }
-        }
-        else {
-            return
-        }
-        self.ordered = keyName;
-        self.reversed = false;
-        self.update()
-    }
-
-    EL.reverseData = function(keyName){
-        self.orderkeyName = keyName;
-        if (self.reversed !== keyName) {
-            if (self.ordered !== keyName) {
-                self.rows = self.rows.sort(self.compare)
-            }
-            self.rows = self.rows.reverse();
-        }
-        else {
-            return
-        }
-        self.ordered = false;
-        self.reversed = keyName;
-        self.update()
-    }
-
-    EL.deleteData = function(keyName, value){
-        self.clearOrder();
-        var keyName = keyName || 'id';
-        for (i = 0; i < self.rows.length; i++) {
-            if (self.rows[i][keyName] === value) {
-                self.rows.splice(i, 1);
-                EL.deleteData(keyName, value);
-            }
-        }
-        self.update();
-        return EL;
-    }
-
-    EL.hide = function(keyName) {
-        for(i = 0; i < self.cols.length; i++) {
-            if (self.cols[i].name === keyName) {
-                self.cols[i].hide = true
-                break
-            }
-        }
-        self.update();
-    }
-
-    EL.show = function(keyName) {
-        for(i = 0; i < self.cols.length; i++) {
-            if (self.cols[i].name === keyName) {
-                self.cols[i].hide = false
-                break
-            }
-        }
-        self.update();
+        return originData
     }
     
-    self.findNodes = function(node, tag) {
-        for(var i = 0;i < node.attributes.length; i++){
-            var attrName = node.attributes[i]['name'];
-            var attrValue = node.attributes[i]['value'];
-            if (attrName === 'if' || attrName === 'show' || attrName === 'hide') {
-                node.removeAttribute(attrName);
-                var judgeValue = riot.util.tmpl(attrValue, tag);
-                if (attrName == 'hide') judgeValue = !judgeValue;
-                node.style.display = judgeValue ? '' : 'none';
-            }
-            if (attrName === 'each') {
-                node.removeAttribute(attrName);
-                var arr = riot.util.tmpl(attrValue, tag);
-                var root = node.parentNode;
-                if (arr && utils.isArray(arr)) {
-                    var placeholder = document.createComment('riot placeholder');
-                    var frag = document.createDocumentFragment();
-
-                    root.insertBefore(placeholder, node);
-                    for (i = 0; i < arr.length; i++) {
-                        var tmp = document.createElement('tmp');
-                        tmp.innerHTML = riot.util.tmpl(node.outerHTML, arr[i]);
-                        frag.appendChild(tmp.firstChild);
-                    }
-
-                    root.removeChild(node);
-                    root.insertBefore(frag, placeholder);
+    
+    self.selectchildren = function(item, bool) {
+        var selectChildItem = function(item) {
+            if (item && item.children) {
+                for(var i = 0; i < item.children.length; i++) {
+                    item.children[i].selected = bool;
+                    selectChildItem(item.children[i]);
                 }
-                
-            } 
+            }
+        };
+        selectChildItem(item, bool);
+        self.parent.treeroot.update();
+    };
+
+    
+    self.cancelParent = function(item) {
+        var cancelParentSelect = function(item) {
+            if (item && item.pnode) {
+                item.pnode.selected = false;
+                cancelParentSelect(item.pnode);
+            }
+        };
+        cancelParentSelect(item);
+        self.parent.treeroot.update();
+    };
+
+    
+    this.checkHandle = function(e) {
+        var originData = self.originData(self.id);
+        var config = self.parent.rootConfig
+        var checkCb = config.onCheck;
+        var uncheckCb = config.onUnCheck;
+        if (self.selected) {
+            originData.selected = false;
+            uncheckCb && uncheckCb(originData, e.target);
+
+            if (config.link) {
+                self.selectchildren(self, false);
+                self.cancelParent(self);
+            }
         }
-        if (node.hasChildNodes()) {
-            var children = node.children;
-            for (var i = 0; i < children.length; i++) {  
-                var child = children.item(i);
-                self.findNodes(child, tag);  
-            }  
+        else if (!self.selected) {
+            originData.selected = true;
+            checkCb && checkCb(originData, e.target);
+            if (config.link) {
+                self.selectchildren(self, true);
+            }
         }
-        
-    }
-
-    this.drawcell = function(rowdata, td, col) {
-        if (col.attrs.length) {
-            for (i in col.attrs) {
-                if (typeof col.attrs[i] !== 'function') {
-                    if (col.attrs[i]['name'] && col.attrs[i]['name']!=='class') {
-                        td.root.setAttribute(col.attrs[i]['name'], col.attrs[i]['value']);
-                    }
-                    else if (col.attrs[i]['name'] && col.attrs[i]['name']=='class') {
-                        utils.addClass(td.root, col.attrs[i]['value']);
-                    }
-                }
-            }
-        } //将rcol的属性挪到td上，class需特殊处理，name和alias不动
-        
-        if(col.inner){
-            var str = col.inner.replace(/&lt;%=/g, '{')
-                               .replace(/%&gt;/g, '}')
-                               .replace(/%>/g, '}')
-                               .replace(/<%=/g, '{');
-            for (i in iToolkit.tableExtend) {
-                if (typeof iToolkit.tableExtend[i] === 'function') {
-                    rowdata[i] = iToolkit.tableExtend[i].bind(rowdata);
-                }
-                else {
-                    rowdata[i] = iToolkit.tableExtend[i]
-                }
-            }
-
-            for (i in rowdata) {
-                td[i] = rowdata[i];
-            }
-            
-            td.root.innerHTML = str;
-            self.findNodes(td.root, td);
-            td.root.innerHTML = riot.util.tmpl(td.root.innerHTML, rowdata)
+    }.bind(this);
+    
+    
+    this.toggle = function(e) {
+        var originData = self.originData(self.id);
+        if (originData.opened === true) {
+            originData.opened = false;
+            self.parent.opened = false;
         }
-        else{
-            return rowdata[col.name];
+        else {
+            originData.opened = true;
+            self.parent.opened = true;
+        }
+        self.parent.treeroot.update();
+    }.bind(this);
+
+    
+    this.leftClick = function(e) {
+        var originData = self.originData(self.id);
+        var config = self.parent.rootConfig;
+        if (config.folder && config.children) {
+            if (originData.opened === true) {
+                originData.opened = false;
+            }
+            else {
+                originData.opened = true;
+            }
+        }
+        else {
+            var leftClick = config.onLeftClick;
+            if (leftClick) {
+                leftClick(originData, e.target);
+            }
         }
     }.bind(this);
 
 
 });
-riot.tag('tree', '<div class="tree-item-wrap" each="{ data }" onselectstart="return false" ondragstart="return false"> <input type="checkbox" onchange="{ parent.checkHandle }" if="{ parent.rootConfig.showCheck }"> <i class="{ tree-item-arrow: true, open: opened, empty: !children }" onclick="{ parent.toggle }"></i> <div onclick="{ parent.leftClick }" style="display: inline;"> <i class="tree-item-icon" if="{ !parent.children }"></i> <i class="tree-item-icon" if="{ parent.children }"></i> <div class="{ tree-item-name : true }" title="{ name }">{ name }</div>  </div> <ul class="tree-child-wrap" if="{ children }"> <tree data="{ children }" if="{ children }"></tree> </ul> </div>', function(opts) {
 
+riot.tag('tree', '<div class="tree-item-wrap" each="{ data }" onselectstart="return false" ondragstart="return false"> <tree-item class="tree-item-row { root: level==1 }" riot-style="padding-left: { countPadding(level) }"></tree-item> <ul class="tree-child-wrap" if="{ _item.opened && children }"> <tree data="{ children }"></tree> </ul> </div>', function(opts) {
     var self = this;
     self.config = self.opts.opts || self.opts;
 
@@ -1404,73 +1306,55 @@ riot.tag('tree', '<div class="tree-item-wrap" each="{ data }" onselectstart="ret
                 if (!parent.children) {
                     parent.children = [];
                 }
+                node.pnode = parent;
                 parent.children.push(node);
             }
             else {
                 tree.push(node);
             }
         });
+
+        var countLevel = function(tree, level) {
+            var level = level + 1;
+            tree.forEach(function(item) {
+                item.level = level - 1;
+
+                if (item.level < (self.config.openLevel + 1)) {
+                    item.opened = true;
+                }
+                if (item.children) {
+                    countLevel(item.children, level);
+                }
+            })
+        };
+        countLevel(tree, 1);
         return tree;
+
     };
     
     
-    if (self.config.handleData) {
-        var tree = self.dataHandle(self.config.data);
-        self.data = tree;
+    if (!self.parent || self.parent.root.tagName !== 'TREE') {
+        if (self.config.handleData) {
+            var tree = self.dataHandle(self.config.data);
+            self.data = tree;
+        }
+        self.rootConfig = self.config;
+        self.treeroot = self;
     }
     else {
         self.data = self.config.data;
-    }
-
-    
-    if (self.config.root) {
-        self.rootConfig = self.config;
-    }
-    else {
         self.rootConfig = self.parent.rootConfig || self.parent.parent.rootConfig;
+        self.treeroot = self.parent.treeroot || self.parent.parent.treeroot;
+
     }
+    self.treeroot.update();
     
     
-    this.leftClick = function(e) {
-        if (self.rootConfig.folder && e.item.children) {
-            if (e.item.opened === true) {
-                e.item.opened = false;
-            }
-            else {
-                e.item.opened = true;
-            }
-        }
-        else {
-            var leftClick = self.rootConfig.onLeftClick;
-            if (leftClick) {
-                leftClick(e.item, e.target);
-            }
-        }
+    
+    this.countPadding = function(level) {
+        var padding = self.rootConfig.padding || 20;
+        return (level - 1) * padding + 'px';
     }.bind(this);
-
-    
-    this.checkHandle = function(e) {
-        var checkItem = self.rootConfig.onCheck;
-        var uncheckItem = self.rootConfig.onUnCheck;
-        if (checkItem && e.target.checked) {
-            checkItem(e.item, e.target);
-        }
-        if (uncheckItem && !e.target.checked) {
-            uncheckItem(e.item, e.target);
-        }
-    }.bind(this);
-
-
-
     
     
-    this.toggle = function(e) {
-        if (e.item.opened === true) {
-            e.item.opened = false;
-        }
-        else {
-            e.item.opened = true;
-        }
-    }.bind(this);
-
 });

@@ -16,3 +16,4 @@ Makefile.in
 /old
 node_modules
 .DS_Store
+.idea

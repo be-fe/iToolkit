@@ -21,40 +21,6 @@ e.g:
 [Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)  
 [新版文档](http://be-fe.github.io/iToolkit/docs/book/index.html)  
 
-### Table
-#### Table generator:
-[Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html#table)   
-HTML:
-
-    <table-view>
-        <rcol name="city"><a href="<%= desc%>"><%= city%></a></rcol>
-        <rcol name="desc" width="100px"></rcol>
-        <rcol name="name" alias="姓名"></rcol>
-    </table-view>
-
-JavaScript:
-
-    var tableOpts = {
-        data: [
-            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'},
-            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'},
-            {city: 'Beijing', name: 'Sherman', desc: 'hehehehehhe'}
-        ]
-    }
-    riot.mount('table-view', tableOpts);
-    riot.mount('rcol');
-
-#### Handle the table：
-JavaScript:
-
-    var dom = document.querySelector('table-view');
-    dom.loadData([{city: 'LuoYang', name: 'mudan', desc: 'It is pretty'}]);  //load new data
-    dom.appendData({city: 'LuoYang', name: 'mudan', desc: 'It is pretty'}); //append data
-    dom.deleteData('city', 'LuoYang'); //delete data
-    dom.clearData();  //clear data
-    dom.orderData('city'); //order by 'city'
-    dom.reverseData('city'); //reverse by 'city'
-
 ### Form
 #### example code:
 [Demo](http://be-fe.github.io/iToolkit/iToolkit_pc.html)   
@@ -170,7 +136,7 @@ JavaScript:
             {id: 6, pid: 3, title: 'item5'},
             {id: 7, pid: 2, title: 'item6'},
         ],
-        root: true,              //must be true
+        
         handleData: true,        //array use true，treeData use false
         name: 'title',           // item name in the data
         onLeftClick: function(item, target) {

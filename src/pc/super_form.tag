@@ -2,7 +2,7 @@
     <form onsubmit={ submit } >
         <yield>
     </form>
-
+    <script>
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
@@ -17,6 +17,17 @@
         'getData',
         'setData'
     ];   //保留字，不被覆盖
+
+    var checkList = [
+        'allowEmpty',
+        'allowempty',
+        'max',
+        'min',
+        'valid',
+        'customValid',
+        'customvalid',
+        'vr'
+    ];
 
     // 正则
     var NUMBER_REGEXP = {
@@ -36,7 +47,7 @@
     self.emailWarning = '邮箱格式错误';
     self.mobileWarning = '手机格式错误';
     self.urlWarning = '网址格式错误';
-    self.successTips = '通过';
+    self.successTips = config.successTipsText || '通过';
     self.regWarning = '字段不符合验证规则';
     self.numWarning = '数字格式错误';
 
@@ -51,33 +62,31 @@
      */
     self.comparator = function (type) {
         return {
-            handler: function (validation, min, max, value) {
+            handler: function (validation, attrs) {
                 switch (type) {
                     case 'number':
-                        return self.numComparator(validation, min, max, value);
+                        return self.numComparator(validation, attrs);
                     case 'string':
                     default:
-                        return self.strCompatator(validation, min, max, value);
+                        return self.strCompatator(validation, attrs);
                 }
             }
         };
     };
 
     /**
-     * [strCompatator]
+     * [numComparator description]
      * @description 字符比较器，用于比较字符长度
-     * @param  {number} min      最小边界
-     * @param  {number} max      最大边界
-     * @param  {Object} dom      dom
-     * @param  {string} value    要比较的值
-     * @param  {Array}  validArr 验证数组，该数组为空，可submit
-     * @param  {string} name     参数名
-     * @return {[type]}          [description]
+     * @param  {Object} validation
+     * @param  {Object} attrs 
+     * @return {Object} 
      */
-    self.strCompatator = function(validation, min, max, value) {
+    self.strCompatator = function(validation, attrs) {
+        var min = parseInt(attrs.min, 10);
+        var max = parseInt(attrs.max, 10);
         var nMin = isNaN(min);
         var nMax = isNaN(max);
-        var len = value.length;
+        var len = attrs.value.length;
         if (!nMin && !nMax) {
             if (len > max || len < min) {
                 validation.msg.push(self.bpWarning(min, max));
@@ -92,23 +101,22 @@
             }
         }
         return validation;
-    }
+    };
 
     /**
-     * [numComparator]
-     * @description 字符比较器，用于比较字符长度
-     * @param  {number} min      最小边界
-     * @param  {number} max      最大边界
-     * @param  {Object} dom      dom
-     * @param  {string} value    要比较的值
-     * @param  {Array}  validArr 验证数组，该数组为空，可submit
-     * @param  {string} name     参数名
-     * @return {[type]}          [description]
+     * [numComparator description]
+     * @description 数字比较器，用于比较数字大小
+     * @param  {Object} validation
+     * @param  {Object} attrs 
+     * @return {Object} 
      */
-    self.numComparator = function(validation, min, max, value) {
+
+    self.numComparator = function(validation, attrs) {
+        var min = parseInt(attrs.min, 10);
+        var max = parseInt(attrs.max, 10);
         var nMin = isNaN(min);
         var nMax = isNaN(max);
-        var value = +value;
+        var value = +attrs.value;
         if (!nMin && !nMax) {
             if (value > max || value < min) {
                 validation.msg.push(self.numBpWarning(min, max));
@@ -123,7 +131,7 @@
             }
         }
         return validation;
-    }
+    };
 
     self.one('mount', function() {
         EL.style.display = 'block';
@@ -133,13 +141,8 @@
                 var type = elems[i].type;
                 if (type !== 'submit' || type !== 'button') {
                     elems[i].addEventListener('input', valueOnChange, false);
-                    if (type === 'checkbox' || type === 'radio') {
-                        elems[i].addEventListener('change', valueOnChange, false);
-                        
-                    }
-                    elems[i].addEventListener('input', valueOnChange, false);
+                    elems[i].addEventListener('change', valueOnChange, false);
                 }
-                
             }
         }
     });
@@ -155,12 +158,15 @@
     }
 
     function isType(obj) {
-        return toString.call(obj).match(/\ (.*)\]/)[1];
+        return Object.prototype.toString.call(obj).match(/\ (.*)\]/)[1];
     }
 
     function dif(obj) {
         var constructor = isType(obj);
-        if (constructor === 'Null' || constructor === 'Undefined' || constructor === 'Function') {
+        if (constructor === 'Null'
+            || constructor === 'Undefined'
+            || constructor === 'Function'
+        ) {
             return obj;
         }
         return new window[constructor](obj);
@@ -177,11 +183,6 @@
         }
         colName = colName || 'data';
         self[colName] = newData;
-        // if (utils.isObject(newData) && utils.isObject(self[colName])) {
-        //     for (var i in newData) {
-        //         self[colName][i] = dif(newData[i]);
-        //     };
-        // }
         self.update();
     };
 
@@ -213,11 +214,14 @@
         var params = {};
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
+                var value;
                 if (elems[i].tagName === "SELECT") {
-                    var selected = elems[i].selectedOptions;
-                    for (j = 0; j < selected.length; j++) {
-                        value = selected[j].value;
-                        self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
+                    var options = elems[i].options;
+                    for (var j = 0; j < options.length; j++) {
+                        if (options[j].selected) {
+                           value = options[j].value;
+                           self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
+                        }
                     }
                 } 
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
@@ -303,20 +307,21 @@
     /*
      *  插入提示
      */
-    self.removeTip = EL.removeTip = function(dom){
+    
+    self.removeTipNode = function(dom) {
         var tip = dom.nextElementSibling;
         if (tip && tip.className.match(/tip-container/)) {
             dom.parentNode.removeChild(tip);
         }
+    };
+    self.removeTip = EL.removeTip = function(dom){
+        self.removeTipNode(dom);
         utils.removeClass(dom, self.passClass);
         utils.removeClass(dom, self.failedClass);
     };
 
     self.insertTip = EL.insertTip = function(dom, message, className){
-        var tip = dom.nextElementSibling;
-        if (tip && tip.className.match(/tip-container/)) {
-            dom.parentNode.removeChild(tip);
-        }
+        self.removeTipNode(dom);
         var tipContainer = document.createElement('span');
         tipContainer.className = className;
         tipContainer.innerHTML = message;
@@ -342,13 +347,16 @@
         var params = '';
         for (var i = 0; i < elems.length; i++) {
             if (elems[i].name) {
+                var value;
                 if (elems[i].tagName === "SELECT") {
-                    var selected = elems[i].selectedOptions;
-                    for (j = 0; j < selected.length; j++) {
-                        value = selected[j].value;
-                        params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                    var options = elems[i].options;
+                    for (var j = 0; j < options.length; j++) {
+                        if (options[j].selected) {
+                           value = options[j].value;
+                           params += elems[i].name + "=" + encodeURIComponent(value) + "&";
+                        }
                     }
-                } 
+                }
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
                         value = elems[i].value;
@@ -361,18 +369,13 @@
                 }
             }
             if (elems[i].type === "submit") {
-                if (elems[i].tagName === 'BUTTON') {
-                    var submitbtn = elems[i];
-                    var submitText = submitbtn.innerHTML;
-                    submitbtn.disabled = 'disabled';
-                    submitbtn.innerHTML = self.submitingText;
-                }
-                else {
-                    var submitbtn = elems[i];
-                    var submitText = submitbtn.value;
-                    submitbtn.disabled = 'disabled';
-                    submitbtn.value = self.submitingText;
-                }
+                var submitbtn = elems[i];
+                var attr = submitbtn.tagName === 'BUTTON'
+                         ? 'innerHTML'
+                         : 'value';
+                var submitingText = submitbtn[attr];
+                submitbtn.disabled = 'disabled';
+                submitbtn[attr] = self.submitingText;
             }
         }
         var xmlhttp = new XMLHttpRequest();
@@ -382,12 +385,7 @@
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
                 self.removeTips();
-                if (submitbtn.tagName === 'BUTTON') {
-                    submitbtn.innerHTML = submitText;
-                }
-                else {
-                    submitbtn.value = submitText;
-                }
+                submitbtn[attr] = submitingText;
                 submitbtn.disabled = false;
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
@@ -434,7 +432,6 @@
         }
 
         if (!validArr.length) {
-
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
                 return true;
@@ -449,7 +446,33 @@
         }
     }
 
+    function getCheckParam(elem) {
+        var elem = elem;
+        var attributes = elem.attributes;
+        var ret = {};
+        for (var i = 0; i < attributes.length; i++) {
+            var attr = attributes[i];
+            ret[attr.name] = attr.value;
+        }
+        ret.value = elem.value;
+        return ret;
+    }
 
+    function isNeedCheck(attrs) {
+        for (var i = 0; i < checkList.length; i++) {
+            if (attrs[checkList[i]]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Validation 校验构造函数
+     * @validArr 校验不通过时将name压入
+     * @name  表单name
+     * @dom   对应的表单dom元素
+     */
     self.Validation = function(validArr, name, dom) {
         this.msg = [];        
         this.validTip = function() {
@@ -458,70 +481,88 @@
                 validArr.push(name)
             }
             else {
-                self.onValidPass(dom, self.successTips);
+                if (config.forbidTips) {
+                    self.removeTip(dom);
+                }
+                else {
+                    self.onValidPass(dom, self.successTips);
+                }
             }
         }
     }
 
-    self.validEmail = function(validation, v) {
-        if (!v.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
+    self.validEmail = function(validation, attrs) {
+        if (!attrs.value.match(/^([a-zA-Z0-9_\-\.])+\@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
             validation.msg.push(self.emailWarning);
+        }
+        else {
+            self.comparator('string').handler(validation, attrs);
         }
         return validation;
     }
 
-    self.validUrl = function(validation, v) {
-        if (!v.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
-            validation.msg.push(self.emailWarning);
+    self.validUrl = function(validation, attrs) {
+        if (!attrs.value.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
+            validation.msg.push(self.urlWarning);
+        }
+        else {
+            self.comparator('string').handler(validation, attrs);
         }
         return validation;
     }
 
-    self.validMobile = function(validation, v) {
-        if (!v.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
+    self.validMobile = function(validation, attrs) {
+        if (!attrs.value.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
             validation.msg.push(self.mobileWarning);
         }
+        else {
+            self.comparator('string').handler(validation, attrs);
+        }
         return validation;
     }
 
-    self.validPresent = function(validation, v) {
-        v = v.replace(' ', '');
+    self.validPresent = function(validation, attrs) {
+        var v = attrs.value.replace(' ', '');
         if (!v.length) {
             validation.msg.push(self.presentWarning);
         }
+        else {
+            self.comparator('string').handler(validation, attrs);
+        }
         return validation;
     }
 
-    self.validRegExp = function(validation, valid, v, min, max) {
-        valid = valid.replace(/^\//, '');
+    self.validRegExp = function(validation, attrs) {
+        var valid = attrs.valid.replace(/^\//, '');
         valid = valid.replace(/\/$/, '');
         var reg = new RegExp(valid);
-        if (reg.test(v)) {
-            self.comparator('string').handler(validation, min, max, v);
+        if (reg.test(attrs.value)) {
+            self.comparator('string').handler(validation, attrs);
         }
         else {
-            validation.msg.push(self.presentWarning);
+            validation.msg.push(self.regWarning);
         }
         return validation;
     }
 
-    self.validNumRange = function(validation, valid, v, min, max) {
-        var reg = NUMBER_REGEXP[valid.toUpperCase()];
-        if (reg.test(v)) {
-            self.comparator('number').handler(validation, min, max, v);
-        }
-        else {
+    self.validNumRange = function(validation, attrs) {
+        var reg = NUMBER_REGEXP[attrs.valid.toUpperCase()];
+        if (!reg.test(attrs.value)) {
             validation.msg.push(self.numWarning);
         }
+        else {
+            self.comparator('number').handler(validation, attrs);
+        }
         return validation;
     }
 
-    self.validCustom = function(validation, customValid, v, min, max) {
+    self.validCustom = function(validation, attrs) {
+        var customValid = attrs.customValid || attrs.customvalid;
         if (window[customValid]) {
             var reg = window[customValid].regExp;
             var tips = window[customValid].message || self.regWarning;
-            if (reg && reg.test(v)) {
-                self.comparator('string').handler(validation, min, max, v); 
+            if (reg && reg.test(attrs.value)) {
+                self.comparator('string').handler(validation, attrs); 
             }
             else {
                 validation.msg.push(tips);
@@ -530,7 +571,32 @@
         return validation;
     }
 
+    self.validUnion = function (validation, validArr, elem, attrs) {
+        if (attrs.vr) {
+            var arr = attrs.vr.split('::');
+            var method = arr[0];
+            var params = arr[1] ? arr[1].split(',') : undefined;
+            var flag = false;
+            try {
+                flag = iToolkit[method].apply(elem, params);
+            }
+            catch (e) {
+                flag = false;
+                throw e;
+            }
+            if (!flag) {
+                validation.msg.push('');
+            }
+        }
+        return validation;
+    }
 
+    self.validEmpty = function (validation, attrs) {
+        if (attrs.value === '') {
+            validation.msg.push(self.presentWarning);
+        }
+        return validation;
+    }
 
     /**
      * doCheck
@@ -539,93 +605,51 @@
      * @return {[type]}          [description]
      */
     function doCheck(validArr, elem) {
-        var elem = elem;
-        var valid = elem.getAttribute('valid');
-        var customValid = elem.getAttribute('customValid');
-        var vr = elem.getAttribute('vr');
-        var orient = elem.getAttribute('orient');
-        var max = parseInt(elem.getAttribute('max'), 10);
-        var min = parseInt(elem.getAttribute('min'), 10);
-        var type = elem.type;
-        var allowEmpty = elem.getAttribute('allowEmpty');
-        var v = elem.value; 
-        var name = elem.name;
         var dom = elem;
-        var validation = new self.Validation(validArr, name, dom);
-
-        if (
-            allowEmpty === null
-            && isNaN(max)
-            && isNaN(min)
-            && valid === null
-            && customValid === null
-            && vr === null
-            && orient === null
-        ) {
+        var attrs = getCheckParam(elem);
+        if (!isNeedCheck(attrs)) {
             return;
         }
-        if (allowEmpty && (v === '' || typeof v !== 'string')) {
-            self.onValidPass(dom, self.successTips);
-            return;
-        }
-        if (name && valid) {
-            if (valid === 'present') {
-                self.validPresent(validation, v);
-            }
-            else if (valid === 'mobile') {
-                self.validMobile(validation, v);
-            }
-            else if (valid === 'url') {
-                self.validUrl(validation, v);
-            }
-            else if (valid === 'email') {
-                self.validEmail(validation, v);
-            }
-            else if (valid.match(/^\/\S+\/$/)) {
-                self.validRegExp(validation, valid, v, min, max);
-            }
-            else if (NUMBER_REGEXP[valid.toUpperCase()]) {
-                self.validNumRange(validation, valid, v, min, max);
-            }
-        }
-        else if (name && !valid) {
-            if (customValid) {
-                self.validCustom(validation, customValid, v, min, max);
-            }
-            else {
-                if (type === 'text') {
-                    self.comparator('string').handler(validation, min, max, v); 
-                }
-            }
-        }
-        validation.validTip();
-
-        if (orient) {
-            var newEle = EL.querySelector(orient);
-            if (elem === newEle || !newEle) {
+        var validation = new self.Validation(validArr, attrs.name, dom);
+        if (attrs.name) {
+            if ((attrs.allowEmpty || attrs.allowempty) && attrs.value === '') {
+                self.onValidPass(dom, self.successTips);
                 return;
             }
-            elem = newEle;
-            vr = elem.getAttribute('vr');
-        }
-        if (!validArr.length && vr) {
-            var arr = vr.split('::');
-            var method = arr[0];
-            var params = arr[1] ? arr[1].split(',') : undefined;
-            var flag = false;
-            try {
-                if (iToolkit[method]) {
-                    flag = iToolkit[method].apply(elem, params);
+            self.validEmpty(validation, attrs);
+            if (attrs.valid) {
+                if (attrs.valid === 'present') {
+                    self.validPresent(validation, attrs);
+                }
+                else if (attrs.valid === 'mobile') {
+                    self.validMobile(validation, attrs);
+                }
+                else if (attrs.valid === 'url') {
+                    self.validUrl(validation, attrs);
+                }
+                else if (attrs.valid === 'email') {
+                    self.validEmail(validation, attrs);
+                }
+                else if (attrs.valid.match(/^\/\S+\/$/)) {
+                    self.validRegExp(validation, attrs);
+                }
+                else if (NUMBER_REGEXP[attrs.valid.toUpperCase()]) {
+                    self.validNumRange(validation, attrs);
                 }
             }
-            catch (e) {
-                flag = false;
-                throw e;
-            }
-            if (!flag) {
-                validArr.push('fail');
+            else if (!attrs.valid) {
+                if (attrs.customValid || attrs.customvalid) {
+                    self.validCustom(validation, attrs);
+                }
+                else if (attrs.min || attrs.max){
+                    self.comparator('string').handler(validation, attrs);
+                }
             }
         }
+        if (!validArr.length) {
+            self.validUnion(validation, validArr, dom, attrs);
+        }
+        validation.validTip();
     }
-
+    </script>
 </super-form>
