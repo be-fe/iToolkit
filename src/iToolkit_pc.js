@@ -1186,21 +1186,9 @@ riot.tag('tab-content', '', function(opts) {
     });
 
 });
-riot.tag('tree-item', '<input type="checkbox" __checked="{ selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-arrow { open: opened }" onclick="{ toggle }" if="{ children }"></i> <i class="tree-item-icon" if="{ children }"></i> <div onclick="{ leftClick }">{ name }</div>', function(opts) {
+riot.tag('tree-item', '<input type="checkbox" __checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-arrow { open: item.opened }" onclick="{ toggle }" if="{ item.children }"></i> <i class="tree-item-icon" if="{ item.children }"></i> <div onclick="{ leftClick }">{ item.name }</div>', function(opts) {
     
     var self = this;
-
-    self.originData = function(id) {
-        var originDatas = self.parent.data;
-        var originData;
-        for (i = 0; i < originDatas.length; i++) {
-            if (originDatas[i].id === id) {
-                originData = originDatas[i];
-                break;
-            }
-        }
-        return originData
-    }
     
     
     self.selectchildren = function(item, bool) {
@@ -1230,58 +1218,53 @@ riot.tag('tree-item', '<input type="checkbox" __checked="{ selected }" if="{ par
 
     
     this.checkHandle = function(e) {
-        var originData = self.originData(self.id);
         var config = self.parent.rootConfig
         var checkCb = config.onCheck;
         var uncheckCb = config.onUnCheck;
-        if (self.selected) {
-            originData.selected = false;
-            uncheckCb && uncheckCb(originData, e.target);
+        if (self.item.selected) {
+            self.item.selected = false;
+            uncheckCb && uncheckCb(self.item, e.target);
 
             if (config.link) {
-                self.selectchildren(self, false);
-                self.cancelParent(self);
+                self.selectchildren(self.item, false);
+                self.cancelParent(self.item);
             }
         }
-        else if (!self.selected) {
-            originData.selected = true;
-            checkCb && checkCb(originData, e.target);
+        else if (!self.item.selected) {
+            self.item.selected = true;
+            checkCb && checkCb(self.item, e.target);
             if (config.link) {
-                self.selectchildren(self, true);
+                self.selectchildren(self.item, true);
             }
         }
     }.bind(this);
     
     
     this.toggle = function(e) {
-        var originData = self.originData(self.id);
-        if (originData.opened === true) {
-            originData.opened = false;
-            self.parent.opened = false;
+        if (self.item.opened === true) {
+            self.item.opened = false;
         }
         else {
-            originData.opened = true;
-            self.parent.opened = true;
+            self.item.opened = true;
         }
         self.parent.treeroot.update();
     }.bind(this);
 
     
     this.leftClick = function(e) {
-        var originData = self.originData(self.id);
         var config = self.parent.rootConfig;
         if (config.folder && config.children) {
-            if (originData.opened === true) {
-                originData.opened = false;
+            if (self.item.opened === true) {
+                self.item.opened = false;
             }
             else {
-                originData.opened = true;
+                self.item.opened = true;
             }
         }
         else {
             var leftClick = config.onLeftClick;
             if (leftClick) {
-                leftClick(originData, e.target);
+                leftClick(self.item, e.target);
             }
         }
     }.bind(this);
@@ -1289,7 +1272,7 @@ riot.tag('tree-item', '<input type="checkbox" __checked="{ selected }" if="{ par
 
 });
 
-riot.tag('tree', '<div class="tree-item-wrap" each="{ data }" onselectstart="return false" ondragstart="return false"> <tree-item class="tree-item-row { root: level==1 }" riot-style="padding-left: { countPadding(level) }"></tree-item> <ul class="tree-child-wrap" if="{ _item.opened && children }"> <tree data="{ children }"></tree> </ul> </div>', function(opts) {
+riot.tag('tree', '<div class="tree-item-wrap" each="{ item, i in data }" onselectstart="return false" ondragstart="return false"> <tree-item class="tree-item-row { root: item.level==1 }" riot-style="padding-left: { countPadding(item.level) }"></tree-item> <ul class="tree-child-wrap" if="{ item.opened && item.children }"> <tree data="{ item.children }"></tree> </ul> </div>', function(opts) {
     var self = this;
     self.config = self.opts.opts || self.opts;
 
@@ -1353,7 +1336,6 @@ riot.tag('tree', '<div class="tree-item-wrap" each="{ data }" onselectstart="ret
         self.data = self.config.data;
         self.rootConfig = self.parent.rootConfig || self.parent.parent.rootConfig;
         self.treeroot = self.parent.treeroot || self.parent.parent.treeroot;
-
     }
     self.treeroot.update();
     

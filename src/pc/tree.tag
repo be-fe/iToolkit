@@ -1,22 +1,10 @@
 <tree-item>
-    <input type="checkbox" checked="{ selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"/>
-    <i class="tree-item-arrow { open: opened }" onclick="{ toggle }" if={ children }></i>
-    <i class="tree-item-icon" if="{ children }"></i>
-    <div onclick="{ leftClick }">{ name }</div>
+    <input type="checkbox" checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"/>
+    <i class="tree-item-arrow { open: item.opened }" onclick="{ toggle }" if={ item.children }></i>
+    <i class="tree-item-icon" if="{ item.children }"></i>
+    <div onclick="{ leftClick }">{ item.name }</div>
     
     var self = this;
-
-    self.originData = function(id) {
-        var originDatas = self.parent.data;
-        var originData;
-        for (i = 0; i < originDatas.length; i++) {
-            if (originDatas[i].id === id) {
-                originData = originDatas[i];
-                break;
-            }
-        }
-        return originData
-    }
     
     /*
     *  选中所有子元素
@@ -52,24 +40,23 @@
      * checkbox选中回调
      */
     checkHandle(e) {
-        var originData = self.originData(self.id);
         var config = self.parent.rootConfig
         var checkCb = config.onCheck;
         var uncheckCb = config.onUnCheck;
-        if (self.selected) {
-            originData.selected = false;
-            uncheckCb && uncheckCb(originData, e.target);
+        if (self.item.selected) {
+            self.item.selected = false;
+            uncheckCb && uncheckCb(self.item, e.target);
             //如果设置为联动，则取消子，父相应也取消，选中父，也自动选中子
             if (config.link) {
-                self.selectchildren(self, false);
-                self.cancelParent(self);
+                self.selectchildren(self.item, false);
+                self.cancelParent(self.item);
             }
         }
-        else if (!self.selected) {
-            originData.selected = true;
-            checkCb && checkCb(originData, e.target);
+        else if (!self.item.selected) {
+            self.item.selected = true;
+            checkCb && checkCb(self.item, e.target);
             if (config.link) {
-                self.selectchildren(self, true);
+                self.selectchildren(self.item, true);
             }
         }
     };
@@ -78,14 +65,11 @@
      * 展开收起
      */
     toggle(e) {
-        var originData = self.originData(self.id);
-        if (originData.opened === true) {
-            originData.opened = false;
-            self.parent.opened = false;
+        if (self.item.opened === true) {
+            self.item.opened = false;
         }
         else {
-            originData.opened = true;
-            self.parent.opened = true;
+            self.item.opened = true;
         }
         self.parent.treeroot.update();
     }
@@ -94,20 +78,19 @@
      * 左键点击回调
      */
     leftClick(e) {
-        var originData = self.originData(self.id);
         var config = self.parent.rootConfig;
         if (config.folder && config.children) {
-            if (originData.opened === true) {
-                originData.opened = false;
+            if (self.item.opened === true) {
+                self.item.opened = false;
             }
             else {
-                originData.opened = true;
+                self.item.opened = true;
             }
         }
         else {
             var leftClick = config.onLeftClick;
             if (leftClick) {
-                leftClick(originData, e.target);
+                leftClick(self.item, e.target);
             }
         }
     }
@@ -115,10 +98,10 @@
 </tree-item>
 
 <tree>
-    <div class="tree-item-wrap" each="{ data }" onselectstart="return false" ondragstart="return false">
-        <tree-item class="tree-item-row { root: level==1 }" style="padding-left: { countPadding(level) }"></tree-item>
-        <ul class="tree-child-wrap" if="{ _item.opened && children }">
-            <tree data="{ children }"></tree>
+    <div class="tree-item-wrap" each="{ item, i in data }" onselectstart="return false" ondragstart="return false">
+        <tree-item class="tree-item-row { root: item.level==1 }" style="padding-left: { countPadding(item.level) }"></tree-item>
+        <ul class="tree-child-wrap" if="{ item.opened && item.children }">
+            <tree data="{ item.children }"></tree>
         </ul>
     </div>
     <script>
@@ -189,7 +172,6 @@
         self.data = self.config.data;
         self.rootConfig = self.parent.rootConfig || self.parent.parent.rootConfig;
         self.treeroot = self.parent.treeroot || self.parent.parent.treeroot;
-        //console.log(self.data);
     }
     self.treeroot.update();
     
