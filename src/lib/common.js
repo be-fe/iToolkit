@@ -214,7 +214,26 @@ var utils = {
                 src[key] = obj[key];
             }
         }
+    },
+
+    deepCopy: function (parent, child) {
+        var child = child || {};
+        for (var i in parent) {
+            if (toString.call(parent[i]) === '[object Object]') {
+                child[i] = {}; //新建数组或者object来达到目的
+                this.deepCopy(parent[i], child[i]);
+            }
+            else if (toString.call(parent[i]) === '[object Array]') {
+                child[i] = []; //新建数组或者object来达到目的
+                this.deepCopy(parent[i], child[i]);
+            } 
+            else {
+                child[i] = parent[i];
+            }
+        }
+        return child;
     }
+
 };
 
 utils.extend(utils, {

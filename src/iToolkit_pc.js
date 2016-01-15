@@ -596,7 +596,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     self.mobileWarning = '手机格式错误';
     self.urlWarning = '网址格式错误';
     self.successTips = config.successTipsText || '通过';
-    self.regWarning = '字段不符合验证规则';
+    self.regexpWarning = '字段不符合验证规则';
     self.numWarning = '数字格式错误';
 
     self.passClass = config.passClass || 'valid-pass';
@@ -763,14 +763,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         return params;
     }
     
-    
 
-    for (i in config) {
-        if (keyWords.indexOf(i) < 0) {
-            self[i] = config[i];
-        }
-    }
-    self.data = config.data;
 
     self.submitingText = config.submitingText || '提交中...';
     if (config.valid === undefined) {
@@ -996,61 +989,41 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 }
             }
         }
-    }
+    };
 
-    self.validEmail = function(validation, attrs) {
-        if (!attrs.value.match(/^([a-zA-Z0-9_\-\.])+\@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/)) {
-            validation.msg.push(self.emailWarning);
+    
+    self.rulesConfig = {
+        email: {
+            regexp: /^([a-zA-Z0-9_\-\.])+\@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/,
+            msg: self.emailWarning
+        },
+        present: {
+            regexp: /\S+/,
+            msg: self.presentWarning
+        },
+        url: {
+            regexp: /((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/,
+            msg: self.urlWarning
+        },
+        mobile: {
+            regexp:/^1[3|4|5|8][0-9]\d{4,8}$/,
+            msg: self.mobileWarning
         }
-        else {
-            self.comparator('string').handler(validation, attrs);
-        }
-        return validation;
-    }
+    };
 
-    self.validUrl = function(validation, attrs) {
-        if (!attrs.value.match(/((http|ftp|https|file):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/)) {
-            validation.msg.push(self.urlWarning);
+    self.valid = function(rule, validation, attrs) {
+        if (self.rules[rule]) {
+            var judgeResult = self.rules[rule](attrs);
+            if (judgeResult === true) {
+                self.comparator('string').handler(validation, attrs);
+            }
+            else {
+                validation.msg.push(judgeResult);
+            }
+            return validation;
         }
-        else {
-            self.comparator('string').handler(validation, attrs);
-        }
-        return validation;
-    }
+    };
 
-    self.validMobile = function(validation, attrs) {
-        if (!attrs.value.match(/^1[3|4|5|8][0-9]\d{4,8}$/)) {
-            validation.msg.push(self.mobileWarning);
-        }
-        else {
-            self.comparator('string').handler(validation, attrs);
-        }
-        return validation;
-    }
-
-    self.validPresent = function(validation, attrs) {
-        var v = attrs.value.replace(' ', '');
-        if (!v.length) {
-            validation.msg.push(self.presentWarning);
-        }
-        else {
-            self.comparator('string').handler(validation, attrs);
-        }
-        return validation;
-    }
-
-    self.validRegExp = function(validation, attrs) {
-        var valid = attrs.valid.replace(/^\//, '');
-        valid = valid.replace(/\/$/, '');
-        var reg = new RegExp(valid);
-        if (reg.test(attrs.value)) {
-            self.comparator('string').handler(validation, attrs);
-        }
-        else {
-            validation.msg.push(self.regWarning);
-        }
-        return validation;
-    }
 
     self.validNumRange = function(validation, attrs) {
         var reg = NUMBER_REGEXP[attrs.valid.toUpperCase()];
@@ -1061,7 +1034,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             self.comparator('number').handler(validation, attrs);
         }
         return validation;
-    }
+    };
 
     self.validCustom = function(validation, attrs) {
         var customValid = attrs.customValid || attrs.customvalid;
@@ -1076,7 +1049,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             }
         }
         return validation;
-    }
+    };
 
     self.validUnion = function (validation, validArr, elem, attrs) {
         if (attrs.vr) {
@@ -1096,14 +1069,47 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             }
         }
         return validation;
-    }
+    };
 
     self.validEmpty = function (validation, attrs) {
         if (attrs.value === '') {
             validation.msg.push(self.presentWarning);
         }
         return validation;
+    };
+
+    
+    self.on('mount', function() {
+        self.init();
+    });
+
+    self.init = function() {
+        for (i in config) {
+            if (keyWords.indexOf(i) < 0) {
+                if (self.hasOwnProperty(i)) {
+                    self[i] = utils.deepCopy(config[i], self[i]);
+                }
+                else {
+                    self[i] = config[i];
+                }
+            }
+        }
+        self.data = config.data;
+        self.rules = {};
+        for (ruleConfig in self.rulesConfig) {
+            (function(ruleConfig) {
+                self.rules[ruleConfig] = function(attrs) {
+                    if (attrs.value.match(self.rulesConfig[ruleConfig].regexp)) {
+                        return true;
+                    }
+                    else {
+                        return self.rulesConfig[ruleConfig].msg;
+                    }
+                }
+            })(ruleConfig);
+        }
     }
+    
 
     
     function doCheck(validArr, elem) {
@@ -1120,20 +1126,8 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             }
             self.validEmpty(validation, attrs);
             if (attrs.valid) {
-                if (attrs.valid === 'present') {
-                    self.validPresent(validation, attrs);
-                }
-                else if (attrs.valid === 'mobile') {
-                    self.validMobile(validation, attrs);
-                }
-                else if (attrs.valid === 'url') {
-                    self.validUrl(validation, attrs);
-                }
-                else if (attrs.valid === 'email') {
-                    self.validEmail(validation, attrs);
-                }
-                else if (attrs.valid.match(/^\/\S+\/$/)) {
-                    self.validRegExp(validation, attrs);
+                if (self.rules[attrs.valid]) {
+                    self.valid(attrs.valid, validation, attrs);
                 }
                 else if (NUMBER_REGEXP[attrs.valid.toUpperCase()]) {
                     self.validNumRange(validation, attrs);

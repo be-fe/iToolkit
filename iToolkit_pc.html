@@ -307,13 +307,8 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
                             </label><br>
 
                             <label>
-                                RegExp:
-                                <input type="text" name="t3" value="test" valid="/test/">
-                            </label><br>
-
-                            <label>
-                                RegExp2:
-                                <input type="text" name="idcard" value="41030319880612000" customValid="isIDCard" allowEmpty="true">
+                                custom RegExp:
+                                <input type="text" name="idcard" value="41030319880612000" valid="idcard">
                             </label><br>
 
                             <label>
@@ -413,16 +408,6 @@ document.querySelector('#modal-demo').loadData(newData, colname); //更新数据
         <label>
             mobile: 
             <input type="text" name="mobile" value="13927678767" valid="mobile">
-        </label><br>
-
-        <label>
-            RegExp:
-            <input type="text" name="t3" value="test" valid="/test/">
-        </label><br>
-
-        <label>
-            RegExp2:
-            <input type="text" name="idcard" value="41030319880612000" customValid="isIDCard" allowEmpty="true">
         </label><br>
 
         <label>
@@ -1245,6 +1230,12 @@ riot.mount('#d0', d0);
                 },
                 valid: true,       //是否执行校验
                 realTime: true,    //是否实时验证
+                rulesConfig:{
+                    idcard: {
+                        regexp: /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                        msg: '不是合法的身份证号码'
+                    }
+                },
                 complete: function() {
                     alert('complete');
                 },
