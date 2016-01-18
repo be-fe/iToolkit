@@ -24,8 +24,6 @@
         'max',
         'min',
         'valid',
-        'customValid',
-        'customvalid',
         'vr'
     ];
 
@@ -527,21 +525,6 @@
         return validation;
     };
 
-    self.validCustom = function(validation, attrs) {
-        var customValid = attrs.customValid || attrs.customvalid;
-        if (window[customValid]) {
-            var reg = window[customValid].regExp;
-            var tips = window[customValid].message || self.regWarning;
-            if (reg && reg.test(attrs.value)) {
-                self.comparator('string').handler(validation, attrs); 
-            }
-            else {
-                validation.msg.push(tips);
-            }
-        }
-        return validation;
-    };
-
     self.validUnion = function (validation, validArr, elem, attrs) {
         if (attrs.vr) {
             var arr = attrs.vr.split('::');
@@ -633,10 +616,7 @@
                 }
             }
             else if (!attrs.valid) {
-                if (attrs.customValid || attrs.customvalid) {
-                    self.validCustom(validation, attrs);
-                }
-                else if (attrs.min || attrs.max){
+                if (attrs.min || attrs.max){
                     self.comparator('string').handler(validation, attrs);
                 }
             }
