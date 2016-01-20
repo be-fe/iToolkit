@@ -2,11 +2,6 @@
 
     <!--详细配置文档:http://kenwheeler.github.io/slick/-->
 
-    <!--简单默认样式,请根据需要在使用 slick-slide的时候覆盖掉-->
-    <style>
-
-    </style>
-
     <yield>
 
         <script>

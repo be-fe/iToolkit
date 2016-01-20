@@ -2983,7 +2983,7 @@ riot.tag('itk-select', '<yield></yield> <ul class="itk-selected-container" onmou
 });
 
 
-riot.tag('itk-slide', '  <yield>', function(opts) {
+riot.tag('itk-slide', ' <yield>', function(opts) {
 
             var self = this;
             var EL = self.root;
