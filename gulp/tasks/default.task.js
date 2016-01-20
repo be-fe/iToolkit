@@ -5,8 +5,8 @@ module.exports = function (gulp, plugin, pkg) {
         function () {
             gulp.watch([
                 'src/*/*.tag',
-                'src/**/*.css'
-            ], ['riot_pc', 'riot_mobile', 'build']);
+                'src/**/*.less'
+            ], ['less', 'riot_pc', 'riot_mobile', 'build']);
         }
     );
 };

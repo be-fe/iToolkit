@@ -1,4 +1,4 @@
-<super-form>
+<itk-form>
     <form onsubmit={ submit } >
         <yield>
     </form>
@@ -627,4 +627,4 @@
         validation.validTip();
     }
     </script>
-</super-form>
+</itk-form>

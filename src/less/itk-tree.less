@@ -1,0 +1,103 @@
+itk-tree {
+
+    .tree-item-wrap {
+        position: relative;
+    }
+    .tree-item-icon {
+        /*display: inline-block;
+        height: 13px;
+        width: 20px;
+        background: url(../imgs/icons.png) no-repeat;
+        background-position: -256px -64px; */ 
+        cursor: pointer;
+    }
+
+    .tree-item-wrap input {
+        vertical-align: top;
+        z-index: 2;
+        position: relative;
+    }
+
+    .tree-item-name {
+        display: inline-block;
+        cursor: pointer;
+        font-weight: bolder;
+        color: #29282f;
+        position: relative;
+        z-index: 100;
+        max-width: 80%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .tree-item-name.active {
+        position: relative;
+        z-index: 100;
+    }
+
+    .tree-item-name:hover + .tree-item-back {
+        background: #d6d7dc;
+    }
+
+    .tree-item-name.right-active + .tree-item-back {
+        background: #d6d7dc;
+    }
+
+    selector .tree-item-back.active,
+    selector .tree-item-back:hover {
+        background: #eff3f8;
+    }
+
+    selector .tree-item-name:hover + .tree-item-back {
+        background: #eff3f8;
+    }
+
+    selector .tree-item-name.right-active + .tree-item-back {
+        background: #eff3f8;
+    }
+
+    .tree-item-back.active,
+    .tree-item-back:hover {
+        background: #d6d7dc;
+    }
+
+    .tree-child-wrap {
+        padding: 0;
+        position: relative;
+    }
+
+    .tree-item-arrow {
+        display: inline-block;
+        margin: 5px 2px 0 0;
+        vertical-align: top;
+        border-top: 5px solid transparent;
+        border-left: 10px solid #999999;
+        border-bottom: 5px solid transparent;
+        cursor: pointer;
+        position: relative;
+        z-index: 100;
+    }
+
+    .tree-item-arrow.open {
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 10px solid #999999;
+    }
+
+    .tree-item-row > div {
+      display: inline-block;
+    }
+
+    .tree-item-arrow.empty {
+        border: none;
+    }
+
+    .tree-item-arrow ~ ul {
+        display: none;
+    }
+
+    .tree-item-arrow.open ~ ul {
+        display: block;
+    }
+}

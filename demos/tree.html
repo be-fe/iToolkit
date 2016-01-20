@@ -3,7 +3,7 @@
         <meta charset='utf-8'>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
-        <link rel="stylesheet" href="../src/css/common.css">
+        <link rel="stylesheet" href="../src/css/itoolkit.css">
         <link rel="stylesheet" href="../src/css/themes/simple_pc.css">        
         <!-- IE兼容  -->
         <!--[if lt IE 9]>
@@ -16,7 +16,7 @@
         <script src="../src/iToolkit_pc.js"></script>
     </head>
     <body>
-        <tree></tree>
+        <itk-tree></itk-tree>
         <script>
             var treeOpts = {
                 data: [
@@ -28,7 +28,8 @@
                     {id: 6, pid: 3, title: 'item5'},
                     {id: 7, pid: 2, title: 'item6'},
                 ],
-                root: true,         //标示符，必须为true
+                link: true,         //若为true，则联动
+                openLevel: 1,    //默认展开的层级
                 handleData: true,   //data为一维数组，选true, data为树结构，选false
                 name: 'title',      //名称字段在接口中的字段名
                 onLeftClick: function(item, target) {     
@@ -48,7 +49,7 @@
                     alert(item.id + 'unchecked');
                 }  //checkbox取消时的回调
             }
-            riot.mount('tree', treeOpts);
+            riot.mount('itk-tree', treeOpts);
         </script>
     </body>
 </html>

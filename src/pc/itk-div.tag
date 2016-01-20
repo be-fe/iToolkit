@@ -1,9 +1,4 @@
-<super-div>
-    <style scope>
-        super-div{
-            display: block;
-        }
-    </style>
+<itk-div>
     <yield>
     
     var self = this;
@@ -61,4 +56,4 @@
         }
     }
 
-</super-div>
+</itk-div>

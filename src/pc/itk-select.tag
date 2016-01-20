@@ -1,107 +1,23 @@
-<select-muti-wrap>
-    <style>
-        select-muti-wrap {
-            display: block;
-            position: relative;
-            cursor: pointer;
-        }
-        select-muti-wrap select {
-            display: none;
-        }
-
-        select-muti-wrap .itoolkit-selected-container {
-            box-sizing: border-box;
-            list-style: none;
-            margin: 0;
-            padding: 0 5px;
-            width: 100%;
-            display: inline-block;
-            /*overflow-x: hidden;*/
-            /*overflow-y: auto;*/
-            border-radius: 0;
-            border: 1px solid #d2d6de;
-            text-align: left;
-        }
-
-        select-muti-wrap .itoolkit-selected-container .itoolkit-selected-option {
-            display: inline-block;
-            padding: 4px 8px;
-            background: #3c8dbc;
-            border-color: #367fa9;
-            color: #ffffff;
-            border-radius: 4px;
-            margin: 2px 5px 2px 0;
-        }
-
-        select-muti-wrap .itoolkit-search-wrap {
-            width: 1em;
-            display: inline-block;
-        }
-        select-muti-wrap .itoolkit-search-wrap input {
-            padding-left: 0;
-            padding-right: 0;
-            height: 30px;
-            border:none;
-        }
-
-        select-muti-wrap .itoolkit-options-container {
-            padding: 0;
-            text-align: left;
-            position: absolute;
-            width: 100%;
-            border: 1px solid #d2d6de;
-            border-top: none;
-            z-index: 10000;
-            background: #ffffff;
-            display: none;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-        select-muti-wrap .itoolkit-options-container .itoolkit-options {
-            padding: 6px 12px;
-        }
-
-        select-muti-wrap .itoolkit-options-container .itoolkit-options:hover {
-            background: #eff3f8;
-        }
-
-        select-muti-wrap .itoolkit-options-container .no-result {
-            text-align: center;
-            padding: 6px 0;
-        }
-        select-muti-wrap .empty-icon {
-            padding: 0 9px;
-        }
-
-        select-muti-wrap .itoolkit-option-check {
-            /* 对勾*/
-        }
-
-        select-muti-wrap .itoolkit-close {
-            /* 叉叉*/
-        }
-
-    </style>
+<itk-select>
     <yield/>
-    <ul class="itoolkit-selected-container" onmousedown="{ showOptions }">
-        <li class="itoolkit-selected-option" each="{realData }" if="{ selected }">
+    <ul class="itk-selected-container" onmousedown="{ showOptions }">
+        <li class="itk-selected-option" each="{realData }" if="{ selected }">
             { name }
-            <span class="itoolkit-close" onmousedown="{ cancel }" >×</span>
+            <span class="itk-close" onmousedown="{ cancel }" >×</span>
         </li>
-        <li class="itoolkit-search-wrap" style="min-height: 34px;">
+        <li class="itk-search-wrap" style="min-height: 34px;">
             <input
                 type="text"
-                class="form-control itoolkit-select-search"
+                class="form-control itk-select-search"
                 oninput="{ filter }"
                 onfocus="{ filter }"
                 onkeyup="{ keyboardHandle }"
             />
         </li>
     </ul>
-    <ul class="itoolkit-options-container">
-        <li class="itoolkit-options" each="{ realData }" onmousedown="{ toggle }" if="{ !hide }">
-            <span class="itoolkit-option-check" if="{ selected }">√</span>
+    <ul class="itk-options-container">
+        <li class="itk-options" each="{ realData }" onmousedown="{ toggle }" if="{ !hide }">
+            <span class="itk-option-check" if="{ selected }"></span>
             <span class="empty-icon" if="{ !selected }"></span>
             { name }
         </li>
@@ -112,6 +28,7 @@
         var self = this;
         var config = self.opts.opts || self.opts;
         self.gotOptions = false;
+        self.chooseOnce = true;
 
         self.init = self.root.init = function() {
             self.gotOptions = false;
@@ -122,18 +39,7 @@
          *
          */
         self.realData = [];
-        self.root.realData = self.realData;
-        self.root.getSelectedData = function () {
-            var selectedData = [];
-            for (var i = 0, l= self.realData.length; i < l; i ++) {
-                if (self.realData[i].selected) {
-                    selectedData.push({
-                        id: parseInt(self.realData[i].value, 10)
-                    });
-                }
-            }
-            return selectedData;
-        };
+        self.root.exportData = self.realData;
 
         self.initData = self.root.initData = function() {
             if (self.root.querySelector('select')) {
@@ -141,8 +47,8 @@
             }
             if (options && options.length && !self.gotOptions) {
                 self.options = options;
-                self.searchInput = self.root.querySelector('.itoolkit-select-search');
-                self.optionsWrap = self.root.querySelector('.itoolkit-options-container');
+                self.searchInput = self.root.querySelector('.itk-select-search');
+                self.optionsWrap = self.root.querySelector('.itk-options-container');
                 self.realData = [];
                 for (i = 0; i < options.length; i++) {
                     self.realData.push({
@@ -158,11 +64,11 @@
 
                 self.searchInput.onblur = function () {
                     self.optionsWrap.style.display = 'none';
+                    self.searchInput.value = '';
                     self.resetSelectOpt();
                 };
                 self.gotOptions = true;
                 self.update();
-                console.log(self.realData);
             }
         };
 
@@ -178,7 +84,9 @@
 
         self.on('mount', function() {
             if (config) {
-                utils.extend(self, config);
+                for (var i in config) {
+                    self[i] = config[i];
+                }
                 self.update();
             }
         });
@@ -210,6 +118,9 @@
                 self.options[e.item.index].selected = true;
             }
             self.update();
+            if (self.chooseOnce) {
+                self.searchInput.blur();
+            }
         };
 
         self.cancel = function(e) {
@@ -233,7 +144,7 @@
          */
         self.keyboardHandle = function(e) {
             var searchInput = e.target;
-            searchInput.options = document.querySelectorAll('.itoolkit-options');
+            searchInput.options = self.root.querySelectorAll('.itk-options');
             if (searchInput.seletedIndex === undefined ){
                 searchInput.seletedIndex = -1;
             }
@@ -295,5 +206,5 @@
             }
         };
     </script>
-</select-muti-wrap>
+</itk-select>
 

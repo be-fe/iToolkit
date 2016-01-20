@@ -3,7 +3,7 @@
         <meta charset='utf-8'>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
-        <link rel="stylesheet" href="../src/css/common.css">
+        <link rel="stylesheet" href="../src/css/itoolkit.css">
         <link rel="stylesheet" href="../src/css/themes/simple_pc.css">        
         <!-- IE兼容  -->
         <!--[if lt IE 9]>
@@ -16,30 +16,30 @@
         <script src="../src/iToolkit_pc.js"></script>
     </head>
     <body>
-        <select-muti-wrap id="select1">
-            <select>
+        <itk-select id="select1">
+            <select name="name" mutiple="">
                 <option value="{ value }" each="{ data }">{ name }</option>
             </select>
-        </select-muti-wrap>
+        </itk-select>
 
-        <select-muti-wrap id="select2">
-            <select>
+        <itk-select id="select2">
+            <select name="name" mutiple="">
                 <option value="1">liuyuan01</option>
                 <option value="2">chengxing</option>
                 <option value="3">runshi</option>
                 <option value="4">xieyu</option>
                 <option value="5">liangliang</option>
             </select>
-        </select-muti-wrap>
+        </itk-select>
         <script>
+            //dom.export = [{id: xxx name: xx selected: true}]
             var options = {
                 data: [
                         { name: 'xieyu', value: 1}, 
                         { name: 'xieyu01', value: 2},
                         { name: 'xieyu02', value: 3}
                     ],
-                search: false
-
+                chooseOnce: false
             }
             riot.mount('#select1', options);
             riot.mount('#select2');

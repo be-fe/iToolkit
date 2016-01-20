@@ -1,4 +1,4 @@
-<tree-item>
+<itk-tree-item>
     <input type="checkbox" checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"/>
     <i class="tree-item-arrow { open: item.opened }" onclick="{ toggle }" if={ item.children }></i>
     <i class="tree-item-icon" if="{ item.children }"></i>
@@ -95,13 +95,13 @@
         }
     }
 
-</tree-item>
+</itk-tree-item>
 
-<tree>
+<itk-tree>
     <div class="tree-item-wrap" each="{ item, i in data }" onselectstart="return false" ondragstart="return false">
-        <tree-item class="tree-item-row { root: item.level==1 }" style="padding-left: { countPadding(item.level) }"></tree-item>
+        <itk-tree-item class="tree-item-row { root: item.level==1 }" style="padding-left: { countPadding(item.level) }"></itk-tree-item>
         <ul class="tree-child-wrap" if="{ item.opened && item.children }">
-            <tree data="{ item.children }"></tree>
+            <itk-tree data="{ item.children }"></itk-tree>
         </ul>
     </div>
     <script>
@@ -160,7 +160,7 @@
     /*
      * 非树结构需要进行dataHandle处理, 得到根节点的config, 命名为rootConfig
      */
-    if (!self.parent || self.parent.root.tagName !== 'TREE') {
+    if (!self.parent || self.parent.root.tagName !== 'ITK-TREE') {
         if (self.config.handleData) {
             var tree = self.dataHandle(self.config.data);
             self.data = tree;
@@ -185,4 +185,4 @@
     }
     
     </script>
-</tree>
+</itk-tree>

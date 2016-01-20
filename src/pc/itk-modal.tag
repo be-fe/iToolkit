@@ -1,12 +1,12 @@
-<modal>
-    <div class="itoolkit-modal-dialog" style='width:{width}; height:{height}'>
-        <div class="itoolkit-modal-title">
+<itk-modal>
+    <div class="itk-modal-dialog" style='width:{width}; height:{height}'>
+        <div class="itk-modal-title">
             <span>{ title }</span>
-            <div class="itoolkit-modal-close-wrap" onclick={ close }>
-                <div class="itoolkit-modal-close"></div>
+            <div class="itk-modal-close-wrap" onclick={ close }>
+                <div class="itk-modal-close"></div>
             </div>
         </div>
-        <div class="itoolkit-modal-container">
+        <div class="itk-modal-container">
            <yield>
         </div>
     </div>
@@ -21,8 +21,8 @@
     self.height = config.height || 'auto';
 
     self.on('mount', function() {
-        var container = self.root.querySelector('.itoolkit-modal-container');
-        var head = self.root.querySelector('.itoolkit-modal-title');
+        var container = self.root.querySelector('.itk-modal-container');
+        var head = self.root.querySelector('.itk-modal-title');
         var headHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
         if (config.height) {
             container.style.height = (self.height - headHeight - 2) + 'px';
@@ -61,4 +61,4 @@
     // document.querySelector("[modal-close-target='" + self.root.id + "']").onclick = function() {
     //     self.root.style.display = 'none';
     // }
-</modal>
+</itk-modal>

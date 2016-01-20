@@ -81,684 +81,7 @@ riot.tag('date-picker', '<yield>', function(opts) {
     
 });
 
-riot.tag('dropdown', '<yield> <div class="r-dropdown">{ title }</div> <ul class="r-downdown-menu"> <li class="r-dropdown-list" each="{ data }"><a href="{ link|\'javascript:void(0)\' }">{ name }</a></li> </ul>', function(opts) {
-	var self = this;
-    var EL = self.root;
-    var config = self.opts.opts || self.opts;
-	
-});
-riot.tag('editable-link', '<a href="javascript:void(0);" if="{ !editable }" onclick="{ open }">{ value }</a> <super-form if="{ editable }" action="{ action }" opts="{ formOpts }"> <input type="text" value="{ parent.value }" name="{ parent.name }" class="editable-link-input"> <input type="submit" value="提交"> <button onclick="{ parent.close }">取消</button> </super-form>', function(opts) {
-
-    var self = this;
-    self.editlink = false;
-    var EL = self.root;
-    var config = self.opts.opts || self.opts;
-
-    self.on('mount', function() {
-        self.action = EL.getAttribute('action');
-        self.value = EL.getAttribute('text');
-        self.name = EL.getAttribute('name');
-        self.update();
-    })
-
-    this.open = function(e) {
-        self.editable = true;
-        self.update();
-    }.bind(this);
-
-    this.close = function(e) {
-        self.editable = false;
-        self.update();
-    }.bind(this);
-
-    self.formOpts = {
-        errCallback: function() {
-            config.errCallback();
-            EL.querySelector('.editable-link-input').value = self.value;
-            self.editable = false;
-            self.update();
-        },
-        callback: function(value) {
-            config.callback();
-            self.value = EL.querySelector('.editable-link-input').value;
-            self.editable = false;
-            self.update();
-        }
-    }
-
-});
-riot.tag('goto-top', '<div class="itoolkit-goto-top" show="{ showGotoTop }" onclick="{ gotoTop }"> <yield> <span class="itoolkit-goto-top-icon" show="{ showDefault }"><span class="icon-arrowUp"></span></span> </div>', 'goto-top .itoolkit-goto-top{ display: block; position: fixed; bottom: 50px; right: 40px; height: 60px; width: 60px; z-index: 10000; text-align: center; opicity: 0.5; cursor: pointer; } goto-top .itoolkit-goto-top .itoolkit-goto-top-icon{ font-size: 3em; margin: auto; float: none; }', function(opts) {
-
-    var self = this;
-    self.config = self.opts.opts || self.opts;
-    var avalibleHeight = window.screen.availHeight;
-    var EL = self.root;
-    
-    self.on('mount', function() {
-        self.root.querySelector('.itoolkit-goto-top').style.bottom = self.config.bottom;
-        self.root.querySelector('.itoolkit-goto-top').style.right = self.config.right;
-        if (EL.querySelector('.itoolkit-goto-top').firstElementChild.className === 'itoolkit-goto-top-icon') {
-            self.showDefault = true;
-        }
-        window.addEventListener('scroll', self.controlGotoTop);
-    })
-    
-    self.controlGotoTop = function() {
-        var body = document.body;
-        if (body.scrollTop > avalibleHeight && !self.showGotoTop) {
-            self.showGotoTop = true;
-            self.update();
-        }
-        else if (body.scrollTop < avalibleHeight && self.showGotoTop) {
-            self.showGotoTop = false;
-            self.update();
-        }
-    }
-
-    this.gotoTop = function(e) {
-        var length = document.body.scrollTop / 100 * 16;
-        var timer = setInterval(function() {
-            document.body.scrollTop = document.body.scrollTop - length;
-            if (document.body.scrollTop < 10) {
-                clearInterval(timer);
-            }
-        }, 16);
-    }.bind(this);
-    
-
-});
-riot.tag('loading', '<div class="{itoolkit-loading: true, default: default}" > <yield> </div>', 'loading .itoolkit-loading { text-align: center; }', function(opts) {
-
-    var self = this;
-    var config = self.opts.opts || self.opts;
-    self.default = true;
-    
-    self.on('mount', function() {
-        var parentDom = self.root.parentNode;
-        var parentPosition = window.getComputedStyle(parentDom, null).position;
-        if (parentPosition === 'static') {
-            parentDom.style.position = 'relative';
-        }
-
-        self.childDom = self.root.getElementsByClassName('itoolkit-loading')[0];
-
-        if (self.childDom.innerHTML.trim()) {
-            self.default = false;
-            self.update();
-        }
-
-        var cellHeight = parseInt(window.getComputedStyle(self.childDom, null).height.replace('px', ''), 10);
-        self.root.style.marginTop = '-' + cellHeight/2 + 'px';
-        
-    })
-
-    self.root.show = function(){
-        if (self.childDom) {
-            self.childDom.style.display = 'block';
-        }
-    }
-
-    self.root.hide = function(){
-        if (self.childDom) {
-            self.childDom.style.display = 'none';
-        }
-    }
-    
-
-});
-riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itoolkit-modal-title"> <span>{ title }</span> <div class="itoolkit-modal-close-wrap" onclick="{ close }"> <div class="itoolkit-modal-close"></div> </div> </div> <div class="itoolkit-modal-container"> <yield> </div> </div>', function(opts) {
-
-    var self = this;
-    var config = self.opts.opts || self.opts;
-    var EL = self.root;
-    for (i in config) {
-        self[i] = config[i];
-    }
-    self.width = config.width || 600;
-    self.height = config.height || 'auto';
-
-    self.on('mount', function() {
-        var container = self.root.querySelector('.itoolkit-modal-container');
-        var head = self.root.querySelector('.itoolkit-modal-title');
-        var headHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
-        if (config.height) {
-            container.style.height = (self.height - headHeight - 2) + 'px';
-        }
-
-    })
-
-    this.close = function(e) {
-        self.root.style.display = 'none';
-        self.onClose && self.onClose();
-    }.bind(this);
-
-    if (document.querySelector("[modal-open-target='" + self.root.id + "']")) {
-        document.querySelector("[modal-open-target='" + self.root.id + "']").onclick = function() {
-            self.root.style.display = 'block';
-            self.onOpen && self.onOpen();
-        }
-    }
-
-    self.root.open = function() {
-        self.root.style.display = 'block';
-        self.onOpen && self.onOpen();
-    }
-
-    self.root.close = function() {
-        self.root.style.display = 'none';
-        self.onClose && self.onClose();
-    }
-
-    self.root.loadData = function(newData, colName){
-        colName = colName || 'data';
-        self[colName] = newData;
-        self.update();
-    }
-
-
-
-
-});
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }" style="position:relative;"> <span class="redirect" if="{ redirect }">跳转到<input class="jumpPage" name="page" riot-type={"number"} style="width: 40px;">页 </span> <div class="paginate-tips" riot-style="top: { tipsTop }; left: { tipsLeft }; display: { showTip }"> 请输入1～{ pageCount }之间的数字 </div> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', '.paginate .paginate-tips{ position: absolute; padding: 5px; border: 1px solid #ddd; background-color: #fff; -webkit-box-shadow: 0 0 10px #ccc; box-shadow: 0 0 10px #ccc; } .paginate .paginate-tips:before { content: ""; position: absolute; width: 0; height: 0; top: -16px; left: 10px; border: 8px solid transparent; border-bottom-color: #ddd; } .paginate .paginate-tips:after { content: ""; position: absolute; width: 0; height: 0; top: -15px; left: 10px; border: 8px solid transparent; border-bottom-color: #fff; }', function(opts) {
-    var self = this;
-    var EL = self.root;
-    var config = self.opts.opts || self.opts;
-    self.showTip = 'none';
-    self.count = config.count || 0;
-    self.pagesize = config.pagesize || 20;
-    self.pageCount = config.pageCount || Math.ceil(self.count/self.pagesize) || 1;
-    self.currentPage = config.currentPage || 1;
-    self.url = config.url || '';
-    self.showNumber = config.showNumber || 5;
-
-    self.redirect = config.redirect || true;
-    self.showPageCount = config.showPageCount || true;
-    self.showItemCount = config.showItemCount || true;
-    self.needInit = config.needInit || false;
-
-    self.updateCurrentPage = function () {
-        if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
-            self.pages = [];
-            if (self.pageCount - self.currentPage > 2) {
-                var origin = self.currentPage - Math.ceil(self.showNumber/2);
-                var last = self.currentPage + Math.floor(self.showNumber/2);
-            }
-            else {
-                var last = self.pageCount;
-                var origin = self.pageCount - self.showNumber;
-            }
-            for (i = origin; i < last; i++) {
-                self.pages.push({page: i + 1});
-                self.update();
-            }
-        }
-        else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
-            self.pages = [];
-            for (i = 0; i < self.showNumber; i++) {
-                self.pages.push({page: i + 1});
-            }
-            self.pages.push({page: '...'});
-        }
-    };
-    EL.addCount = function (num) {
-        var count = self.count + num;
-        var oldPageCount = self.pageCount;
-        count < 0
-        ? self.count = 0
-        : self.count = count;
-
-        self.pageCount = Math.ceil(self.count/self.pagesize) || 1;
-        self.currentPage = (
-            self.currentPage > self.pageCount
-            ? self.pageCount
-            : self.currentPage
-        );
-
-        if (self.pageCount <= self.showNumber) {
-            self.pages = [];
-            for (var i = 0; i < self.pageCount; i++) {
-                self.pages.push({page: i + 1});
-            }
-        }
-
-        if (
-
-            self.needInit
-
-            || (self.pageCount < oldPageCount && self.currentPage <= self.pageCount)
-        ) {
-            config.callback(self.currentPage);
-        }
-
-        self.pageChange(self.currentPage)
-        self.update();
-    };
-
-    self.pages = [];
-    
-    if (self.pageCount < (self.showNumber + 1)) {
-        for (i = 0; i < self.pageCount; i++) {
-            self.pages.push({page: i + 1});
-        }
-    } 
-    else {
-        for (i = 0; i < self.showNumber; i++) {
-            self.pages.push({page: i + 1});
-        }
-        self.pages.push({page: '...'});
-    }
-
-    if (self.needInit) {
-        config.callback(self.currentPage);
-    }
-    self.updateCurrentPage();
-    self.update();
-
-    this.goFirst = function(e) {
-        self.pageChange(1);
-    }.bind(this);
-
-    this.goPrev = function(e) {
-        if (self.currentPage > 1) {
-            self.pageChange(self.currentPage - 1);
-        }
-    }.bind(this);
-
-    this.goNext = function(e) {
-        if (self.currentPage < self.pageCount) {
-            self.pageChange(self.currentPage + 1);
-        }
-    }.bind(this);
-    
-    this.goLast = function(e) {
-        self.pageChange(self.pageCount);
-    }.bind(this);
-
-    this.redirect = function(e) {
-        var index = parseInt(self.page.value, 10);
-        if (
-            index &&
-            index < (self.pageCount + 1) &&
-            index > 0
-        ) {
-            self.pageChange(parseInt(index, 10));
-        }
-        else {
-            self.tipsLeft = self.page.offsetLeft;
-            self.tipsTop = self.page.offsetTop + self.page.offsetHeight + 8;
-            self.showTip = 'block';
-            setTimeout(function () {
-                self.showTip = 'none';
-                self.update();
-            }, 1500)
-            self.update();
-        }
-    }.bind(this);
-
-    this.changePage = function(e) {
-        var page = e.item.page
-        if (typeof(page) === 'string') {
-            return false;
-        }
-        else {
-            self.pageChange(page);
-        }
-    }.bind(this);
-
-    self.pageChange = function(page) {
-        if (self.currentPage != page) {
-            self.currentPage = page;
-            config.callback(page);
-        }
-        self.updateCurrentPage();
-    };
-
-    
-});
-riot.tag('select-muti-wrap', '<yield></yield> <ul class="itoolkit-selected-container" onmousedown="{ showOptions }"> <li class="itoolkit-selected-option" each="{realData }" if="{ selected }"> { name } <span class="itoolkit-close" onmousedown="{ cancel }" >×</span> </li> <li class="itoolkit-search-wrap" style="min-height: 34px;"> <input type="text" class="form-control itoolkit-select-search" oninput="{ filter }" onfocus="{ filter }" onkeyup="{ keyboardHandle }"> </li> </ul> <ul class="itoolkit-options-container"> <li class="itoolkit-options" each="{ realData }" onmousedown="{ toggle }" if="{ !hide }"> <span class="itoolkit-option-check" if="{ selected }">√</span> <span class="empty-icon" if="{ !selected }"></span> { name } </li> <li class="no-result" if="{ noResult }">无搜索结果</li> </ul>', 'select-muti-wrap { display: block; position: relative; cursor: pointer; } select-muti-wrap select { display: none; } select-muti-wrap .itoolkit-selected-container { box-sizing: border-box; list-style: none; margin: 0; padding: 0 5px; width: 100%; display: inline-block; /*overflow-x: hidden;*/ /*overflow-y: auto;*/ border-radius: 0; border: 1px solid #d2d6de; text-align: left; } select-muti-wrap .itoolkit-selected-container .itoolkit-selected-option { display: inline-block; padding: 4px 8px; background: #3c8dbc; border-color: #367fa9; color: #ffffff; border-radius: 4px; margin: 2px 5px 2px 0; } select-muti-wrap .itoolkit-search-wrap { width: 1em; display: inline-block; } select-muti-wrap .itoolkit-search-wrap input { padding-left: 0; padding-right: 0; height: 30px; border:none; } select-muti-wrap .itoolkit-options-container { padding: 0; text-align: left; position: absolute; width: 100%; border: 1px solid #d2d6de; border-top: none; z-index: 10000; background: #ffffff; display: none; max-height: 150px; overflow-y: auto; } select-muti-wrap .itoolkit-options-container .itoolkit-options { padding: 6px 12px; } select-muti-wrap .itoolkit-options-container .itoolkit-options:hover { background: #eff3f8; } select-muti-wrap .itoolkit-options-container .no-result { text-align: center; padding: 6px 0; } select-muti-wrap .empty-icon { padding: 0 9px; } select-muti-wrap .itoolkit-option-check { /* 对勾*/ } select-muti-wrap .itoolkit-close { /* 叉叉*/ }', function(opts) {
-        var self = this;
-        var config = self.opts.opts || self.opts;
-        self.gotOptions = false;
-
-        self.init = self.root.init = function() {
-            self.gotOptions = false;
-            self.update();
-        };
-
-        
-        self.realData = [];
-        self.root.realData = self.realData;
-        self.root.getSelectedData = function () {
-            var selectedData = [];
-            for (var i = 0, l= self.realData.length; i < l; i ++) {
-                if (self.realData[i].selected) {
-                    selectedData.push({
-                        id: parseInt(self.realData[i].value, 10)
-                    });
-                }
-            }
-            return selectedData;
-        };
-
-        self.initData = self.root.initData = function() {
-            if (self.root.querySelector('select')) {
-                var options = self.root.querySelector('select').querySelectorAll('option');
-            }
-            if (options && options.length && !self.gotOptions) {
-                self.options = options;
-                self.searchInput = self.root.querySelector('.itoolkit-select-search');
-                self.optionsWrap = self.root.querySelector('.itoolkit-options-container');
-                self.realData = [];
-                for (i = 0; i < options.length; i++) {
-                    self.realData.push({
-                        name: options[i].innerHTML,
-                        value: options[i].getAttribute('value'),
-                        selected: options[i].getAttribute('selected'),
-                        index: i
-                    });
-                }
-                self.searchInput.onfocus = function () {
-                    self.optionsWrap.style.display = 'block';
-                };
-
-                self.searchInput.onblur = function () {
-                    self.optionsWrap.style.display = 'none';
-                    self.resetSelectOpt();
-                };
-                self.gotOptions = true;
-                self.update();
-                console.log(self.realData);
-            }
-        };
-
-
-        self.on('update', function() { 
-            setTimeout(function() {
-                self.initData();
-            }, 0)
-            
-        });
-
-
-
-        self.on('mount', function() {
-            if (config) {
-                utils.extend(self, config);
-                self.update();
-            }
-        });
-
-        self.filter = function(e) {
-            self.resetSelectOpt();
-            var v = e.target.value;
-            e.target.style.width = (0.9 * v.length + 1) + 'em';
-            var match;
-            for (i = 0; i < self.realData.length; i++) {
-                if (!self.realData[i].name.match(v)) {
-                    self.realData[i].hide = true;
-                }
-                else {
-                    self.realData[i].hide = false;
-                    match = true;
-                }
-            }
-            self.noResult = !match;
-        };
-
-        self.toggle = function(e) {
-            if (e.item.selected) {
-                e.item.selected = false;
-                self.options[e.item.index].selected = false;
-            }
-            else {
-                e.item.selected = true;
-                self.options[e.item.index].selected = true;
-            }
-            self.update();
-        };
-
-        self.cancel = function(e) {
-            e.stopPropagation();
-            e.item.selected = false;
-            self.options[e.item.index].selected = false;
-            self.update();
-        };
-
-        self.showOptions = function(e) {
-            if (self.searchInput && self.searchInput !== document.activeElement) {
-                self.searchInput.focus();
-            }
-            else {
-                self.searchInput.blur();
-            }
-        };
-
-        
-        self.keyboardHandle = function(e) {
-            var searchInput = e.target;
-            searchInput.options = document.querySelectorAll('.itoolkit-options');
-            if (searchInput.seletedIndex === undefined ){
-                searchInput.seletedIndex = -1;
-            }
-
-            var keyCode = e.keyCode;
-            if (keyCode === 37 || keyCode === 38){
-                self.clearSelectedOpt(searchInput);
-                searchInput.seletedIndex--;
-                if (searchInput.seletedIndex < 0){
-                    searchInput.seletedIndex = searchInput.options.length - 1;
-                }
-                self.setSelectedOpt(searchInput);
-            }
-            else if (keyCode === 39 || keyCode === 40){
-                self.clearSelectedOpt(searchInput);
-                searchInput.seletedIndex++;
-                if (searchInput.seletedIndex >= searchInput.options.length){
-                    searchInput.seletedIndex = 0;
-                }
-                self.setSelectedOpt(searchInput);
-            }
-            else if (keyCode === 13){
-                self.chooseByKeyboard(searchInput);
-            }
-            else if (keyCode === 27){
-                self.searchInput.blur();
-            }
-        };
-
-        self.chooseByKeyboard = function(target){
-            var e = document.createEvent("MouseEvents");
-            var dom = target.options[target.seletedIndex];
-            e.initEvent("mousedown", true, true);
-            if (dom) {
-                dom.dispatchEvent(e);
-            }
-        };
-
-        self.clearSelectedOpt = function(target){
-            if (target.options) {
-                var dom = target.options[target.seletedIndex];
-                if (target.seletedIndex >= 0 && dom) {
-                    dom.style.background = "";
-                    dom.scrollIntoView();
-                }
-            }
-        };
-
-        self.resetSelectOpt = function() {
-            self.clearSelectedOpt(self.searchInput);
-            self.searchInput.seletedIndex = -1;
-        };
-
-        self.setSelectedOpt = function(target){
-            var dom = target.options[target.seletedIndex];
-            if (dom) {
-                dom.style.background = "#eff3f8";
-                dom.scrollIntoView();
-            }
-        };
-    
-});
-
-
-riot.tag('select-box', '<div class="r-select" onclick="{ clicked }">{ placeholder }</div> <ul class="r-select-body" hide="{ hide }"> <li each="{ data }" index="{ index }" value="{ value }" class="r-select-item { selected }" onclick="{ parent.clickItem }">{ innerText }</li> </ul> <div style="display:none" class="inputHide"></div>', function(opts) {
-    var self = this;
-    var EL = self.root;
-    self.config = self.opts.opts || self.opts;
-
-    self.data = [];
-
-    self.placeholder = self.config.placeholder;
-
-    self.callback = self.config.callback;
-
-    self.name = self.config.name;
-
-    self.value = [];
-
-    self.prevNode = null;
-
-    EL.getValue = function () {
-        return self.value;
-    };
-
-    self.hide = true;
-
-    this.clicked = function(e) {
-        self.hide = false;
-        self.update();
-    }.bind(this);
-
-    this.updateValue = function(item) {
-        for (var i = 0; i < self.data.length; i++) {
-            if (self.data[i].selected) {
-                self.value.push(self.data[i].value);
-                self.placeholder.push(self.data[i].innerText);
-            }
-        }
-        if (self.value.length == self.size) {
-            self.hide = true;
-        }
-        self.placeholder = self.placeholder.join(',');
-        self.prevNode = item;
-        self.callback && self.callback(self);
-        self.update();
-    }.bind(this);
- 
-    this.clickItem = function(e) {
-        var item = e.target || e.srcElement;
-        var index = +item.getAttribute('index');
-        self.value.length = 0;
-        self.placeholder = [];
-        if (self.mutiple) {
-            self.data[index].selected = self.data[index].selected ? '' : 'selected';
-            self.updateValue(null);
-            return;
-        }
-        if (self.prevNode) {
-            self.data[+self.prevNode.getAttribute('index')].selected = '';
-        }
-        self.data[index].selected = 'selected';
-        self.updateValue(item);
-    }.bind(this);
-
-    self.one('mount', function () {
-        for (var i = 0; i < self.config.data.length; i++) {
-            var child = self.config.data[i];
-            child.selected = '',
-            child.index = i;
-            self.data.push(child);
-        }
-        self.mutiple = self.config.mutiple || false;
-        self.size = self.mutiple ? (self.config.size ? self.config.size : self.data.length) : 1;
-        self.update();
-    });
-    
-});
-riot.tag('side-list', '<ul > <li each="{ data }"> <img riot-src="{ logoUrl }" if="{ isLogo }"> <span>{ name }</span> </li> </ul>', function(opts) {
-
-});
-riot.tag('slide', '', function(opts) {
-
-
-});
-riot.tag('super-table', '<yield>', function(opts) {
-        var self = this;
-        var config = self.opts.opts || self.opts;
-        var EL = self.root;
-        
-        self.init = function() {
-            EL.style.display = 'block';
-            for (i in config) {
-                if (!self[i]) {
-                    self[i] = config[i];
-                }
-            }
-
-        }
-
-        self.on('mount', function() {
-            self.init();
-        });
-        
-        self.compare = function(a, b) {
-            if (a[self.orderkeyName] > b[self.orderkeyName]) {
-                return 1;
-            } 
-            else if (a[self.orderkeyName] === b[self.orderkeyName]) {
-                return 0;
-            }
-            else {
-                return -1;
-            }
-        }
-        
-        self.orderBy = EL.orderBy = function(col) {
-            self.orderkeyName = col;
-            if (self.ordered !== col) {
-                if (self.reversed !== col) {
-                    self.data = self.data.sort(self.compare)
-                }
-                else {
-                    self.data = self.data.reverse();
-                }
-            }
-            else {
-                return
-            }
-            self.ordered = col;
-            self.reversed = false;
-            self.update()
-        };
-
-        self.loadData = EL.loadData = function(data) {
-            self.data = data;
-
-            self.update();
-        };
-        self.append = EL.loadData = function(rows) {
-            if (utils.isObject(rows)) {
-                self.data.push(rows);
-            }
-            else if (utils.isArray(rows)) {
-                self.data = self.data.concat(rows);
-            }
-        };
-        self.insertBefore = EL.insertBefore = function(rows) {
-            if (utils.isObject(rows)) {
-                self.data.unshift(rows);
-            }
-            else if (utils.isArray(rows)) {
-                self.data = rows.concat(self.data);
-            }
-        };
-        self.reverseBy = EL.reverseBy = function(col) {};
-
-
-
-    
-});
-riot.tag('super-div', '<yield>', 'super-div{ display: block; }', function(opts) {
+riot.tag('itk-div', '<yield>', function(opts) {
     
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -813,7 +136,7 @@ riot.tag('super-div', '<yield>', 'super-div{ display: block; }', function(opts) 
 
 
 });
-riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function(opts) {
+riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(opts) {
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
@@ -1391,38 +714,474 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
     
 });
-riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ active: parent.currentIndex==index }">{ title }</li> </ul> <div class="tab-content" riot-tag="tab-content"></div>', function(opts) {
 
-    var self = this
+riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> </div>', function(opts) {
+
+    var self = this;
     var config = self.opts.opts || self.opts;
-
-    self.data = config.data;
-    if (self.data.length > 0) {
-        self.currentIndex = 0;
-        self.content = self.data[0].content;
-        for (i = 0; i < self.data.length; i++) {
-            self.data[i].index = i;
-        }
+    var EL = self.root;
+    for (i in config) {
+        self[i] = config[i];
     }
-    
+    self.width = config.width || 600;
+    self.height = config.height || 'auto';
 
-    this.toggle = function(e) {
-        self.content = e.item.content;
-        self.currentIndex = e.item.index;
-        self.update();
+    self.on('mount', function() {
+        var container = self.root.querySelector('.itk-modal-container');
+        var head = self.root.querySelector('.itk-modal-title');
+        var headHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
+        if (config.height) {
+            container.style.height = (self.height - headHeight - 2) + 'px';
+        }
+
+    })
+
+    this.close = function(e) {
+        self.root.style.display = 'none';
+        self.onClose && self.onClose();
     }.bind(this);
 
+    if (document.querySelector("[modal-open-target='" + self.root.id + "']")) {
+        document.querySelector("[modal-open-target='" + self.root.id + "']").onclick = function() {
+            self.root.style.display = 'block';
+            self.onOpen && self.onOpen();
+        }
+    }
+
+    self.root.open = function() {
+        self.root.style.display = 'block';
+        self.onOpen && self.onOpen();
+    }
+
+    self.root.close = function() {
+        self.root.style.display = 'none';
+        self.onClose && self.onClose();
+    }
+
+    self.root.loadData = function(newData, colName){
+        colName = colName || 'data';
+        self[colName] = newData;
+        self.update();
+    }
+
+
+
+
+});
+riot.tag('itk-paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="itk-paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="itk-paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="itk-paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="itk-paginate"> <form onsubmit="{ redirect }" style="position:relative;"> <span class="redirect" if="{ redirect }">跳转到<input class="jumpPage" name="page" riot-type={"number"} style="width: 40px;">页 </span> <div class="itk-paginate-tips" riot-style="top: { tipsTop }; left: { tipsLeft }; display: { showTip }"> 请输入1～{ pageCount }之间的数字 </div> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
+        var self = this;
+        var EL = self.root;
+        var config = self.opts.opts || self.opts;
+        self.showTip = 'none';
+        self.count = config.count || 0;
+        self.pagesize = config.pagesize || 20;
+        self.pageCount = config.pageCount || Math.ceil(self.count/self.pagesize) || 1;
+        self.currentPage = config.currentPage || 1;
+        self.url = config.url || '';
+        self.showNumber = config.showNumber || 5;
+
+        self.redirect = config.redirect || true;
+        self.showPageCount = config.showPageCount || true;
+        self.showItemCount = config.showItemCount || true;
+        self.needInit = config.needInit || false;
+
+        self.updateCurrentPage = function () {
+            if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
+                self.pages = [];
+                if (self.pageCount - self.currentPage > 2) {
+                    var origin = self.currentPage - Math.ceil(self.showNumber/2);
+                    var last = self.currentPage + Math.floor(self.showNumber/2);
+                }
+                else {
+                    var last = self.pageCount;
+                    var origin = self.pageCount - self.showNumber;
+                }
+                for (i = origin; i < last; i++) {
+                    self.pages.push({page: i + 1});
+                    self.update();
+                }
+            }
+            else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
+                self.pages = [];
+                for (i = 0; i < self.showNumber; i++) {
+                    self.pages.push({page: i + 1});
+                }
+                self.pages.push({page: '...'});
+            }
+        };
+        EL.addCount = function (num) {
+            var count = self.count + num;
+            var oldPageCount = self.pageCount;
+            count < 0
+            ? self.count = 0
+            : self.count = count;
+
+            self.pageCount = Math.ceil(self.count/self.pagesize) || 1;
+            self.currentPage = (
+                self.currentPage > self.pageCount
+                ? self.pageCount
+                : self.currentPage
+            );
+
+            if (self.pageCount <= self.showNumber) {
+                self.pages = [];
+                for (var i = 0; i < self.pageCount; i++) {
+                    self.pages.push({page: i + 1});
+                }
+            }
+
+            if (
+
+                self.needInit
+
+                || (self.pageCount < oldPageCount && self.currentPage <= self.pageCount)
+            ) {
+                config.callback(self.currentPage);
+            }
+
+            self.pageChange(self.currentPage)
+            self.update();
+        };
+
+        self.pages = [];
+        
+        if (self.pageCount < (self.showNumber + 1)) {
+            for (i = 0; i < self.pageCount; i++) {
+                self.pages.push({page: i + 1});
+            }
+        } 
+        else {
+            for (i = 0; i < self.showNumber; i++) {
+                self.pages.push({page: i + 1});
+            }
+            self.pages.push({page: '...'});
+        }
+
+        if (self.needInit) {
+            config.callback(self.currentPage);
+        }
+        self.updateCurrentPage();
+        self.update();
+
+        this.goFirst = function(e) {
+            self.pageChange(1);
+        }.bind(this);
+
+        this.goPrev = function(e) {
+            if (self.currentPage > 1) {
+                self.pageChange(self.currentPage - 1);
+            }
+        }.bind(this);
+
+        this.goNext = function(e) {
+            if (self.currentPage < self.pageCount) {
+                self.pageChange(self.currentPage + 1);
+            }
+        }.bind(this);
+        
+        this.goLast = function(e) {
+            self.pageChange(self.pageCount);
+        }.bind(this);
+
+        this.redirect = function(e) {
+            var index = parseInt(self.page.value, 10);
+            if (
+                index &&
+                index < (self.pageCount + 1) &&
+                index > 0
+            ) {
+                self.pageChange(parseInt(index, 10));
+            }
+            else {
+                self.tipsLeft = self.page.offsetLeft;
+                self.tipsTop = self.page.offsetTop + self.page.offsetHeight + 8;
+                self.showTip = 'block';
+                setTimeout(function () {
+                    self.showTip = 'none';
+                    self.update();
+                }, 1500)
+                self.update();
+            }
+        }.bind(this);
+
+        this.changePage = function(e) {
+            var page = e.item.page
+            if (typeof(page) === 'string') {
+                return false;
+            }
+            else {
+                self.pageChange(page);
+            }
+        }.bind(this);
+
+        self.pageChange = function(page) {
+            if (self.currentPage != page) {
+                self.currentPage = page;
+                config.callback(page);
+            }
+            self.updateCurrentPage();
+        };
+
+    
+});
+riot.tag('itk-select', '<yield></yield> <ul class="itk-selected-container" onmousedown="{ showOptions }"> <li class="itk-selected-option" each="{realData }" if="{ selected }"> { name } <span class="itk-close" onmousedown="{ cancel }" >×</span> </li> <li class="itk-search-wrap" style="min-height: 34px;"> <input type="text" class="form-control itk-select-search" oninput="{ filter }" onfocus="{ filter }" onkeyup="{ keyboardHandle }"> </li> </ul> <ul class="itk-options-container"> <li class="itk-options" each="{ realData }" onmousedown="{ toggle }" if="{ !hide }"> <span class="itk-option-check" if="{ selected }"></span> <span class="empty-icon" if="{ !selected }"></span> { name } </li> <li class="no-result" if="{ noResult }">无搜索结果</li> </ul>', function(opts) {
+        var self = this;
+        var config = self.opts.opts || self.opts;
+        self.gotOptions = false;
+        self.chooseOnce = true;
+
+        self.init = self.root.init = function() {
+            self.gotOptions = false;
+            self.update();
+        };
+
+        
+        self.realData = [];
+        self.root.exportData = self.realData;
+
+        self.initData = self.root.initData = function() {
+            if (self.root.querySelector('select')) {
+                var options = self.root.querySelector('select').querySelectorAll('option');
+            }
+            if (options && options.length && !self.gotOptions) {
+                self.options = options;
+                self.searchInput = self.root.querySelector('.itk-select-search');
+                self.optionsWrap = self.root.querySelector('.itk-options-container');
+                self.realData = [];
+                for (i = 0; i < options.length; i++) {
+                    self.realData.push({
+                        name: options[i].innerHTML,
+                        value: options[i].getAttribute('value'),
+                        selected: options[i].getAttribute('selected'),
+                        index: i
+                    });
+                }
+                self.searchInput.onfocus = function () {
+                    self.optionsWrap.style.display = 'block';
+                };
+
+                self.searchInput.onblur = function () {
+                    self.optionsWrap.style.display = 'none';
+                    self.searchInput.value = '';
+                    self.resetSelectOpt();
+                };
+                self.gotOptions = true;
+                self.update();
+            }
+        };
+
+
+        self.on('update', function() { 
+            setTimeout(function() {
+                self.initData();
+            }, 0)
+            
+        });
+
+
+
+        self.on('mount', function() {
+            if (config) {
+                for (var i in config) {
+                    self[i] = config[i];
+                }
+                self.update();
+            }
+        });
+
+        self.filter = function(e) {
+            self.resetSelectOpt();
+            var v = e.target.value;
+            e.target.style.width = (0.9 * v.length + 1) + 'em';
+            var match;
+            for (i = 0; i < self.realData.length; i++) {
+                if (!self.realData[i].name.match(v)) {
+                    self.realData[i].hide = true;
+                }
+                else {
+                    self.realData[i].hide = false;
+                    match = true;
+                }
+            }
+            self.noResult = !match;
+        };
+
+        self.toggle = function(e) {
+            if (e.item.selected) {
+                e.item.selected = false;
+                self.options[e.item.index].selected = false;
+            }
+            else {
+                e.item.selected = true;
+                self.options[e.item.index].selected = true;
+            }
+            self.update();
+            if (self.chooseOnce) {
+                self.searchInput.blur();
+            }
+        };
+
+        self.cancel = function(e) {
+            e.stopPropagation();
+            e.item.selected = false;
+            self.options[e.item.index].selected = false;
+            self.update();
+        };
+
+        self.showOptions = function(e) {
+            if (self.searchInput && self.searchInput !== document.activeElement) {
+                self.searchInput.focus();
+            }
+            else {
+                self.searchInput.blur();
+            }
+        };
+
+        
+        self.keyboardHandle = function(e) {
+            var searchInput = e.target;
+            searchInput.options = self.root.querySelectorAll('.itk-options');
+            if (searchInput.seletedIndex === undefined ){
+                searchInput.seletedIndex = -1;
+            }
+
+            var keyCode = e.keyCode;
+            if (keyCode === 37 || keyCode === 38){
+                self.clearSelectedOpt(searchInput);
+                searchInput.seletedIndex--;
+                if (searchInput.seletedIndex < 0){
+                    searchInput.seletedIndex = searchInput.options.length - 1;
+                }
+                self.setSelectedOpt(searchInput);
+            }
+            else if (keyCode === 39 || keyCode === 40){
+                self.clearSelectedOpt(searchInput);
+                searchInput.seletedIndex++;
+                if (searchInput.seletedIndex >= searchInput.options.length){
+                    searchInput.seletedIndex = 0;
+                }
+                self.setSelectedOpt(searchInput);
+            }
+            else if (keyCode === 13){
+                self.chooseByKeyboard(searchInput);
+            }
+            else if (keyCode === 27){
+                self.searchInput.blur();
+            }
+        };
+
+        self.chooseByKeyboard = function(target){
+            var e = document.createEvent("MouseEvents");
+            var dom = target.options[target.seletedIndex];
+            e.initEvent("mousedown", true, true);
+            if (dom) {
+                dom.dispatchEvent(e);
+            }
+        };
+
+        self.clearSelectedOpt = function(target){
+            if (target.options) {
+                var dom = target.options[target.seletedIndex];
+                if (target.seletedIndex >= 0 && dom) {
+                    dom.style.background = "";
+                    dom.scrollIntoView();
+                }
+            }
+        };
+
+        self.resetSelectOpt = function() {
+            self.clearSelectedOpt(self.searchInput);
+            self.searchInput.seletedIndex = -1;
+        };
+
+        self.setSelectedOpt = function(target){
+            var dom = target.options[target.seletedIndex];
+            if (dom) {
+                dom.style.background = "#eff3f8";
+                dom.scrollIntoView();
+            }
+        };
+    
 });
 
-riot.tag('tab-content', '', function(opts) {
-    var self = this;
-   
-    self.parent.on('update', function() {
-        self.root.innerHTML = self.parent.content;
-    });
 
+riot.tag('super-table', '<yield>', function(opts) {
+        var self = this;
+        var config = self.opts.opts || self.opts;
+        var EL = self.root;
+        
+        self.init = function() {
+            EL.style.display = 'block';
+            for (i in config) {
+                if (!self[i]) {
+                    self[i] = config[i];
+                }
+            }
+
+        }
+
+        self.on('mount', function() {
+            self.init();
+        });
+        
+        self.compare = function(a, b) {
+            if (a[self.orderkeyName] > b[self.orderkeyName]) {
+                return 1;
+            } 
+            else if (a[self.orderkeyName] === b[self.orderkeyName]) {
+                return 0;
+            }
+            else {
+                return -1;
+            }
+        }
+        
+        self.orderBy = EL.orderBy = function(col) {
+            self.orderkeyName = col;
+            if (self.ordered !== col) {
+                if (self.reversed !== col) {
+                    self.data = self.data.sort(self.compare)
+                }
+                else {
+                    self.data = self.data.reverse();
+                }
+            }
+            else {
+                return
+            }
+            self.ordered = col;
+            self.reversed = false;
+            self.update()
+        };
+
+        self.loadData = EL.loadData = function(data) {
+            self.data = data;
+
+            self.update();
+        };
+        self.append = EL.loadData = function(rows) {
+            if (utils.isObject(rows)) {
+                self.data.push(rows);
+            }
+            else if (utils.isArray(rows)) {
+                self.data = self.data.concat(rows);
+            }
+        };
+        self.insertBefore = EL.insertBefore = function(rows) {
+            if (utils.isObject(rows)) {
+                self.data.unshift(rows);
+            }
+            else if (utils.isArray(rows)) {
+                self.data = rows.concat(self.data);
+            }
+        };
+        self.reverseBy = EL.reverseBy = function(col) {};
+
+
+
+    
 });
-riot.tag('tree-item', '<input type="checkbox" __checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-arrow { open: item.opened }" onclick="{ toggle }" if="{ item.children }"></i> <i class="tree-item-icon" if="{ item.children }"></i> <div onclick="{ leftClick }">{ item.name }</div>', function(opts) {
+riot.tag('itk-tree-item', '<input type="checkbox" __checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-arrow { open: item.opened }" onclick="{ toggle }" if="{ item.children }"></i> <i class="tree-item-icon" if="{ item.children }"></i> <div onclick="{ leftClick }">{ item.name }</div>', function(opts) {
     
     var self = this;
     
@@ -1508,7 +1267,7 @@ riot.tag('tree-item', '<input type="checkbox" __checked="{ item.selected }" if="
 
 });
 
-riot.tag('tree', '<div class="tree-item-wrap" each="{ item, i in data }" onselectstart="return false" ondragstart="return false"> <tree-item class="tree-item-row { root: item.level==1 }" riot-style="padding-left: { countPadding(item.level) }"></tree-item> <ul class="tree-child-wrap" if="{ item.opened && item.children }"> <tree data="{ item.children }"></tree> </ul> </div>', function(opts) {
+riot.tag('itk-tree', '<div class="tree-item-wrap" each="{ item, i in data }" onselectstart="return false" ondragstart="return false"> <itk-tree-item class="tree-item-row { root: item.level==1 }" riot-style="padding-left: { countPadding(item.level) }"></itk-tree-item> <ul class="tree-child-wrap" if="{ item.opened && item.children }"> <itk-tree data="{ item.children }"></itk-tree> </ul> </div>', function(opts) {
     var self = this;
     self.config = self.opts.opts || self.opts;
 
@@ -1560,7 +1319,7 @@ riot.tag('tree', '<div class="tree-item-wrap" each="{ item, i in data }" onselec
     };
     
     
-    if (!self.parent || self.parent.root.tagName !== 'TREE') {
+    if (!self.parent || self.parent.root.tagName !== 'ITK-TREE') {
         if (self.config.handleData) {
             var tree = self.dataHandle(self.config.data);
             self.data = tree;
@@ -1581,6 +1340,90 @@ riot.tag('tree', '<div class="tree-item-wrap" each="{ item, i in data }" onselec
         var padding = self.rootConfig.padding || 20;
         return (level - 1) * padding + 'px';
     }.bind(this);
+    
+    
+});
+riot.tag('itk-uploader', '<div class="container"> <div class="page-header"> <h1>Simple Ajax Uploader</h1> <h3>Basic Example</h3> </div> <div class="row" style="padding-top:10px;"> <div class="col-xs-2"> <button id="uploadBtn" class="btn btn-large btn-primary">Choose File</button> </div> <div class="col-xs-10"> <div id="progressOuter" class="progress progress-striped active" style="display:none;"> <div id="progressBar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%"</div> </div> </div> </div> <div class="row" style="padding-top:10px;"> <div class="col-xs-10"> <div id="msgBox"></div> </div> </div> </div>', function(opts) {
+    var self = this;
+    var EL = self.root;
+    var config = self.opts.opts || self.opts;
+
+    var js = document.scripts;
+
+    var path = '';
+
+    var jsPath = '';
+
+    if (!config.path) {
+        for (var i = 0; i < js.length; i++) {
+            if (!js[i].src) {
+                continue;
+            }
+            if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
+                jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+                break;
+            }
+        }
+        path = jsPath + 'plugins/uploader/';
+    }
+    else {
+        path = config.path;
+    }
+
+    var sourceArr = [
+        path + 'SimpleAjaxUploader.min.js',
+    ];
+
+    utils.jsLoader(sourceArr, function () {
+        var btn = document.getElementById('uploadBtn'),
+            progressBar = document.getElementById('progressBar'),
+            progressOuter = document.getElementById('progressOuter'),
+            msgBox = document.getElementById('msgBox');
+
+        var uploader = new ss.SimpleUpload({
+            button: btn,
+            url: 'file_upload.php',
+            name: 'uploadfile',
+            multipart: true,
+            hoverClass: 'hover',
+            focusClass: 'focus',
+            responseType: 'json',
+            startXHR: function() {
+                progressOuter.style.display = 'block'; // make progress bar visible
+                this.setProgressBar( progressBar );
+            },
+            onSubmit: function() {
+                msgBox.innerHTML = ''; // empty the message box
+                btn.innerHTML = 'Uploading...'; // change button text to "Uploading..."
+            },
+            onComplete: function( filename, response ) {
+                btn.innerHTML = 'Choose Another File';
+                progressOuter.style.display = 'none'; // hide progress bar when upload is completed
+
+                if ( !response ) {
+                    msgBox.innerHTML = 'Unable to upload file';
+                    return;
+                }
+
+                if ( response.success === true ) {
+                    msgBox.innerHTML = '<strong>' + escapeTags( filename ) + '</strong>' + ' successfully uploaded.';
+
+                } else {
+                    if ( response.msg )  {
+                        msgBox.innerHTML = escapeTags( response.msg );
+
+                    } else {
+                        msgBox.innerHTML = 'An error occurred and the upload failed.';
+                    }
+                }
+            },
+            onError: function() {
+                progressOuter.style.display = 'none';
+                msgBox.innerHTML = 'Unable to upload file';
+            }
+        });        
+    });
+
     
     
 });
