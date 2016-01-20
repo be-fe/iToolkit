@@ -3,7 +3,7 @@
         <meta charset='utf-8'>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
-        <link rel="stylesheet" href="../src/css/common.css">
+        <link rel="stylesheet" href="../src/css/itoolkit.css">
         <link rel="stylesheet" href="../src/css/themes/simple_pc.css">        
         <!-- IE兼容  -->
         <!--[if lt IE 9]>
@@ -17,8 +17,8 @@
     </head>
     <body>
         <button modal-open-target='modal-demo1' class="btn btn-primary">打开模态框</button>
-        <modal id="modal-demo1">
-            <super-form opts="{ formData }" action="{ url }" class="form-horizontal">
+        <itk-modal id="modal-demo1">
+            <itk-form opts="{ formData }" action="{ url }" class="form-horizontal">
                 <div class="form-group">
                     <label for="exampleInputIP">IP address</label>
                     <input type="text" name="ip" class="form-control" id="exampleInputIP" placeholder="{ data.rip }" value="{ data.ip }" customValid="isIP">
@@ -32,10 +32,10 @@
                     <input type="password" name="password"  class="form-control" id="exampleInputPassword1" placeholder="Password" value="{ data.password }">
                 </div>
                 <input class="btn btn-primary" value="提交" type="submit"/>
-            </super-form>
+            </itk-form>
             <button onclick="test()">reset</button>
             <button onclick="test1()">重设data中某一值</button>
-        </modal>
+        </itk-modal>
 
         <script>
             var data = {
@@ -83,8 +83,8 @@
                 regExp: empRegExp.ip,
                 message: 'IP地址格式错误'
             };
-            riot.mount('modal', config)
-            document.querySelector('super-form').loadData('/submit/actionchange', 'action');
+            riot.mount('itk-modal', config)
+            document.querySelector('itk-form').loadData('/submit/actionchange', 'action');
         </script>
     </body>
 </html>

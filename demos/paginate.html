@@ -3,7 +3,7 @@
         <meta charset='utf-8'>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
-        <link rel="stylesheet" href="../src/css/common.css">
+        <link rel="stylesheet" href="../src/css/itoolkit.css">
         <link rel="stylesheet" href="../src/css/themes/simple_pc.css">        
         <!-- IE兼容  -->
         <!--[if lt IE 9]>
@@ -17,7 +17,7 @@
     </head>
     <body>
         <ul id="container"></ul>
-        <paginate></paginate>
+        <itk-paginate></itk-paginate>
         <p>The page number is <b id="page-number"></b></p>
         <div>
         	<button onclick="addItem(1)">增加一条条目</button>
@@ -56,9 +56,9 @@
                         container.innerHTML = html;
                     }               //页数变化时的回调，会将跳转页码作为参数传入
                 }
-                riot.mount('paginate', pageOpts);
+                riot.mount('itk-paginate', pageOpts);
             });
-            var p = document.querySelector('paginate');
+            var p = document.querySelector('itk-paginate');
             function addItem(num) {
                 if (typeof num !== 'number') {
                     return;
