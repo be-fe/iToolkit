@@ -2045,6 +2045,318 @@ riot.tag('goto-top', '<div class="itoolkit-goto-top" show="{ showGotoTop }" oncl
     
 
 });
+riot.tag('itk-slick-slide', '  <yield>', 'itk-slick-slide { width: 600px; height: 300px; background-color: white; text-align: center; } itk-slick-slide .slick-arrow { width: 30px; } itk-slick-slide .slick-arrow:hover { width: 30px; }', function(opts) {
+
+            var self = this;
+            var EL = self.root;
+            var config = self.opts.opts || self.opts;
+            var js = document.scripts;
+            var path = '';
+            var jsPath = '';
+
+            for (var i = 0; i < js.length; i++) {
+                if (!js[i].src) {
+                    continue;
+                }
+                if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
+                    jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+                    break;
+                }
+            }
+
+            path = jsPath + 'plugins/';
+
+            if (typeof jQuery == 'undefined') {
+                (function () {
+                    utils.jsLoader([
+                        path + 'jquery/jquery-1.11.0.min.js',
+                    ], function () {
+
+                        jQuery(document).ready(function ($) {
+                            utils.jsLoader([
+                                path + 'jquery/jquery-migrate-1.2.1.min.js',
+                                path + 'slick/slick.css',
+                                path + 'slick/slick-theme.css',
+                                path + 'slick/slick.js',
+                            ], function () {
+                                $(document).ready(function () {
+                                    $(EL).slick(config);
+                                });
+                            });
+                        });
+                    });
+                })();
+            } else {
+                jQuery(document).ready(function ($) {
+                    utils.jsLoader([
+                        path + 'slick/slick.css',
+                        path + 'slick/slick-theme.css',
+                        path + 'slick/slick.js'
+                    ], function () {
+                        $(document).ready(function () {
+                            $(EL).slick(config);
+                        });
+                    });
+                });
+            }
+        
+});
+
+riot.tag('itk-slide', '<ul id="slide-wrap"> <yield></yield> </ul> <a href="javascript:;" id="prev" class="arrow">《</a> <a href="javascript:;" id="next" class="arrow">》</a> <div class="slide-btn-wrap" id="slide-btn-wrap"> <div id="slide-btn-container"> </div> </div>', 'slide { display: block; overflow: hidden; padding: 0; position: relative; margin: 0; } slide ul { display: block; overflow: hidden; padding: 0; margin: 0; position: relative; } slide ul li { display: block; float: left; ul-style: none; list-style: none; padding: 0; margin: 0; } slide .slide-btn-wrap { width: 100%; height: 50px; background-color: rgba(0, 0, 0, .3); position: relative; top: -50px; } slide #slide-btn-container { width: 100px; height: 50px; margin: 0 auto; } slide .slide-btn-wrap span { cursor: pointer; float: left; border: 1px solid #fff; width: 10px; height: 10px; border-radius: 50%; background: #333; margin-right: 5px; margin-left: 5px; margin-top: 20px; } slide .slide-btn-wrap .on { background: orangered; } slide .arrow { display: block; cursor: pointer; line-height: 50px; text-align: center; font-size: 36px; font-weight: bold; width: 40px; height: 50px; position: absolute; z-index: 100; background-color: RGBA(0, 0, 0, .3); color: #fff; top: 50%; text-decoration: none; } slide #prev { left: 20px; } slide #next { right: 20px; }', function(opts) {
+
+
+
+
+
+
+
+
+
+        var self = this;
+
+        var defaultConfig = {
+
+            width: "600px",
+            height: "400px",
+
+            prev_next_show: true,
+            prev_next_width: "",
+            prev_next_height: "",
+            prev_next_color: "",
+
+            btns_container_show: true,
+            btns_show: true,
+            btns_size: "10px",
+            btns_style: "circle",
+            btns_active_color: "orangered",
+            btns_blur_color: "333",
+            btns_border_color: "fff",
+            btns_border_size: "1px",
+
+            direction: "right",
+            move_function: "liner",
+
+            time: 3000,// 多久运动一次,总间隔
+            speed: 300,// 每次运动耗时,表明运动速度
+            step: 5,// 多少个步骤,表明运动帧速,对应细腻程度
+
+        };
+
+        var root = self.root;
+        var ul = self['slide-wrap'];
+        var li = ul.getElementsByTagName('li');
+        var first = li[0];
+        var last = li[li.length - 1];
+
+        var btnsContainer = self['slide-btn-container'];
+        var btns = self['slide-btn-wrap'].getElementsByTagName('span');
+        var prev = self['prev'];
+        var next = self['next'];
+
+        var len = li.length;
+
+        var index = 1;
+        var animated = false;//全局运动状态标志
+        var timer;
+
+        var initSetting = function () {
+            for (var defeaultItem in defaultConfig) {
+                for (var newItem in self.opts) {
+                    if (defeaultItem == newItem) {
+                        defaultConfig[defeaultItem] = self.opts[newItem];
+                        console.log(self.opts[newItem]);
+                    }
+                }
+            }
+            console.log("更新后的设置为:");
+            console.log(defaultConfig);
+        }
+
+        var initView = function () {
+
+            ul.innerHTML = li[li.length - 1].outerHTML + ul.innerHTML + li[0].outerHTML;
+
+            for (var i = 0; i < len; i++) {
+                var span = document.createElement('span');
+                span.index = i + 1;
+                if (i == 0) {
+                    span.className = 'on';
+                }
+                btnsContainer.appendChild(span);
+            }
+
+            self.root.style.width = defaultConfig['width'];
+            self.root.style.height = defaultConfig['height'];
+
+            ul.style.width = parseInt(defaultConfig['width']) * (len + 1) + 'px';
+            ul.style.height = defaultConfig['height'];
+            ul.style.left = "-" + defaultConfig['width'];
+
+            for (var j = 0; j < li.length; j++) {
+                li[j].style.width = defaultConfig['width'];
+                li[j].style.height = defaultConfig['height'];
+            }
+
+            btnsContainer.style.width = (len * 10) + (len * 2 * 5) + 'px';
+
+            self['prev'].style.marginTop = '-25px';
+            self['next'].style.marginTop = '-25px';
+
+        }
+
+        var play = function () {
+            timer = setTimeout(function () {
+                prev.onclick();
+                play();
+            }, defaultConfig.time);
+        }
+
+
+        var goLeft = function () {
+
+        };
+
+        var goTop = function () {
+
+        };
+
+        var goBottom = function () {
+
+        };
+
+        var animate = function (offset) {
+
+            if (offset == 0) {
+                return;
+            }
+
+            animated = true;
+
+            var speed = defaultConfig.speed;
+
+            var step = defaultConfig.step;
+
+            var perStepTime = speed / step;
+
+            var perStepDiff = offset / step;
+
+            var target = parseInt(ul.style.left) + offset;
+
+            var goRight = function() {
+
+
+
+                if ((perStepDiff > 0 && parseInt(ul.style.left) < target) || (perStepDiff < 0 && parseInt(ul.style.left) > target)) {
+
+                    ul.style.left = parseInt(ul.style.left) + perStepDiff + 'px';
+                    setTimeout(goRight, perStepTime);
+                }
+                else {
+
+
+                    console.log("超出范围,或者正好在等于的位置上,目前位置是:" + ul.style.left);
+
+                    ul.style.left = target + 'px';
+
+
+
+
+                    if (target < (-600 * len)) {
+                        console.log('先到0');
+                        ul.style.left = '0px';
+                        animate(-600);
+                    }
+
+                    animated = false;
+                }
+            }
+
+            goRight();
+
+
+        }
+
+        var showButton = function () {
+            for (var i = 0; i < btns.length; i++) {
+                if (btns[i].className == 'on') {
+                    btns[i].className = '';
+                    break;
+                }
+            }
+            btns[index - 1].className = 'on';
+        }
+
+
+        function stop() {
+            console.log('stop');
+            clearTimeout(timer);
+        }
+
+        next.onclick = function () {
+
+            console.log('next on click');
+
+            if (animated) {
+                return;
+            }
+            if (index == len) {
+                index = 1;
+            }
+            else {
+                index += 1;
+            }
+            animate(-600);
+            showButton();
+        }
+
+        prev.onclick = function () {
+            if (animated) {
+                return;
+            }
+            if (index == 1) {
+                index = len;
+            }
+            else {
+                index -= 1;
+            }
+            animate(600);
+            showButton();
+        }
+
+        root.onmouseover = stop;
+        root.onmouseout = play;
+
+        self.on('mount', function () {
+
+            initSetting();
+
+            initView();
+
+
+            for (var i = 0; i < btns.length; i++) {
+                btns[i].onclick = function () {
+                    if (animated) {
+                        return;
+                    }
+                    if (this.className == 'on') {
+                        return;
+                    }
+                    var myIndex = parseInt(this.getAttribute('index'));
+                    var offset = -600 * (myIndex - index);
+
+                    animate(offset);
+                    index = myIndex;
+                    showButton();
+                }
+            }
+
+
+            play();
+
+        });
+
+    
+});
 riot.tag('loading', '<div class="{itoolkit-loading: true, default: default}" > <yield> </div>', 'loading .itoolkit-loading { text-align: center; }', function(opts) {
 
     var self = this;
@@ -2554,10 +2866,6 @@ riot.tag('select-box', '<div class="r-select" onclick="{ clicked }">{ placeholde
     
 });
 riot.tag('side-list', '<ul > <li each="{ data }"> <img riot-src="{ logoUrl }" if="{ isLogo }"> <span>{ name }</span> </li> </ul>', function(opts) {
-
-});
-riot.tag('slide', '', function(opts) {
-
 
 });
 riot.tag('super-table', '<yield>', function(opts) {
