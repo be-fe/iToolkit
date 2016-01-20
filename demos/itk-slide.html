@@ -43,6 +43,7 @@
     <div>第二个轮播</div>
     <li>第三个轮播</li>
     <a>第四个轮播</a>
+    <a>第五个轮播</a>
 
 </itk-slide>
 
@@ -58,12 +59,15 @@
         slidesToShow: 1,
         adaptiveHeight: false,
         autoplay: true,
-        arrows: true
+        arrows: true,
+
+        slidesToShow: 2,
+        slidesToScroll: 2
 
     };
 
-    // riot.mount('itk-slide', opt);
-    riot.mount('itk-slide');
+     riot.mount('itk-slide', opt);
+    // riot.mount('itk-slide');
 
 </script>
 
