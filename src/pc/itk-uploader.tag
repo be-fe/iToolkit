@@ -98,7 +98,7 @@
             onError: function() {
                 progressOuter.style.display = 'none';
                 msgBox.innerHTML = 'Unable to upload file';
-            } 
+            }
         });        
     });
 
