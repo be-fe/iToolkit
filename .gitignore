@@ -16,3 +16,4 @@ Makefile.in
 node_modules
 .DS_Store
 .idea
+/src/plugins/uploader/examples/basic_example/upload_files/

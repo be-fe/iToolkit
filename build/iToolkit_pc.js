@@ -3260,7 +3260,7 @@ riot.tag('itk-uploader', '<div class="container"> <div class="page-header"> <h1>
 
         var uploader = new ss.SimpleUpload({
             button: btn,
-            url: 'http://localhost/file_upload.php',
+            url: '/src/plugins/uploader/examples/basic_example/file_upload.php',
             name: 'uploadfile',
             multipart: true,
             hoverClass: 'hover',
@@ -3277,18 +3277,17 @@ riot.tag('itk-uploader', '<div class="container"> <div class="page-header"> <h1>
             onComplete: function( filename, response ) {
                 btn.innerHTML = 'Choose Another File';
                 progressOuter.style.display = 'none'; // hide progress bar when upload is completed
-
                 if ( !response ) {
                     msgBox.innerHTML = 'Unable to upload file';
                     return;
                 }
 
                 if ( response.success === true ) {
-                    msgBox.innerHTML = '<strong>' + escapeTags( filename ) + '</strong>' + ' successfully uploaded.';
+                    msgBox.innerHTML = msgBox.innerHTML + '<br><strong>' + filename + '</strong>' + ' successfully uploaded.';
 
                 } else {
                     if ( response.msg )  {
-                        msgBox.innerHTML = escapeTags( response.msg );
+                        msgBox.innerHTML = response.msg ;
 
                     } else {
                         msgBox.innerHTML = 'An error occurred and the upload failed.';
