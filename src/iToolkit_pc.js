@@ -1426,6 +1426,7 @@ riot.tag('itk-uploader', '<div class="container"> <div class="page-header"> <h1>
             path = config.path;
         }
 
+
         var sourceArr = [
             path + 'SimpleAjaxUploader.min.js',
         ];

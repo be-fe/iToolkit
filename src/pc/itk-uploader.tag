@@ -51,6 +51,7 @@
             path = config.path;
         }
 
+
         var sourceArr = [
             path + 'SimpleAjaxUploader.min.js',
         ];

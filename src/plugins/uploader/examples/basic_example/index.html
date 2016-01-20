@@ -33,7 +33,7 @@
           </div>
       </div>
 
-  <script src="../../SimpleAjaxUploader.js"></script>
+  <script src="../SimpleAjaxUploader.js"></script>
 <script>
 function escapeTags( str ) {
   return String( str )
@@ -53,7 +53,7 @@ window.onload = function() {
 
   var uploader = new ss.SimpleUpload({
         button: btn,
-        url: 'file_upload.php',
+        url: 'basic_example/file_upload.php',
         name: 'uploadfile',
         multipart: true,
         hoverClass: 'hover',
