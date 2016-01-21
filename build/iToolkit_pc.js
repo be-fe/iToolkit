@@ -1588,7 +1588,8 @@ var utils = {
     },
 
     deepCopy: function (parent, child) {
-        var child = child || {};
+        var defaultWrapper = (toString.call(parent) === '[object Array]') ? [] : {};
+        var child = child || defaultWrapper;
         for (var i in parent) {
             if (toString.call(parent[i]) === '[object Object]') {
                 child[i] = {}; //新建数组或者object来达到目的
@@ -1876,6 +1877,43 @@ iToolkit.methodRegister = function (name, fn) {
 };
 iToolkit.tableExtend = {};
 
+riot.tag('itk-center', '<div class="{itk-loading: true, default: default}" > <yield> </div>', function(opts) {
+        var self = this;
+        var config = self.opts.opts || self.opts;
+        self.default = false;
+        
+        self.on('mount', function() {
+            var parentDom = self.root.parentNode;
+            var parentPosition = window.getComputedStyle(parentDom, null).position;
+            if (parentPosition === 'static') {
+                parentDom.style.position = 'relative';
+            }
+
+            self.childDom = self.root.getElementsByClassName('itk-loading')[0];
+
+            if (self.childDom.innerHTML.trim()) {
+                self.default = false;
+                self.update();
+            }
+
+            var cellHeight = parseInt(window.getComputedStyle(self.childDom, null).height.replace('px', ''), 10);
+            self.root.style.marginTop = '-' + cellHeight/2 + 'px';
+            
+        })
+
+        self.root.show = function(){
+            if (self.childDom) {
+                self.childDom.style.display = 'block';
+            }
+        }
+
+        self.root.hide = function(){
+            if (self.childDom) {
+                self.childDom.style.display = 'none';
+            }
+        }
+    
+});
 riot.tag('date-picker', '<yield>', function(opts) {
     var self = this;
     var EL = self.root;
@@ -3039,7 +3077,7 @@ riot.tag('itk-slide', ' <yield>', function(opts) {
             }
         
 });
-riot.tag('super-table', '<yield>', function(opts) {
+riot.tag('itk-table', '<yield>', function(opts) {
         var self = this;
         var config = self.opts.opts || self.opts;
         var EL = self.root;
@@ -3051,12 +3089,15 @@ riot.tag('super-table', '<yield>', function(opts) {
                     self[i] = config[i];
                 }
             }
+            self.originData = utils.deepCopy(self.data);
+            self.update();
+        };
 
-        }
 
         self.on('mount', function() {
             self.init();
         });
+
         
         self.compare = function(a, b) {
             if (a[self.orderkeyName] > b[self.orderkeyName]) {
@@ -3069,48 +3110,159 @@ riot.tag('super-table', '<yield>', function(opts) {
                 return -1;
             }
         }
-        
-        self.orderBy = EL.orderBy = function(col) {
-            self.orderkeyName = col;
-            if (self.ordered !== col) {
-                if (self.reversed !== col) {
-                    self.data = self.data.sort(self.compare)
-                }
-                else {
-                    self.data = self.data.reverse();
-                }
-            }
-            else {
-                return
-            }
-            self.ordered = col;
-            self.reversed = false;
-            self.update()
-        };
 
+        self.clearOrder = function() {
+            self.ordered = false;
+            self.reversed = false;
+        }
+
+        
         self.loadData = EL.loadData = function(data) {
             self.data = data;
-
+            self.originData = utils.deepCopy(data);
+            self.update();
+            return self.data;
+        };
+        
+        
+        self.exportData = EL.exportData = function() {
+            return self.data;
+        }
+        
+        
+        self.reset = EL.reset = function() {
+            self.data = utils.deepCopy(self.originData);
             self.update();
         };
-        self.append = EL.loadData = function(rows) {
-            if (utils.isObject(rows)) {
-                self.data.push(rows);
-            }
-            else if (utils.isArray(rows)) {
-                self.data = self.data.concat(rows);
-            }
-        };
-        self.insertBefore = EL.insertBefore = function(rows) {
-            if (utils.isObject(rows)) {
-                self.data.unshift(rows);
-            }
-            else if (utils.isArray(rows)) {
-                self.data = rows.concat(self.data);
-            }
-        };
-        self.reverseBy = EL.reverseBy = function(col) {};
 
+        
+        self.orderBy = function(col) {
+            if (col & typeof col === 'string') {
+                return function() {
+                    self.orderkeyName = col;
+                    if (self.ordered !== col) {
+                        if (self.reversed !== col) {
+                            self.data = self.data.sort(self.compare)
+                        }
+                        else {
+                            self.data = self.data.reverse();
+                        }
+                        self.ordered = col;
+                        self.reversed = false;
+                        self.update()
+                    }
+                    return self.data;
+                }
+            }
+        }
+
+        EL.orderBy = function(col) {
+            self.orderBy(col)();
+        };
+
+        
+        self.reverseBy  = function(col) {
+            if (col & typeof col === 'string') {
+                return function() {
+                    self.orderkeyName = col;
+                    if (self.reversed !== col) {
+                        if (self.ordered !== col) {
+                            self.data = self.data.sort(self.compare);
+                            self.data = self.data.reverse();
+                        }
+                        else {
+                            self.data = self.data.reverse();
+                        }
+                        self.ordered = false;
+                        self.reversed = col;
+                        self.update()
+                    }
+                    return self.data;
+                }
+            }
+        };
+        
+        EL.reverseBy = function(col) {
+            self.reverseBy(col)();
+        };
+        
+        self.toggleBy = function(col) {
+
+                if (self.ordered === col) {
+                    return self.reverseBy(col);
+                }
+                else {
+                    return self.orderBy(col);
+                }
+
+        };
+
+        EL.toggleBy = function(col) {
+            if (col & typeof col === 'string') {
+                if (self.ordered === col) {
+                    EL.reverseBy(col);
+                }
+                else {
+                    EL.orderBy(col);
+                }
+            }
+        };
+
+        
+        
+        self.append = function(rows) {
+            return function() {
+                self.clearOrder();
+                if (utils.isObject(rows)) {
+                    self.data.push(rows);
+                }
+                else if (utils.isArray(rows)) {
+                    self.data = self.data.concat(rows);
+                }
+                self.update();
+            }
+        };
+
+        EL.append = function(rows) {
+            self.append(rows)();
+        };
+        
+        
+        self.prepend = function(rows) {
+            return function() {
+                self.clearOrder();
+                if (utils.isObject(rows)) {
+                    self.data.unshift(rows);
+                }
+                else if (utils.isArray(rows)) {
+                    self.data = rows.concat(self.data);
+                }
+                self.update();
+            }
+        };
+        EL.prepend = function(rows) {
+            self.prepend(rows)();
+        };
+        
+        
+        self.deleteBy = function(col, value) {
+            return function() {
+                if (col && value) {
+                    self.clearOrder();
+                    for (var i = 0 ; i < self.data.length; i++) {
+                        if (self.data[i][col] === value) {
+                            self.data.splice(i, 1);
+                            i = i - 1;
+                        }
+                    }
+                    self.update();
+                }
+            };
+        }
+
+        EL.deleteBy = function (col, value) {
+            self.deleteBy(col, value)();
+        }
 
 
     
@@ -3277,98 +3429,86 @@ riot.tag('itk-tree', '<div class="tree-item-wrap" each="{ item, i in data }" ons
     
     
 });
-riot.tag('itk-uploader', '<div class="container"> <div class="page-header"> <h1>Simple Ajax Uploader</h1> <h3>Basic Example</h3> </div> <div class="row" style="padding-top:10px;"> <div class="col-xs-2"> <button id="uploadBtn" class="btn btn-large btn-primary">Choose File</button> </div> <div class="col-xs-10"> <div id="progressOuter" class="progress progress-striped active" style="display:none;"> <div id="progressBar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%" </div> </div> </div> </div> <div class="row" style="padding-top:10px;"> <div class="col-xs-10"> <div id="msgBox"></div> </div> </div> </div>', function(opts) {
-        var self = this;
-        var EL = self.root;
-        var config = self.opts.opts || self.opts;
+riot.tag('itk-uploader', '<div class="container"> <div class="page-header"> <h1>Simple Ajax Uploader</h1> <h3>Basic Example</h3> </div> <div class="row" style="padding-top:10px;"> <div class="col-xs-2"> <button id="uploadBtn" class="btn btn-large btn-primary">Choose File</button> </div> <div class="col-xs-10"> <div id="progressOuter" class="progress progress-striped active" style="display:none;"> <div id="progressBar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%"</div> </div> </div> </div> <div class="row" style="padding-top:10px;"> <div class="col-xs-10"> <div id="msgBox"></div> </div> </div> </div>', function(opts) {
+    var self = this;
+    var EL = self.root;
+    var config = self.opts.opts || self.opts;
 
-        var js = document.scripts;
+    var js = document.scripts;
 
-        var path = '';
+    var path = '';
 
-        var jsPath = '';
+    var jsPath = '';
 
-        if (!config.path) {
-            for (var i = 0; i < js.length; i++) {
-                if (!js[i].src) {
-                    continue;
-                }
-                if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
-                    jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
-                    break;
-                }
+    if (!config.path) {
+        for (var i = 0; i < js.length; i++) {
+            if (!js[i].src) {
+                continue;
             }
-            path = jsPath + 'plugins/uploader/';
+            if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
+                jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+                break;
+            }
         }
-        else {
-            path = config.path;
-        }
+        path = jsPath + 'plugins/uploader/';
+    }
+    else {
+        path = config.path;
+    }
 
+    var sourceArr = [
+        path + 'SimpleAjaxUploader.min.js',
+    ];
 
-        var sourceArr = [
-            path + 'SimpleAjaxUploader.min.js',
-        ];
+    utils.jsLoader(sourceArr, function () {
+        var btn = document.getElementById('uploadBtn'),
+            progressBar = document.getElementById('progressBar'),
+            progressOuter = document.getElementById('progressOuter'),
+            msgBox = document.getElementById('msgBox');
 
-        utils.jsLoader(sourceArr, function () {
-            var btn = document.getElementById('uploadBtn'),
-                    progressBar = document.getElementById('progressBar'),
-                    progressOuter = document.getElementById('progressOuter'),
-                    msgBox = document.getElementById('msgBox');
+        var uploader = new ss.SimpleUpload({
+            button: btn,
+            url: '/src/plugins/uploader/examples/basic_example/file_upload.php',
+            name: 'uploadfile',
+            multipart: true,
+            hoverClass: 'hover',
+            focusClass: 'focus',
+            responseType: 'json',
+            startXHR: function() {
+                progressOuter.style.display = 'block'; // make progress bar visible
+                this.setProgressBar( progressBar );
+            },
+            onSubmit: function() {
+                msgBox.innerHTML = ''; // empty the message box
+                btn.innerHTML = 'Uploading...'; // change button text to "Uploading..."
+            },
+            onComplete: function( filename, response ) {
+                btn.innerHTML = 'Choose Another File';
+                progressOuter.style.display = 'none'; // hide progress bar when upload is completed
+                if ( !response ) {
+                    msgBox.innerHTML = 'Unable to upload file';
+                    return;
+                }
 
-            var uploader = new ss.SimpleUpload({
-                button: btn,
-                url: 'file_upload.php',
-                name: 'uploadfile',
-                multipart: true,
-                hoverClass: 'hover',
-                focusClass: 'focus',
-                responseType: 'json',
-                startXHR: function () {
-                    progressOuter.style.display = 'block'; // make progress bar visible
-                    this.setProgressBar(progressBar);
-                },
-                onSubmit: function () {
-                    msgBox.innerHTML = ''; // empty the message box
-                    btn.innerHTML = 'Uploading...'; // change button text to "Uploading..."
-                },
-                onComplete: function (filename, response) {
-                    btn.innerHTML = 'Choose Another File';
-                    progressOuter.style.display = 'none'; // hide progress bar when upload is completed
+                if ( response.success === true ) {
+                    msgBox.innerHTML = '<strong>' + filename + '</strong>' + ' successfully uploaded.';
 
-                    if (!response) {
-                        msgBox.innerHTML = 'Unable to upload file';
-                        return;
-                    }
-
-                    if (response.success === true) {
-                        msgBox.innerHTML = '<strong>' + escapeTags(filename) + '</strong>' + ' successfully uploaded.';
+                } else {
+                    if ( response.msg )  {
+                        msgBox.innerHTML = response.msg ;
 
                     } else {
-                        if (response.msg) {
-                            msgBox.innerHTML = escapeTags(response.msg);
-
-                        } else {
-                            msgBox.innerHTML = 'An error occurred and the upload failed.';
-                        }
+                        msgBox.innerHTML = 'An error occurred and the upload failed.';
                     }
-                },
-                onError: function () {
-                    progressOuter.style.display = 'none';
-                    msgBox.innerHTML = 'Unable to upload file';
                 }
-<<<<<<< HEAD
             },
             onError: function() {
                 progressOuter.style.display = 'none';
                 msgBox.innerHTML = 'Unable to upload file';
-            } 
+            }
         });        
     });
-=======
-            });
-        });
 
->>>>>>> 3abf7fbfbd76ae2668fa3212ff2f3acdc5eaf1c4
-
+    
     
 });
