@@ -16,12 +16,61 @@
     <script src="../src/iToolkit_pc.js"></script>
 </head>
 <body>
-<itk-uploader>
 
-</itk-uploader>
+<itk-uploader></itk-uploader>
+
 <script>
 
-    riot.mount('itk-uploader');
+    var opt = {
+
+        url: '/src/plugins/uploader/examples/basic_example/file_upload.php',
+        name: 'uploadfile',
+        multipart: true,
+        responseType: 'json',
+
+        startXHR: function () {
+
+        },
+
+        onSubmit: function () {
+
+        },
+
+        onComplete: function (filename, response) {
+
+            console.log(response);
+
+            if (!response) {
+                console.log("上传文件失败!");
+                return;
+            }
+
+            if (response.success === true) {
+                console.log("上传文件成功!");
+
+            } else {
+                if (response.msg) {
+                    alert(response.msg);
+
+                } else {
+                    console.log("发生未知错误!");
+                }
+            }
+        },
+
+        onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
+            console.log(filename);
+            console.log(errorType);
+            console.log(status);
+            console.log(statusText);
+            console.log(response);
+            console.log(uploadBtn);
+            console.log(fileSize);
+        }
+
+    };
+
+    riot.mount('itk-uploader', opt);
 </script>
 </body>
 </html>
