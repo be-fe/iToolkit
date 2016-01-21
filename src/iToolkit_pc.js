@@ -259,7 +259,7 @@ riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width};
 
 
 });
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }" style="position:relative;"> <span class="redirect" if="{ redirect }">跳转到<input class="jumpPage" name="page" riot-type={"number"} style="width: 40px;">页 </span> <div class="paginate-tips" riot-style="top: { tipsTop }; left: { tipsLeft }; display: { showTip }"> 请输入1～{ pageCount }之间的数字 </div> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', '.paginate .paginate-tips{ position: absolute; padding: 5px; border: 1px solid #ddd; background-color: #fff; -webkit-box-shadow: 0 0 10px #ccc; box-shadow: 0 0 10px #ccc; } .paginate .paginate-tips:before { content: ""; position: absolute; width: 0; height: 0; top: -16px; left: 10px; border: 8px solid transparent; border-bottom-color: #ddd; } .paginate .paginate-tips:after { content: ""; position: absolute; width: 0; height: 0; top: -15px; left: 10px; border: 8px solid transparent; border-bottom-color: #fff; }', function(opts) {
+riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }" style="position:relative;"> <span> <select-list list="{ pagesizeOpts }" title="选择分页数量"></select-list> </span> <span class="redirect" if="{ redirect }">跳转到<input class="jumpPage" name="page" riot-type={"number"} style="width: 40px;">页 </span> <div class="paginate-tips" riot-style="top: { tipsTop }; left: { tipsLeft }; display: { showTip }"> 请输入1～{ pageCount }之间的数字 </div> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', '.paginate .paginate-tips{ position: absolute; padding: 5px; border: 1px solid #ddd; background-color: #fff; -webkit-box-shadow: 0 0 10px #ccc; box-shadow: 0 0 10px #ccc; } .paginate .paginate-tips:before { content: ""; position: absolute; width: 0; height: 0; top: -16px; left: 10px; border: 8px solid transparent; border-bottom-color: #ddd; } .paginate .paginate-tips:after { content: ""; position: absolute; width: 0; height: 0; top: -15px; left: 10px; border: 8px solid transparent; border-bottom-color: #fff; }', function(opts) {
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
@@ -270,6 +270,21 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
     self.currentPage = config.currentPage || 1;
     self.url = config.url || '';
     self.showNumber = config.showNumber || 5;
+
+    self.setPagesize = function () {
+        var ret = [];
+        var selected = Math.ceil(self.pagesize / 10);
+        for (var i = 1; i < 11; i++) {
+            ret.push({
+                value: i * 10,
+                text: '每页' + (i * 10) + '条',
+                selected: i === selected ? 'selected' : '',
+            });
+        }
+        return ret;
+    };
+
+    self.pagesizeOpts = self.setPagesize();
 
     self.redirect = config.redirect || true;
     self.showPageCount = config.showPageCount || true;
@@ -413,6 +428,74 @@ riot.tag('paginate', '<div onselectstart="return false" ondragstart="return fals
         self.updateCurrentPage();
     };
 
+    self.on('selected', function (v) {
+        config.onPagesizeSelected && config.onPagesizeSelected(v.value);
+    });
+
+    
+});
+
+riot.tag('select-list', '<div onclick="{ toggle }"> <div class="select-list-title-text">{ selectedItem.text }</div> <div class="select-list-title-triangle"></div> </div> <div class="select-list-options { open : openning }" riot-style="top: { top }"> <div each="{ list }" class="select-list-option { selected: parent.selectedItem.value === value }" onclick="{ parent.select }">{ text }</div> </div>', 'select-list { display: inline-block; position: relative; cursor: pointer; } .select-list-title-text { border: 1px solid #ddd; width: 94px; padding: 6px 12px; color: #337ab7; } .select-list-options { display: none; position: absolute; max-height: 96px; overflow-x: none; overflow-y: auto; border: 1px solid #ddd; } .select-list-option { width: 92px; padding: 6px 12px; background-color: #fff; } .select-list-option.selected { background-color: #ccc; color: #fff; } .select-list-options.open { display: block; }', function(opts) {
+    var self = this;
+    self.openning = false;
+    self.list = self.opts.list;
+
+    self.getSelected = function() {
+        for (var i = 0; i < self.list.length; i++) {
+            if (self.list[i].selected) {
+                return self.list[i];
+            }
+        }
+    }
+
+    self.selectedItem = self.getSelected();
+
+    
+    self.toggle = function (e) {
+        window.event ? window.event.cancelBubble = true : e.stopPropagation();
+        if (!self.openning) {
+          self.openning = true;
+        } else {
+          self.openning = false;
+        }
+        self.update();
+
+        if (self.openning) {
+            var listBox = self.root.querySelector('.select-list-options');
+            var listBoxHeight = listBox.clientHeight;
+            var isOverflow = listBoxHeight + e.pageY > document.body.clientHeight;
+            if (isOverflow) {
+                self.top = (-listBoxHeight - 1) + 'px';
+            }
+            else {
+                self.top = self.root.clientHeight - 1 + 'px';
+            }
+            self.update();
+        }
+    };
+
+    self.select = function (e) {
+        window.event ? window.event.cancelBubble = true : e.stopPropagation();
+        var prevSelectedItem = self.selectedItem;
+        self.selectedItem = e.item;
+        self.openning = false;
+        if (prevSelectedItem !== self.selectedItem) {
+            self.parent.trigger('selected', self.selectedItem);
+        }
+        self.update();
+    };
+
+    self.closeSelectList = function (e) {
+        self.openning = false;
+        self.update();
+    };
+
+    self.on('mount', function () {
+        document.addEventListener('click', self.closeSelectList, false);
+    });
+    self.on('unmount', function () {
+        document.removeEventListener('click', self.closeSelectList, false);
+    });
     
 });
 riot.tag('select-box', '<div class="r-select" onclick="{ clicked }">{ placeholder }</div> <ul class="r-select-body" hide="{ hide }"> <li each="{ data }" index="{ index }" value="{ value }" class="r-select-item { selected }" onclick="{ parent.clickItem }">{ innerText }</li> </ul> <div style="display:none" class="inputHide"></div>', function(opts) {

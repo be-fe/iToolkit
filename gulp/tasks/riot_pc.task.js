@@ -5,4 +5,7 @@ module.exports = function (gulp, plugin, config) {
         .pipe(plugin.concat('iToolkit_pc.js'))
         .pipe(gulp.dest('src'));
     });
+    gulp.task('watch', function () {
+        gulp.watch('src/pc/*.tag', ['riot_pc']);
+    })
 };
