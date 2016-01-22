@@ -3309,8 +3309,9 @@ riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn
 
             console.log(btn);
 
-            var json ={};
+            var json = {};
             json.button = btn;
+
             json.url = config.url;
             json.name = config.name ? config.name : "";
             json.multipart = config.multipart ? config.multipart : true;
@@ -3319,7 +3320,6 @@ riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn
             json.onSubmit = config.onSubmit ? config.onSubmit : null;
             json.onComplete = config.onComplete ? config.onComplete : null;
             json.onError = config.onError ? config.onError : null;
-
 
 
             var uploader = new ss.SimpleUpload(json);

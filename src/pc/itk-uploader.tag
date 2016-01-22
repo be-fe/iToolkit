@@ -2,17 +2,6 @@
 
     <style>
 
-        #progressOuter {
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            height: 32px;
-            margin: 0;
-            background: white;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-            display: none;
-        }
-
     </style>
 
 
