@@ -70,24 +70,22 @@
          * 排序By col
          */
         self.orderBy = function(col) {
-            if (col & typeof col === 'string') {
-                return function() {
-                    self.orderkeyName = col;
-                    if (self.ordered !== col) {
-                        if (self.reversed !== col) {
-                            self.data = self.data.sort(self.compare)
-                        }
-                        else {
-                            self.data = self.data.reverse();
-                        }
-                        self.ordered = col;
-                        self.reversed = false;
-                        self.update()
+            return function() {
+                self.orderkeyName = col;
+                if (self.ordered !== col) {
+                    if (self.reversed !== col) {
+                        self.data = self.data.sort(self.compare)
                     }
-                    return self.data;
+                    else {
+                        self.data = self.data.reverse();
+                    }
+                    self.ordered = col;
+                    self.reversed = false;
+                    self.update()
                 }
+                return self.data;
             }
-        }
+        };
 
         EL.orderBy = function(col) {
             self.orderBy(col)();
@@ -97,23 +95,21 @@
          * 倒序By col
          */
         self.reverseBy = function(col) {
-            if (col & typeof col === 'string') {
-                return function() {
-                    self.orderkeyName = col;
-                    if (self.reversed !== col) {
-                        if (self.ordered !== col) {
-                            self.data = self.data.sort(self.compare);
-                            self.data = self.data.reverse();
-                        }
-                        else {
-                            self.data = self.data.reverse();
-                        }
-                        self.ordered = false;
-                        self.reversed = col;
-                        self.update()
+            return function() {
+                self.orderkeyName = col;
+                if (self.reversed !== col) {
+                    if (self.ordered !== col) {
+                        self.data = self.data.sort(self.compare);
+                        self.data = self.data.reverse();
                     }
-                    return self.data;
+                    else {
+                        self.data = self.data.reverse();
+                    }
+                    self.ordered = false;
+                    self.reversed = col;
+                    self.update()
                 }
+                return self.data;
             }
         };
         
@@ -122,24 +118,20 @@
         };
         
         self.toggleBy = function(col) {
-            //if (col & typeof col === 'string') {
-                if (self.ordered === col) {
-                    return self.reverseBy(col);
-                }
-                else {
-                    return self.orderBy(col);
-                }
-            //}
+            if (self.ordered === col) {
+                return self.reverseBy(col);
+            }
+            else {
+                return self.orderBy(col);
+            }
         };
 
         EL.toggleBy = function(col) {
-            if (col & typeof col === 'string') {
-                if (self.ordered === col) {
-                    EL.reverseBy(col);
-                }
-                else {
-                    EL.orderBy(col);
-                }
+            if (self.ordered === col) {
+                EL.reverseBy(col);
+            }
+            else {
+                EL.orderBy(col);
             }
         };
 
