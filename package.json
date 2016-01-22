@@ -13,7 +13,7 @@
     "gulp-load-plugins": "^1.0.0-rc.1",
     "gulp-minify-css": "x",
     "gulp-rename": "x",
-    "gulp-riot": "0.3.0",
+    "gulp-riot": "0.3.1",
     "gulp-uglify": "x",
     "http-proxy": "^1.8.1",
     "proxy-middleware": "^0.11.0",

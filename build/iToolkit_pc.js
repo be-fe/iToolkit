@@ -1588,7 +1588,8 @@ var utils = {
     },
 
     deepCopy: function (parent, child) {
-        var child = child || {};
+        var defaultWrapper = (toString.call(parent) === '[object Array]') ? [] : {};
+        var child = child || defaultWrapper;
         for (var i in parent) {
             if (toString.call(parent[i]) === '[object Object]') {
                 child[i] = {}; //新建数组或者object来达到目的
@@ -1876,6 +1877,43 @@ iToolkit.methodRegister = function (name, fn) {
 };
 iToolkit.tableExtend = {};
 
+riot.tag('itk-center', '<div class="{itk-loading: true, default: default}" > <yield> </div>', function(opts) {
+        var self = this;
+        var config = self.opts.opts || self.opts;
+        self.default = false;
+        
+        self.on('mount', function() {
+            var parentDom = self.root.parentNode;
+            var parentPosition = window.getComputedStyle(parentDom, null).position;
+            if (parentPosition === 'static') {
+                parentDom.style.position = 'relative';
+            }
+
+            self.childDom = self.root.getElementsByClassName('itk-loading')[0];
+
+            if (self.childDom.innerHTML.trim()) {
+                self.default = false;
+                self.update();
+            }
+
+            var cellHeight = parseInt(window.getComputedStyle(self.childDom, null).height.replace('px', ''), 10);
+            self.root.style.marginTop = '-' + cellHeight/2 + 'px';
+            
+        })
+
+        self.root.show = function(){
+            if (self.childDom) {
+                self.childDom.style.display = 'block';
+            }
+        }
+
+        self.root.hide = function(){
+            if (self.childDom) {
+                self.childDom.style.display = 'none';
+            }
+        }
+    
+});
 riot.tag('date-picker', '<yield>', function(opts) {
     var self = this;
     var EL = self.root;
@@ -2013,6 +2051,46 @@ riot.tag('itk-div', '<yield>', function(opts) {
     }
 
 
+});
+riot.tag('itk-editor', '<textarea name="editor1" id="editor1" rows="10" cols="80"> This is my textarea to be replaced with CKEditor. </textarea>', function(opts) {
+        var self = this;
+        var EL = self.root;
+        var config = self.opts.opts || self.opts;
+        var js = document.scripts;
+        var path = '';
+        var jsPath = '';
+        var type = config.type || 'standard';
+
+        if (!config.path) {
+            for (var i = 0; i < js.length; i++) {
+                if (!js[i].src) {
+                    continue;
+                }
+                if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
+                    jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+                    break;
+                }
+            }
+            path = jsPath + 'plugins/ckeditor/';
+        }
+        else {
+            path = config.path;
+        }
+        
+
+        utils.jsLoader([
+            path + type + '/ckeditor.js',
+
+
+        ], function () {
+            CKEDITOR.replace( 'editor1', {
+                image_previewText: '',
+                filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
+            });
+            self.update();
+        });
+        
+    
 });
 riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(opts) {
     var self = this;
@@ -2985,61 +3063,65 @@ riot.tag('itk-select', '<yield></yield> <ul class="itk-selected-container" onmou
 
 riot.tag('itk-slide', ' <yield>', function(opts) {
 
-            var self = this;
-            var EL = self.root;
-            var config = self.opts.opts || self.opts;
-            var js = document.scripts;
-            var path = '';
-            var jsPath = '';
+        var self = this;
+        var EL = self.root;
+        var config = self.opts.opts || self.opts;
+        var js = document.scripts;
+        var path = '';
+        var jsPath = '';
 
 
-            for (var i = 0; i < js.length; i++) {
-                if (!js[i].src) {
-                    continue;
-                }
-                if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
-                    jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
-                    break;
-                }
+        for (var i = 0; i < js.length; i++) {
+            if (!js[i].src) {
+                continue;
             }
+            if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
+                jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+                break;
+            }
+        }
 
-            path = jsPath + 'plugins/';
+        path = jsPath + 'plugins/';
 
-            if (typeof jQuery == 'undefined') {
-                (function () {
-                    utils.jsLoader([
-                        path + 'jquery/jquery-1.12.0.min.js',
-                    ], function () {
+        if (typeof jQuery == 'undefined') {
+            (function () {
+                utils.jsLoader([
+                    path + 'jquery/jquery-1.12.0.min.js',
+                ], function () {
 
-                        jQuery(document).ready(function ($) {
-                            utils.jsLoader([
-                                path + 'slick/slick.css',
-                                path + 'slick/slick-theme.css',
-                                path + 'slick/slick.js',
-                            ], function () {
-                                $(document).ready(function () {
-                                    $(EL).slick(config);
-                                });
+                    jQuery(document).ready(function ($) {
+                        utils.jsLoader([
+                            path + 'slick/slick.css',
+                            path + 'slick/slick-theme.css',
+                            path + 'slick/slick.js',
+                        ], function () {
+                            $(document).ready(function () {
+                                $(EL).slick(config);
                             });
                         });
                     });
-                })();
-            } else {
-                jQuery(document).ready(function ($) {
-                    utils.jsLoader([
-                        path + 'slick/slick.css',
-                        path + 'slick/slick-theme.css',
-                        path + 'slick/slick.js'
-                    ], function () {
-                        $(document).ready(function () {
-                            $(EL).slick(config);
-                        });
+                });
+            })();
+        } else {
+            jQuery(document).ready(function ($) {
+                utils.jsLoader([
+                    path + 'slick/slick.css',
+                    path + 'slick/slick-theme.css',
+                    path + 'slick/slick.js'
+                ], function () {
+                    $(document).ready(function () {
+                        $(EL).slick(config);
                     });
                 });
-            }
-        
+            });
+        }
+
+        self.on('mount', function() {
+            self.root.style.display = 'block';
+        })
+    
 });
-riot.tag('super-table', '<yield>', function(opts) {
+riot.tag('itk-table', '<yield>', function(opts) {
         var self = this;
         var config = self.opts.opts || self.opts;
         var EL = self.root;
@@ -3051,12 +3133,15 @@ riot.tag('super-table', '<yield>', function(opts) {
                     self[i] = config[i];
                 }
             }
+            self.originData = utils.deepCopy(self.data);
+            self.update();
+        };
 
-        }
 
         self.on('mount', function() {
             self.init();
         });
+
         
         self.compare = function(a, b) {
             if (a[self.orderkeyName] > b[self.orderkeyName]) {
@@ -3069,48 +3154,151 @@ riot.tag('super-table', '<yield>', function(opts) {
                 return -1;
             }
         }
-        
-        self.orderBy = EL.orderBy = function(col) {
-            self.orderkeyName = col;
-            if (self.ordered !== col) {
-                if (self.reversed !== col) {
-                    self.data = self.data.sort(self.compare)
-                }
-                else {
-                    self.data = self.data.reverse();
-                }
-            }
-            else {
-                return
-            }
-            self.ordered = col;
-            self.reversed = false;
-            self.update()
-        };
 
+        self.clearOrder = function() {
+            self.ordered = false;
+            self.reversed = false;
+        }
+
+        
         self.loadData = EL.loadData = function(data) {
             self.data = data;
-
+            self.originData = utils.deepCopy(data);
+            self.update();
+            return self.data;
+        };
+        
+        
+        self.exportData = EL.exportData = function() {
+            return self.data;
+        }
+        
+        
+        self.reset = EL.reset = function() {
+            self.data = utils.deepCopy(self.originData);
             self.update();
         };
-        self.append = EL.loadData = function(rows) {
-            if (utils.isObject(rows)) {
-                self.data.push(rows);
-            }
-            else if (utils.isArray(rows)) {
-                self.data = self.data.concat(rows);
-            }
-        };
-        self.insertBefore = EL.insertBefore = function(rows) {
-            if (utils.isObject(rows)) {
-                self.data.unshift(rows);
-            }
-            else if (utils.isArray(rows)) {
-                self.data = rows.concat(self.data);
-            }
-        };
-        self.reverseBy = EL.reverseBy = function(col) {};
 
+        
+        self.orderBy = function(col) {
+            return function() {
+                self.orderkeyName = col;
+                if (self.ordered !== col) {
+                    if (self.reversed !== col) {
+                        self.data = self.data.sort(self.compare)
+                    }
+                    else {
+                        self.data = self.data.reverse();
+                    }
+                    self.ordered = col;
+                    self.reversed = false;
+                    self.update()
+                }
+                return self.data;
+            }
+        };
+
+        EL.orderBy = function(col) {
+            self.orderBy(col)();
+        };
+
+        
+        self.reverseBy = function(col) {
+            return function() {
+                self.orderkeyName = col;
+                if (self.reversed !== col) {
+                    if (self.ordered !== col) {
+                        self.data = self.data.sort(self.compare);
+                        self.data = self.data.reverse();
+                    }
+                    else {
+                        self.data = self.data.reverse();
+                    }
+                    self.ordered = false;
+                    self.reversed = col;
+                    self.update()
+                }
+                return self.data;
+            }
+        };
+        
+        EL.reverseBy = function(col) {
+            self.reverseBy(col)();
+        };
+        
+        self.toggleBy = function(col) {
+            if (self.ordered === col) {
+                return self.reverseBy(col);
+            }
+            else {
+                return self.orderBy(col);
+            }
+        };
+
+        EL.toggleBy = function(col) {
+            if (self.ordered === col) {
+                EL.reverseBy(col);
+            }
+            else {
+                EL.orderBy(col);
+            }
+        };
+
+        
+        
+        self.append = function(rows) {
+            return function() {
+                self.clearOrder();
+                if (utils.isObject(rows)) {
+                    self.data.push(rows);
+                }
+                else if (utils.isArray(rows)) {
+                    self.data = self.data.concat(rows);
+                }
+                self.update();
+            }
+        };
+
+        EL.append = function(rows) {
+            self.append(rows)();
+        };
+        
+        
+        self.prepend = function(rows) {
+            return function() {
+                self.clearOrder();
+                if (utils.isObject(rows)) {
+                    self.data.unshift(rows);
+                }
+                else if (utils.isArray(rows)) {
+                    self.data = rows.concat(self.data);
+                }
+                self.update();
+            }
+        };
+        EL.prepend = function(rows) {
+            self.prepend(rows)();
+        };
+        
+        
+        self.deleteBy = function(col, value) {
+            return function() {
+                if (col && value) {
+                    self.clearOrder();
+                    for (var i = 0 ; i < self.data.length; i++) {
+                        if (self.data[i][col] === value) {
+                            self.data.splice(i, 1);
+                            i = i - 1;
+                        }
+                    }
+                    self.update();
+                }
+            };
+        }
+
+        EL.deleteBy = function (col, value) {
+            self.deleteBy(col, value)();
+        }
 
 
     

@@ -217,7 +217,8 @@ var utils = {
     },
 
     deepCopy: function (parent, child) {
-        var child = child || {};
+        var defaultWrapper = (toString.call(parent) === '[object Array]') ? [] : {};
+        var child = child || defaultWrapper;
         for (var i in parent) {
             if (toString.call(parent[i]) === '[object Object]') {
                 child[i] = {}; //新建数组或者object来达到目的
