@@ -585,7 +585,9 @@
                 }
             })(ruleConfig);
         }
-    }
+
+        //self.rules.extend(config.rules);
+    };
     
 
     /**

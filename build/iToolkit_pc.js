@@ -1877,7 +1877,7 @@ iToolkit.methodRegister = function (name, fn) {
 };
 iToolkit.tableExtend = {};
 
-riot.tag('itk-center', '<div class="{itk-loading: true, default: default}" > <yield> </div>', function(opts) {
+riot.tag('itk-center', '<div class="itk-loading {default: default}" > <yield> </div>', function(opts) {
         var self = this;
         var config = self.opts.opts || self.opts;
         self.default = false;
@@ -2632,7 +2632,8 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                 }
             })(ruleConfig);
         }
-    }
+
+    };
     
 
     
@@ -3465,7 +3466,7 @@ riot.tag('itk-tree', '<div class="tree-item-wrap" each="{ item, i in data }" ons
     
     
 });
-riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn" id="uploadBtn">上传</div>', '#progressOuter { border: 1px solid #ccc; border-radius: 4px; height: 32px; margin: 0; background: white; border-top-right-radius: 0; border-bottom-right-radius: 0; display: none; }', function(opts) {
+riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn" id="uploadBtn">上传</div>', function(opts) {
         var self = this;
         var EL = self.root;
         var config = self.opts.opts || self.opts;

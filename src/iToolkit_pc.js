@@ -1,4 +1,4 @@
-riot.tag('itk-center', '<div class="{itk-loading: true, default: default}" > <yield> </div>', function(opts) {
+riot.tag('itk-center', '<div class="itk-loading {default: default}" > <yield> </div>', function(opts) {
         var self = this;
         var config = self.opts.opts || self.opts;
         self.default = false;
@@ -753,7 +753,8 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                 }
             })(ruleConfig);
         }
-    }
+
+    };
     
 
     

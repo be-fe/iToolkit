@@ -1,5 +1,5 @@
 <itk-center>
-    <div class={itk-loading: true, default: default} >
+    <div class="itk-loading {default: default}" >
         <yield>
     </div>
     
