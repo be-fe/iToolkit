@@ -84,6 +84,7 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
 
     self.initDays = function (timeStamp) {
         var date;
+        console.log(1)
         if (timeStamp) {
             date = new Date(timeStamp);
         }
@@ -106,23 +107,31 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
 
 
         var thisMonthDays = self.getDaysCount(thisYear, thisMonth);
+        console.log('thisMonthDays', thisMonthDays);
         var prevMonthDays = self.getDaysCount(thisYear, thisMonth - 1);
+        console.log('prevMonthDays', prevMonthDays);
         var nextMonthDays = self.getDaysCount(thisYear, thisMonth + 1);
+        console.log('nextMonthDays', nextMonthDays);
         date.setDate(1);
         var firstDay = date.getDay();
+        console.log('firstDay', firstDay);
         date.setDate(thisMonthDays);
         var lastDay = date.getDay();
+        console.log('lastDay', lastDay);
         var dayArr = [];
         dayArr = dayArr
-            .concat((new Array(firstDay === 7 ? 0 : (7 - firstDay) ^ 7)).map(function (v, i) {
+            .concat((new Array(firstDay === 0 ? 1 : ((7 - firstDay) ^ 7) + 1).join(0).split('')).map(function (v, i) {
                 return prevMonthDays - i;
-            }))
-            .concat((new Array(thisMonthDays)).map(function (v, i){
-                return i + 1;
-            }))
-            .concat((new Array((lastDay === 7 ? 6 : 6 - lastDay))).map(function (v, i){
+            }).reverse());
+        console.log(1,dayArr)
+        dayArr = dayArr.concat((new Array(thisMonthDays + 1).join(0).split('')).map(function (v, i){
                 return i + 1;
             }));
+        console.log(2,dayArr);
+        dayArr = dayArr.concat((new Array(lastDay === 0 ? 7 : (6 - lastDay) + 1).join(0).split('')).map(function (v, i){
+                return i + 1;
+            }));
+        console.log(3,dayArr);
         self.dayArr = dayArr;
         self.update();
     };
