@@ -1,12 +1,12 @@
-<itk-calendar show={ open }>
+<itk-calendar hide={ !open }>
     <div class="itk-calendar-wrapper">
         <div class="itk-calendar-head">
-            <div class="itk-calendar-month-prev"></div>
-            <div class="itk-calendar-year-prev"></div>
-            <div class="itk-calendar-month-select"></div>
-            <div class="itk-calendar-year-select"></div>
-            <div class="itk-calendar-year-next"></div>
-            <div class="itk-calendar-month-next"></div>
+            <div class="itk-calendar-month-prev btn" onclick={ prevMonth }>⟨</div>
+            <div class="itk-calendar-year-prev btn" onclick={ prevYear }>⟪</div>
+            <div class="itk-calendar-month">{ month.text }</div>
+            <div class="itk-calendar-year">{ year.text }</div>
+            <div class="itk-calendar-year-next btn" onclick={ nextMonth }>⟩</div>
+            <div class="itk-calendar-month-next btn" onclick={ nextYear }>⟫</div>
         </div>
         <div class="itk-calendar-body">
             <div class="itk-calendar-weeks">
@@ -14,22 +14,13 @@
             </div>
             <div class="itk-calendar-days">
                 <div
-                    class="itk-calendar-day { 
-                        selected:
-                            parent.showSelected &&
-                            parent.selectedYear === parent.year &&
-                            parent.selectedMonth === parent.month &&
-                            parent.selectedDay === text
-                        } {
-                        today:
-                            parent.showToday &&
-                            parent.toYear === parent.year &&
-                            parent.toMonth === parent.month &&
-                            parent.toDay === text
-                    }"
-                    each={ text in dayArr }
-                    onclick={ dayClicked }
-                >{ text }</div>
+                    each={ dayArr }
+                    class="itk-calendar-day { selected: parent.showSelected && parent.selectedYear === year && parent.selectedMonth === month && parent.selectedDay === day } { today: parent.showToday && parent.toYear === year && parent.toMonth === month && parent.today === day } { cursor: year && month && day }"
+                    data-year={ year }
+                    data-month={ month }
+                    data-day={ day }
+                    onclick={ (year && month) ? dayClicked : 'return false;' }
+                >{ day }</div>
             </div>
         </div>
     </div>
@@ -126,64 +117,90 @@
         return ret;
     };
 
-    self.initDays = function (timeStamp) {
+    self.drawDays = function (timeStamp) {
         var date;
-        console.log(1)
         if (timeStamp) {
             date = new Date(timeStamp);
         }
         else {
             date = new Date();
         }
-        var thisMonth = date.getMonth() + 1;
+        var thisMonth = date.getMonth();
         var thisYear = date.getFullYear();
-        var thisDay = date.getDate();
 
-        self.today = thisDay;
-        self.toMonth = thisMonth;
-        self.toYear = thisYear;
+        self.month = {
+            text: self.monthArr[thisMonth],
+            val: thisMonth + 1
+        };
 
-        if (self.showToday) {
-            self.day = thisDay;
-            self.month = thisMonth;
-            self.year = thisYear;
-        }
+        self.year = {
+            text: thisYear,
+            val: thisYear
+        };
 
+        thisMonth = thisMonth + 1;
 
         var thisMonthDays = self.getDaysCount(thisYear, thisMonth);
-        console.log('thisMonthDays', thisMonthDays);
         var prevMonthDays = self.getDaysCount(thisYear, thisMonth - 1);
-        console.log('prevMonthDays', prevMonthDays);
         var nextMonthDays = self.getDaysCount(thisYear, thisMonth + 1);
-        console.log('nextMonthDays', nextMonthDays);
         date.setDate(1);
         var firstDay = date.getDay();
-        console.log('firstDay', firstDay);
         date.setDate(thisMonthDays);
         var lastDay = date.getDay();
-        console.log('lastDay', lastDay);
         var dayArr = [];
         dayArr = dayArr
             .concat((new Array(firstDay === 0 ? 1 : ((7 - firstDay) ^ 7) + 1).join(0).split('')).map(function (v, i) {
-                return prevMonthDays - i;
+                return {
+                    year: '',
+                    month: '',
+                    day: prevMonthDays - i
+                }
             }).reverse());
-        console.log(1,dayArr)
         dayArr = dayArr.concat((new Array(thisMonthDays + 1).join(0).split('')).map(function (v, i){
-                return i + 1;
+                return {
+                    year: thisYear,
+                    month: thisMonth,
+                    day: i + 1
+                }
             }));
-        console.log(2,dayArr);
         dayArr = dayArr.concat((new Array(lastDay === 0 ? 7 : (6 - lastDay) + 1).join(0).split('')).map(function (v, i){
-                return i + 1;
+                return {
+                    year: '',
+                    month: '',
+                    day: i + 1
+                }
             }));
-        console.log(3,dayArr);
-        self.dayArr = dayArr;
+        return dayArr;
+    };
+
+    self.initDays = function (timeStamp) {
+        if (self.showToday) {
+            var tmp_date = new Date();
+            self.today = tmp_date.getDate();
+            self.toMonth = tmp_date.getMonth() + 1;
+            self.toYear = tmp_date.getFullYear();
+        }
+
+        if (self.defaultSelected) {
+            var tmp_date = new Date();
+            self.selectedDay = tmp_date.getDate();
+            self.selectedMonth = tmp_date.getMonth() + 1;
+            self.selectedYear = tmp_date.getFullYear();
+        }
+
+        
+        self.dayArr = self.drawDays(timeStamp);
         self.update();
     };
 
     self.initDays(self.initTime);
 
+    self.getNum = function (v) {
+        return v > 10 ? v : '0' + v;
+    }
+
     self.formatter = function (type) {
-        var date = new Date(self.year, self.month - 1, self.day, 0, 0, 0);
+        var date = new Date(self.selectedYear, self.selectedMonth - 1, self.selectedDay, 0, 0, 0);
         var timeStamp = date.getTime();
         var ret;
         switch (type) {
@@ -216,39 +233,53 @@
                     if (v === 'd') {
                         return self.selectedDay;
                     }
-                })
+                });
+                break;
         }
+        return ret;
     };
 
     /**
      * 点击天数
      */
-    self.dayClicked = function () {
-        self.selectedDay = 
+    self.dayClicked = function (e) {
+        self.selectedDay = e.item.day;
+        self.selectedMonth = e.item.month;
+        self.selectedYear = e.item.year;
         self.onSelect && self.onSelect(self.formatter);
+        self.update();
     };
 
 
     // 首先这个是隐藏的
     self.open = false;
 
-    /**
-     * 为触发元素绑定事件
-     * @return {[type]} [description]
-     */
-    self.bindEvent = function () {
-        if (self.element) {
-            document.addEventListener('click', self.closeIt, false);
-            self.element.addEventListener('click', self.openIt, false);
+    self.getAbsPoint = function (elm) {
+        var x = elm.offsetLeft;
+        var y = elm.offsetTop;
+        while (elm = elm.offsetParent) {
+            x += elm.offsetLeft;
+            y += elm.offsetTop;
         }
-        else {
-            self.open = true;
+        return {
+            'x': x,
+            'y': y
+        };
+    };
+
+    self.location = function (e) {
+        if (self.element) {
+            var pos = self.getAbsPoint(self.element);
+            self.root.style.position = 'absolute';
+            self.root.style.top = pos.y + self.element.offsetHeight;
+            self.root.style.left = pos.x;
         }
     };
 
     self.closeIt = function (e) {
         var className = e.target.className;
         if (
+            e.target === self.element ||
             className &&
             className.indexOf('itk-calendar') !== -1 &&
             className !== 'itk-calendar-days'
@@ -262,9 +293,8 @@
     self.openIt = function (e) {
         self.open = true;
         self.update();
+        self.location(e);
     };
-
-    self.bindEvent();
 
     /**
      * 在目标卸载时解绑
@@ -275,6 +305,17 @@
             self.element.removeEventListener('click', self.openIt, false);
         }
     };
+
+    self.on('mount', function () {
+        if (self.element) {
+            document.addEventListener('click', self.closeIt, false);
+            self.element.addEventListener('click', self.openIt, false);
+        }
+        else {
+            self.open = true;
+        }
+        self.update();
+    });
 
     self.on('unmount', function () {
         self.unbindEvent();
@@ -322,16 +363,36 @@
         return self.selectedDay;
     };
 
-    self.nextYear = function () {};
+    self.nextYear = function () {
+        var year = self.year.val + 1;
+        self.dayArr = self.drawDays(new Date(year, self.month.val - 1, 1).getTime());
+        self.update();
+    };
 
-    self.nextMonth = function () {};
+    self.nextMonth = function () {
+        var month = self.month.val - 1;
+        var year = self.year.val;
+        year = month === 11 ? year + 1 : year;
+        month = month === 11 ? 0 : month + 1;
+        var date = new Date(year, month, 1);
+        self.dayArr = self.drawDays(date.getTime());
+        self.update();
+    };
 
-    self.prevYear = function () {};
+    self.prevYear = function () {
+        var year = self.year.val - 1;
+        self.dayArr = self.drawDays(new Date(year, self.month.val - 1, 1).getTime());
+        self.update();
+    };
 
-    self.prevMonth = function () {};
-
-    self.flush = function () {};
-
-    self.location = function () {};
+    self.prevMonth = function () {
+        var month = self.month.val - 1;
+        var year = self.year.val;
+        year = month === 0 ? year - 1 : year;
+        month = month === 0 ? 11 : month - 1;
+        var date = new Date(year, month, 1);
+        self.dayArr = self.drawDays(date.getTime());
+        self.update();
+    };
     </script>
 </itk-calendar>

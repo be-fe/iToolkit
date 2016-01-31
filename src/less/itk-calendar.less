@@ -1,0 +1,81 @@
+itk-calendar {
+    position: absolute;
+    width: 254px;
+    height: 290px;
+    border: 1px solid #95A0A6;
+    color: #95A0A6;
+    background: #fff;
+    text-align: center;
+    -webkit-border-radius: 2px;
+            border-radius: 2px;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+    overflow: hidden;
+
+    .itk-calendar-head {
+        height: 35px;
+        line-height: 35px;
+        :after {
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            content: "";
+            clear: both;
+        }
+        > div {
+            display: inline-block;
+            width: 30px;
+        }
+        .itk-calendar-month-prev,
+        .itk-calendar-year-prev {
+            float: left;
+        }
+        .itk-calendar-month-next,
+        .itk-calendar-year-next {
+            float: right;
+        }
+        .btn {
+            cursor: pointer;
+        }
+        .btn:hover {
+                background: #F9FAFA;
+            }
+
+        .itk-calendar-month,
+        .itk-calendar-year {
+            width: 62px;
+        }
+    }
+    .itk-calendar-body {
+        .itk-calendar-weeks {
+            height: 36px;
+            line-height: 36px;
+            background: #F9FAFA;
+            > div {
+                width: 36px;
+                display: inline-block;
+            }
+        }
+        .itk-calendar-day {
+            display: inline-block;
+            height: 36px;
+            width: 36px;
+            line-height: 34px;
+            border: 1px solid #fff;
+            -webkit-border-radius: 50%;
+                    border-radius: 50%;
+            
+            
+        }
+        .itk-calendar-day.cursor {
+            cursor: pointer;
+        }
+        .itk-calendar-day.today {
+            border-color: #95A0A6;
+        }
+        .itk-calendar-day.selected,
+        .itk-calendar-day:hover {
+            background: #F9FAFA;
+        }
+    }
+}
