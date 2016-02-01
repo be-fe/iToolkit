@@ -2210,8 +2210,7 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
         var month = self.month.val - 1;
         var year = self.year.val;
         year = month === 0 ? year - 1 : year;
-        month = month === 0 ? 11 : month;
-        console.log(month);
+        month = month === 0 ? 11 : month - 1;
         var date = new Date(year, month, 1);
         self.dayArr = self.drawDays(date.getTime());
         self.update();

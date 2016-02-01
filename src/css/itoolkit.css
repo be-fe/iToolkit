@@ -1,8 +1,8 @@
 
 itk-calendar {
-  position: absolute;
+  position: relative;
   width: 254px;
-  height: 290px;
+  display: block;
   border: 1px solid #95A0A6;
   color: #95A0A6;
   background: #fff;

@@ -209,7 +209,7 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
         self.selectedDay = e.item.day;
         self.selectedMonth = e.item.month;
         self.selectedYear = e.item.year;
-        self.onSelect && self.onSelect(self.formatter);
+        self.onSelect && self.onSelect(self.formatter, self.getYear(), self.getMonth(), self.getDay());
         self.update();
     };
 
