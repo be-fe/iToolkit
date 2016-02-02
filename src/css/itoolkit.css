@@ -1,4 +1,80 @@
 
+itk-calendar {
+  position: relative;
+  width: 254px;
+  display: block;
+  border: 1px solid #95A0A6;
+  color: #95A0A6;
+  background: #fff;
+  text-align: center;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+itk-calendar .itk-calendar-head {
+  height: 35px;
+  line-height: 35px;
+}
+itk-calendar .itk-calendar-head :after {
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  content: "";
+  clear: both;
+}
+itk-calendar .itk-calendar-head > div {
+  display: inline-block;
+  width: 30px;
+}
+itk-calendar .itk-calendar-head .itk-calendar-month-prev,
+itk-calendar .itk-calendar-head .itk-calendar-year-prev {
+  float: left;
+}
+itk-calendar .itk-calendar-head .itk-calendar-month-next,
+itk-calendar .itk-calendar-head .itk-calendar-year-next {
+  float: right;
+}
+itk-calendar .itk-calendar-head .btn {
+  cursor: pointer;
+}
+itk-calendar .itk-calendar-head .btn:hover {
+  background: #F9FAFA;
+}
+itk-calendar .itk-calendar-head .itk-calendar-month,
+itk-calendar .itk-calendar-head .itk-calendar-year {
+  width: 62px;
+}
+itk-calendar .itk-calendar-body .itk-calendar-weeks {
+  height: 36px;
+  line-height: 36px;
+  background: #F9FAFA;
+}
+itk-calendar .itk-calendar-body .itk-calendar-weeks > div {
+  width: 36px;
+  display: inline-block;
+}
+itk-calendar .itk-calendar-body .itk-calendar-day {
+  display: inline-block;
+  height: 36px;
+  width: 36px;
+  line-height: 34px;
+  border: 1px solid #fff;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+}
+itk-calendar .itk-calendar-body .itk-calendar-day.cursor {
+  cursor: pointer;
+}
+itk-calendar .itk-calendar-body .itk-calendar-day.today {
+  border-color: #95A0A6;
+}
+itk-calendar .itk-calendar-body .itk-calendar-day.selected,
+itk-calendar .itk-calendar-body .itk-calendar-day:hover {
+  background: #F9FAFA;
+}
+
 itk-center .itk-loading {
   text-align: center;
 }
