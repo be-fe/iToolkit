@@ -1,4 +1,4 @@
-// we will re-enable the broken browsers once saucelabs will fix all the timeout issues
+// we will re-enable the broken browsers once ç will fix all the timeout issues
 module.exports = {
   browsers: {
     /*
