@@ -1,0 +1,81 @@
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="../src/css/itoolkit.css">
+        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
+        <script src="../src/lib/riot.js"></script>
+        <script src="../src/lib/common.js"></script>
+        <script src="../src/iToolkit_pc.js"></script>
+        <script src="js/prism.js"></script>
+    </head>
+    <body>
+        <div id="demo-info">
+            <h2>itk-uploader</h2><hr>
+            <p>
+                <code>itk-uploader</code>组件可以快速构建文件上传功能
+            </p>
+        </div>
+        <div id="demo-html">
+            <itk-uploader></itk-uploader>
+        </div>
+        <script src="js/html-code.js"></script>
+
+        <script id="demo-script">
+            var opt = {
+                url: '/src/plugins/uploader/examples/basic_example/file_upload.php',
+                name: 'uploadfile',
+                multipart: true,
+                responseType: 'json',
+
+                startXHR: function () {
+
+                },
+
+                onSubmit: function () {
+
+                },
+
+                onComplete: function (filename, response) {
+
+                    console.log(response);
+
+                    if (!response) {
+                        console.log("上传文件失败!");
+                        return;
+                    }
+
+                    if (response.success === true) {
+                        console.log("上传文件成功!");
+
+                    } else {
+                        if (response.msg) {
+                            alert(response.msg);
+
+                        } else {
+                            console.log("发生未知错误!");
+                        }
+                    }
+                },
+
+                onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
+                    console.log(filename);
+                    console.log(errorType);
+                    console.log(status);
+                    console.log(statusText);
+                    console.log(response);
+                    console.log(uploadBtn);
+                    console.log(fileSize);
+                }
+
+            };
+
+            riot.mount('itk-uploader', opt);
+        </script>
+
+        <script src="js/js-code.js"></script>
+    </body>
+</html>

@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="../src/css/itoolkit.css">
+        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
+        <script src="../src/lib/riot.js"></script>
+        <script src="../src/lib/common.js"></script>
+        <script src="../src/iToolkit_pc.js"></script>
+        <script src="js/prism.js"></script>
+    </head>
+    <body>
+        <div id="demo-info">
+            <h2>itk-form</h2><hr>
+            <p>
+                <code>itk-form</code>组件主要提供表单的ajax提交、前端格式校验、防止连续点击等必备功能。
+            </p>
+        </div>
+        <div id="demo-html">
+            <itk-form>
+                <input type="text" name="name" valid="present">
+                <input type="submit" value="提交">
+            </itk-form>
+        </div>   
+        <script src="js/html-code.js"></script>
+        
+        <script id="demo-script">
+            var opts = {
+                
+            }
+            itk.mount('itk-form', opts);
+
+        </script>
+        <script src="js/js-code.js"></script>
+    </body>
+</html>

@@ -18,3 +18,4 @@ node_modules
 .idea
 /src/plugins/uploader/examples/basic_example/upload_files/
 coverage
+psd

@@ -4,20 +4,27 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
         <link rel="stylesheet" href="../src/css/itoolkit.css">
-        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">        
-        <!-- IE兼容  -->
-        <!--[if lt IE 9]>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.5/es5-shim.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
-            <script>html5.addElements('test')</script>
-        <![endif]-->
+        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
         <script src="../src/lib/riot.js"></script>
         <script src="../src/lib/common.js"></script>
         <script src="../src/iToolkit_pc.js"></script>
+        <script src="js/prism.js"></script>
     </head>
     <body>
-        <itk-tree></itk-tree>
-        <script>
+        <div id="demo-info">
+            <h2>itk-tree</h2><hr>
+            <p>
+                <code>itk-tree</code>组件可以快速构建树状组织结构，支持checkbox联动，默认展开层级，点击/选择回调等高级用法。
+            </p>
+        </div>
+        <div id="demo-html">
+            <itk-tree></itk-tree>
+        </div>
+        <script src="js/html-code.js"></script>
+
+        <script id="demo-script">
             var treeOpts = {
                 data: [
                     {id: 1, pid: null, title: 'root'},
@@ -51,5 +58,6 @@
             }
             riot.mount('itk-tree', treeOpts);
         </script>
+        <script src="js/js-code.js"></script>
     </body>
 </html>

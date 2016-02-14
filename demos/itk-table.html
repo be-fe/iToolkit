@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="../src/css/itoolkit.css">
+        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
+        <script src="../src/lib/riot.js"></script>
+        <script src="../src/lib/common.js"></script>
+        <script src="../src/iToolkit_pc.js"></script>
+        <script src="js/prism.js"></script>
+    </head>
+    <body>
+        <div id="demo-info">
+            <h2>itk-table</h2><hr>
+            <p>
+                <code>itk-table</code>组件类似于itk-div，所不同的是内置了排序、插入、删除、重置等常用表格操作，如果仅仅渲染表格，可以使用itk-div代替。
+            </p>
+        </div>
+        <div id="demo-html">
+            <itk-table id="table1">
+                <table class="table">
+                    <tr>
+                        <th onclick="{ toggleBy('name') }">姓名</th>
+                        <th onclick="{ toggleBy('age') }">年龄</th>
+                        <th>邮箱</th>
+                        <th>手机</th>
+                        <th>学号</th>
+                        <th>备注</th>
+                        <th>操作</th>
+                    </tr>
+                    <tr each="{ data }">
+                        <td><a href="{ '/goto/' + id }">{ name }</a></td>
+                        <td>{ age }</td>
+                        <td>{ email }</td>
+                        <td>{ mobile }</td>
+                        <td>{ number }</td>
+                        <td>{ description }</td>
+                        <td>
+                            <a href="javascript:void(0);" onclick="{ delete }">删除</a> | 
+                            <a href="javascript:void(0);" onclick="{ mark }">标注</a> |
+                            <select if="{ options }">
+                                <option each="{ options }" value="{ val }">{ alias }</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </itk-table>
+
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-default" onclick="append();">Append</button>
+                <button type="button" class="btn btn-default" onclick="prepend();">Prepend</button>
+                <button type="button" class="btn btn-default" onclick="reset();">Reset</button>
+            </div>
+        </div>
+        <script src="js/html-code.js"></script>
+
+        <script id="demo-script">
+            var table = document.getElementById('table1');
+            var config = {
+                data: [
+                    {id: 1, age: 18, name: 'Peter', mobile: 15676545625, email: 'Peter@baidu.com', number: 236243, description: 'Good!', options:[{val: 1, alias: 'one'}, {val: 2, alias: 'two'}, {val: 3, alias: 'three'} ]},
+                    {id: 2, age: 15, name: 'Tom', mobile: 15676535625, email: 'Tom@baidu.com', number: 386243, description: 'No Good!'},
+                    {id: 3, age: 50, name: 'David', mobile: 15676555625, email: 'David@baidu.com', number: 676243, description: 'Better!'},
+                    {id: 4, age: 30, name: 'Lee', mobile: 15676585625, email: 'Lee@baidu.com', number: 566243, description: 'Bad!'},
+                    {id: 5, age: 10, name: 'John', mobile: 15676595625, email: 'John@baidu.com', number: 126243, description: 'Very Bad!'},
+                ],
+                delete: function(e) {
+                    var id = e.item.id;
+                    table.deleteBy('id', e.item.id);
+                },
+
+                mark: function(e) {
+                    var id = e.item.id;
+                    alert('Mark: ' + id);
+                }
+            }
+            riot.mount('itk-table', config);
+
+            function append() {
+                table.append({id: 6, age: 7, name: 'xiaoming', mobile: 15676595625, email: 'John@baidu.com', number: 126243, description: 'Very Bad!'});
+            }
+
+            function prepend() {
+                table.prepend({id: 7, age: 7, name: 'xiaoli', mobile: 15676595625, email: 'John@baidu.com', number: 126243, description: 'Very Bad!'});
+            }
+
+            function reset() {
+                table.reset();
+            }
+        </script>
+        <script src="js/js-code.js"></script>
+    </body>
+</html>

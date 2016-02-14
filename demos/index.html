@@ -1,42 +1,194 @@
-<!doctype html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="chrome=1">
-        <title>iToolkit by BE-FE</title>
+        <title>iToolkit</title>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        
+        <style>
+            html: {
+                width: 100%;
+            }
+            body {
+                overflow-x: hidden; 
+            }
+            #nav {
+                height: 72px;
+            }
+            
+            .brand {
+                font-size: 28px;
+                font-family: "DINPro Regular";
+                height: 100%;
+                line-height: 72px;
+                float: left;
+            }
+
+            .info {
+                float: right;
+                margin: 0;
+                padding: 0;
+                height: 100%;
+            }
+            
+            .info li,
+            .info li a {
+                display: inline-block;
+                font-size: 18px;
+                list-style: none;
+                line-height: 72px;
+                font-weight: 300;
+                font-family: "Helvetica";
+                padding: 0 10px;
+            }
+
+            #banner {
+                height: 450px;
+                width: 100%;
+                background: url('img/bg.jpg');
+            }
+
+            .btn-wrapper {
+                width: 450px;
+                margin: auto;
+                padding-top: 50px;
+            }
+
+            .btn-download {
+                display: inline-block;
+                height: 60px;
+                line-height: 60px;
+                padding: 0 20px;
+                border-radius: 60px;
+                background-color: #5798f7;
+                color: #ffffff;
+                text-decoration: none;
+                font-size: 24px;
+                font-weight: 300;
+                margin: 0 20px 0 22px;
+                border: 2px solid #5798f7;
+            }
+
+            .btn-doc {
+                display: inline-block;
+                height: 60px;
+                line-height: 60px;
+                padding: 0 20px;
+                border-radius: 60px;
+                background-color: #ffffff;
+                color: #5798f7;
+                text-decoration: none;
+                font-size: 24px;
+                font-weight: 300;
+                border: 2px solid #5798f7;
+            }
+            .btn-doc:hover {
+                color: #5798f7;
+            }
+            .btn-download:hover {
+                /*text-decoration: none;*/
+                color: white;
+            }
+
+            .itoolkit-blocks {
+                width: 50%;
+                height: auto;
+                display: block;
+                margin: auto;
+                padding-top: 100px;
+            }
+            
+            #introduction {
+                width: 100%;
+                background: url("img/bg2.png") center;
+                text-align: center;
+            }
+            #introduction ul {
+                margin: 0;
+                padding: 0;
+            }
+            #introduction li {
+                display: block;
+                list-style: none;
+            }
+
+            #introduction li h2 {
+                margin-top: 75px;
+            }
+            
+            #footer {
+                height: 70px;
+                line-height: 70px;
+                text-align: center;
+                background-color: rgba(0, 0, 0, 0.3);
+                color: #ffffff;
+            }
+
+        </style>
     </head>
     <body>
-        <div class="container">
-            <div class="col col-xs-3">
-                <h2>Demo列表</h2>
-                <h3>可插入内容的组件：</h3>
-                <ul>
-                    <li><a href="DivGetData.html" onclick="goto(this)">Super-div Get Data</a></li>
-                    <li><a href="FormInModal.html" onclick="goto(this)">Form In Modal</a></li>
-                    <li><a href="TableInDiv.html" onclick="goto(this)">Table In Div</a></li>
-                    <li><a href="Table.html" onclick="goto(this)">Table</a></li>
-                    <li><a href="select.html" onclick="goto(this)">Select</a></li>
-                    <li><a href="formWithBeforeSubmit.html" onclick="goto(this)">formWithBeforeSubmit</a>
-                    <li><a href="datePicker.html" onclick="goto(this)">Date Picker</a>
+        <div id="nav">
+            <div class="container">
+                <div class="brand">iToolkit</div>
+                <ul class="info">
+                    <li><a href="#">Get Start</a></li>
+                    <li><a href="doc.html">Documents</a></li>
                 </ul>
-                <h3>不可插入内容的组件</h3>
-                <ul>
-                    <li><a href="paginate.html" onclick="goto(this)">Paginate</a></li>
-                </ul>
-            </div>
-            <div class="col col-xs-9">
-                <iframe id="iframe" src="FormInModal.html" width="100%" height="600px" style="margin-top: 20px;"></iframe>
             </div>
         </div>
-
-        <script>
-            function goto(obj) {
-                var e = window.event;
-                e.preventDefault();
-                var iframe = document.getElementById('iframe');
-                iframe.src = obj.href;
-            }
-        </script>
+        <div id="banner">
+            <img class="itoolkit-blocks" src="img/itoolkit.png">
+            <div class="btn-wrapper">
+                <a class="btn-download" href="#">Download iToolkit</a>
+                <a class="btn-doc" href="doc.html">Document</a>
+            </div>
+        </div>
+        <div id="introduction">
+            <ul>
+                <li>
+                    <div class="col-xs-6">
+                        <img src="img/light1.1.png">
+                    </div>
+                    <div class="col-xs-6">
+                        <h2>统一的调用方式</h2>
+                        <p>一致的基础调用方式，简单方便</p>
+                    </div>
+                    <div class="clearfix"></div>
+                </li>
+                <li>
+                    <div class="col-xs-6">
+                        <h2>丰富的组件库</h2>
+                        <p>包含很多企业级开发常用组件</p>
+                    </div>
+                    <div class="col-xs-6">
+                        <img src="img/light1.2.png">
+                    </div>
+                    <div class="clearfix"></div>
+                </li>
+                <li>
+                    <div class="col-xs-6">
+                        <img src="img/light1.3.png">
+                    </div>
+                    <div class="col-xs-6">
+                        <h2>无限制接入</h2>
+                        <p>无论您的项目采用何种技术方案，都可以轻松接入使用</p>
+                    </div>
+                    <div class="clearfix"></div>
+                </li>
+                <li>
+                    <div class="col-xs-6">
+                        <h2>无依赖、体积小</h2>
+                        <p>不依赖第三方框架，压缩后大小仅50KB</p>
+                    </div>
+                    <div class="col-xs-6">
+                        <img src="img/light1.4.png">
+                    </div>
+                    <div class="clearfix"></div>
+                </li>
+            </ul>
+            <div id="footer">
+                百度EUX版权所有  All rights reserved
+            </div>
+        </div>
     </body>
 </html>

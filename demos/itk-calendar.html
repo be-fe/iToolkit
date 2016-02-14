@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>测试日历挂件</title>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
     <link rel="stylesheet" href="../src/css/itoolkit.css">
     <link rel="stylesheet" href="../src/css/themes/simple_pc.css">
-    <!-- IE兼容  -->
-    <!--[if lt IE 9]>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.5/es5-shim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script>html5.addElements('test')</script>
-    <![endif]-->
+    <link rel="stylesheet" href="css/demo.css">
+    <link rel="stylesheet" href="css/prism.css">        
     <script src="../src/lib/riot.js"></script>
     <script src="../src/lib/common.js"></script>
     <script src="../src/iToolkit_pc.js"></script>
+    <script src="js/prism.js"></script>
 </head>
 <body>
-<h3>直接挂着的日历</h3>
-<itk-calendar id="c1"></itk-calendar>
+<div id="demo-html">
+    <h3>直接挂着的日历</h3>
+    <itk-calendar id="c1"></itk-calendar>
 
-<h3>需要呼出的日历</h3>
-<input type="text" id="input1">
-<itk-calendar id="c2"></itk-calendar>
+    <h3>需要呼出的日历</h3>
+    <input type="text" id="input1">
+    <itk-calendar id="c2"></itk-calendar>
 
-<h3>初始化到某天,国际化(国际化待补充)</h3>
-<div style="width: 500px; height:400px; margin: 0 auto;">
-    <input type="text" id="input2">
-    <itk-calendar id="c3"></itk-calendar>
-    <div>输出时间戳<span id="span1"></span></div>
+    <h3>初始化到某天,国际化(国际化待补充)</h3>
+    <div style="width: 500px; height:400px; margin: 0 auto;">
+        <input type="text" id="input2">
+        <itk-calendar id="c3"></itk-calendar>
+        <div>输出时间戳<span id="span1"></span></div>
+    </div>
 </div>
+<script src="js/html-code.js"></script>
 
-<script>
+<script id="demo-script">
     riot.mount('#c1');
     var input1 = document.getElementById('input1')
     riot.mount('#c2', {
@@ -57,8 +57,8 @@
             span.innerText = '年' + y + ' 月' + m + ' 日' + d + ';' + 'timeStamp:' + formatter('unixTimeStamp') + ' unixTimeStamp:' + formatter('timeStamp');
         }
     });
-
 </script>
+<script src="js/js-code.js"></script>
 
 </body>
 </html>

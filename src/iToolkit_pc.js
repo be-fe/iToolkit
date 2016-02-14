@@ -360,7 +360,7 @@ riot.tag('itk-center', '<div class="itk-loading {default: default}" > <yield> </
             var cellHeight = parseInt(window.getComputedStyle(self.childDom, null).height.replace('px', ''), 10);
             self.root.style.marginTop = '-' + cellHeight/2 + 'px';
             
-        })
+        });
 
         self.root.show = function(){
             if (self.childDom) {
@@ -513,7 +513,7 @@ riot.tag('itk-div', '<yield>', function(opts) {
 
 
 });
-riot.tag('itk-editor', '<textarea name="editor1" id="editor1" rows="10" cols="80"> This is my textarea to be replaced with CKEditor. </textarea>', function(opts) {
+riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></textarea>', function(opts) {
         var self = this;
         var EL = self.root;
         var config = self.opts.opts || self.opts;
@@ -521,7 +521,7 @@ riot.tag('itk-editor', '<textarea name="editor1" id="editor1" rows="10" cols="80
         var path = '';
         var jsPath = '';
         var type = config.type || 'standard';
-
+        
         if (!config.path) {
             for (var i = 0; i < js.length; i++) {
                 if (!js[i].src) {
@@ -538,18 +538,27 @@ riot.tag('itk-editor', '<textarea name="editor1" id="editor1" rows="10" cols="80
             path = config.path;
         }
         
+        self.on('mount', function() {
+            var textarea = EL.getElementsByTagName('textarea')[0];
+            var id = EL.getAttribute('id');
+            textarea.setAttribute('name', EL.getAttribute('name'));
+            textarea.setAttribute('id', EL.getAttribute('id'));
+            EL.removeAttribute('id');
 
-        utils.jsLoader([
-            path + type + '/ckeditor.js',
+            utils.jsLoader([
+                path + type + '/ckeditor.js',
 
 
-        ], function () {
-            CKEDITOR.replace( 'editor1', {
-                image_previewText: '',
-                filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
+            ], function () {
+                CKEDITOR.replace( id, {
+                    image_previewText: '',
+                    filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
+                });
+                self.update();
             });
-            self.update();
-        });
+        })
+
+        
         
     
 });
@@ -1132,7 +1141,6 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
     }
     
 });
-
 riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> </div>', function(opts) {
 
     var self = this;

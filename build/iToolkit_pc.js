@@ -1862,21 +1862,7 @@ utils.extend(utils, {
  * 全局事件监控
  */
 var EventCtrl = EC = riot.observable();
-
-/*
- * 外部方法传入
- */
-var iToolkit = {};
-iToolkit.methodRegister = function (name, fn) {
-    for (var i in iToolkit) {
-        if (name === i) {
-            return;
-        }
-    }
-    iToolkit[name] = fn;
-};
-iToolkit.tableExtend = {};
-
+var iToolkit = itk = riot;
 riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-calendar-head"> <div class="itk-calendar-month-prev btn" onclick="{ prevMonth }">⟨</div> <div class="itk-calendar-year-prev btn" onclick="{ prevYear }">⟪</div> <div class="itk-calendar-month">{ month.text }</div> <div class="itk-calendar-year">{ year.text }</div> <div class="itk-calendar-year-next btn" onclick="{ nextMonth }">⟩</div> <div class="itk-calendar-month-next btn" onclick="{ nextYear }">⟫</div> </div> <div class="itk-calendar-body"> <div class="itk-calendar-weeks"> <div class="itk-calendar-week" each="{ text in weekArr }">{ text }</div> </div> <div class="itk-calendar-days"> <div each="{ dayArr }" class="itk-calendar-day { selected: parent.showSelected && parent.selectedYear === year && parent.selectedMonth === month && parent.selectedDay === day } { today: parent.showToday && parent.toYear === year && parent.toMonth === month && parent.today === day } { cursor: year && month && day }" data-year="{ year }" data-month="{ month }" data-day="{ day }" onclick="{ (year && month) ? dayClicked : \'return false;\' }" >{ day }</div> </div> </div> </div>', 'hide="{ !open }"', function(opts) {
 
 
@@ -2088,7 +2074,7 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
         self.selectedDay = e.item.day;
         self.selectedMonth = e.item.month;
         self.selectedYear = e.item.year;
-        self.onSelect && self.onSelect(self.formatter);
+        self.onSelect && self.onSelect(self.formatter, self.getYear(), self.getMonth(), self.getDay());
         self.update();
     };
 
@@ -2239,7 +2225,7 @@ riot.tag('itk-center', '<div class="itk-loading {default: default}" > <yield> </
             var cellHeight = parseInt(window.getComputedStyle(self.childDom, null).height.replace('px', ''), 10);
             self.root.style.marginTop = '-' + cellHeight/2 + 'px';
             
-        })
+        });
 
         self.root.show = function(){
             if (self.childDom) {
@@ -2392,7 +2378,7 @@ riot.tag('itk-div', '<yield>', function(opts) {
 
 
 });
-riot.tag('itk-editor', '<textarea name="editor1" id="editor1" rows="10" cols="80"> This is my textarea to be replaced with CKEditor. </textarea>', function(opts) {
+riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></textarea>', function(opts) {
         var self = this;
         var EL = self.root;
         var config = self.opts.opts || self.opts;
@@ -2400,7 +2386,7 @@ riot.tag('itk-editor', '<textarea name="editor1" id="editor1" rows="10" cols="80
         var path = '';
         var jsPath = '';
         var type = config.type || 'standard';
-
+        
         if (!config.path) {
             for (var i = 0; i < js.length; i++) {
                 if (!js[i].src) {
@@ -2417,18 +2403,27 @@ riot.tag('itk-editor', '<textarea name="editor1" id="editor1" rows="10" cols="80
             path = config.path;
         }
         
+        self.on('mount', function() {
+            var textarea = EL.getElementsByTagName('textarea')[0];
+            var id = EL.getAttribute('id');
+            textarea.setAttribute('name', EL.getAttribute('name'));
+            textarea.setAttribute('id', EL.getAttribute('id'));
+            EL.removeAttribute('id');
 
-        utils.jsLoader([
-            path + type + '/ckeditor.js',
+            utils.jsLoader([
+                path + type + '/ckeditor.js',
 
 
-        ], function () {
-            CKEDITOR.replace( 'editor1', {
-                image_previewText: '',
-                filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
+            ], function () {
+                CKEDITOR.replace( id, {
+                    image_previewText: '',
+                    filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
+                });
+                self.update();
             });
-            self.update();
-        });
+        })
+
+        
         
     
 });
@@ -3011,7 +3006,6 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
     }
     
 });
-
 riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> </div>', function(opts) {
 
     var self = this;

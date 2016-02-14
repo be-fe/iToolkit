@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="../src/css/itoolkit.css">
+        <link rel="stylesheet" href="../src/css/themes/simple_pc.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
+        <script src="../src/lib/riot.js"></script>
+        <script src="../src/lib/common.js"></script>
+        <script src="../src/iToolkit_pc.js"></script>
+        <script src="js/prism.js"></script>
+    </head>
+    <body>
+        <div id="demo-info">
+            <h2>itk-editor</h2><hr>
+            <p>
+                <code>itk-editor</code>组件基于CKEditor,用于快速构建富文本编辑器。
+            </p>
+        </div>
+        <div id="demo-html">
+            <itk-editor id="editor" name="content"></itk-editor>
+        </div>
+         <script src="js/html-code.js"></script>
+
+        <script id="demo-script">
+            riot.mount('#editor');
+        </script>
+         <script src="js/js-code.js"></script>
+    </body>
+</html>
