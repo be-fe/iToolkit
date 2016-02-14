@@ -34,13 +34,17 @@ module.exports = function (gulp, plugin, pkg) {
     gulp.task('build', function () {
         
         gulp.src(['src/css/themes/*.css'])
-        .pipe(gulp.dest('build/themes'))
         .pipe(plugin.minifyCss())
         .pipe(plugin.rename({ suffix: '.min' }))
         .pipe(gulp.dest('build/themes'));
 
-        gulp.src(['src/lib/riot.js', 'src/lib/common.js', 'src/iToolkit_pc.js'])
-        .pipe(plugin.concat('iToolkit_pc.js'))
+        gulp.src(['src/css/*.css'])
+        .pipe(plugin.minifyCss())
+        .pipe(plugin.rename({ suffix: '.min' }))
+        .pipe(gulp.dest('build'));
+
+        gulp.src(['src/lib/riot.js', 'src/lib/common.js', 'src/itoolkit.js'])
+        .pipe(plugin.concat('itoolkit.js'))
         .pipe(gulp.dest('build'))
         // .pipe(jshint())
         // .pipe(jshint.reporter('default'))

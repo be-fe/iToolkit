@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>iToolkit Document</title>
+        <title>iToolkit Documents</title>
         <meta charset='utf-8'>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
@@ -80,8 +80,8 @@
             <div class="container">
                 <div class="brand">iToolkit</div>
                     <ul class="info">
-                        <li><a href="#">Get Start</a></li>
-                        <li><a href="#">Download</a></li>
+                        <li><a href="https://github.com/be-fe/iToolkit">Github</a></li>
+                        <li><a href="https://github.com/be-fe/iToolkit/releases">Download</a></li>
                     </ul>
                 </div>
             </div>
@@ -91,16 +91,16 @@
                 <itk-div id="side-bar" class="col-xs-3">
                     <h5>introduction</h5>
                     <ul class="tag-list">
-                        <li each="{ intr }" onclick="{ goto }"><a href="#">{ alias || name }</a></li>
+                        <li each="{ intr }" onclick="{ goto }"><a href="#{name}">{ alias || name }</a></li>
                     </ul>
                     <h5>components</h5>
                     <ul class="tag-list">
-                        <li each="{ data }" onclick="{ goto }"><a href="#">{ alias || name }</a></li>
+                        <li each="{ data }" onclick="{ goto }"><a href="#{name}">{ alias || name }</a></li>
                     </ul>
                 </itk-div>
 
                 <div id="main" class="col-xs-9">
-                    <iframe id="iframe" src="itk-div.html" onLoad="iFrameHeight()"></iframe>
+                    <iframe id="iframe" src="get-start.html" onLoad="iFrameHeight()"></iframe>
                 </div>
             </div>
         </div>

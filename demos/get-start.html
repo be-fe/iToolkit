@@ -14,6 +14,42 @@
     <script src="js/prism.js"></script>
 </head>
 <body>
-    
+    <h2>Get Start</h2><hr>
+    <h3>开始使用</h3>
+    <p>下载iToolkit, 将build文件夹中的内容放入您的项目中(注意：如果要使用轮播、文件上传、富文本等组件，必须将plugins文件夹放在您项目中的相对位置)。</p>
+    <p>然后在html中引入css和js文件即可。</p>
+<pre>
+    <code class="language-markup"><script type="prism-html-markup">
+    <link rel="stylesheet" href="../itoolkit.min.css">        
+    <script src="../itoolkit.min.js"></script></script></code>
+</pre>
+
+    <h3>基本用法</h3>
+    <p>itoolkit组件基本可以分为两种形式：功能组件和容器组件，功能组件典型如树结构：</p>
+<pre>
+    <code class="language-markup"><script type="prism-html-markup">
+        <itk-tree></itk-tree></script></code>
+</pre>
+<pre>
+    <code class="language-javascript">
+        itk.mount('itk-tree', config);</code>
+</pre>
+    <p>功能组件会提供一个完整的功能，用户只需要mount一下即可使用,通过配置项配置自己需要的功能。</p>
+
+    <p>而容器组件则需要用户自定义里面内容，组件则提供一些特定的辅助功能，典型的如表单(itk-form):</p>
+<pre>
+    <code class="language-markup"><script type="prism-html-markup">
+    <itk-form action="url" name="form">
+        <input name="name" type="text" valid="present" max="20">
+        <input name="email" type="text" valid="email">
+        <input name="password" type="password" valid="present">
+        <input type="submit" value="提交">
+    </itk-form></script></script></code>
+</pre>
+<pre>
+    <code class="language-javascript">
+        itk.mount('itk-form', config);</code>
+</pre>
+    <p>用户需要在容器内编写自己想要的内容，而像itk-form这个容器则提供了表单校验、ajax提交、防止连击等功能。</p>
 </body>
 </html>
