@@ -1,0 +1,128 @@
+/** 
+ 
+ @Name： laydate皮肤：雅兰
+ @Author：贤心
+ @Site：http://sentsin.com/layui/laydate
+ 
+**/
+
+#laydate_box,
+#laydate_box * {
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+	        box-sizing: border-box;
+	font-size: 12px;
+	border: 0;
+}
+
+#laydate_box,
+#laydate_box #laydate_my,
+#laydate_box #laydate_ms {
+	border: 1px solid #ccc;
+}
+
+#laydate_box {
+	width: 300px;
+}
+
+#laydate_box .laydate_top {
+	background: #E4E9EF;
+	height: 60px;
+	padding-top: 15px;
+}
+
+#laydate_box #laydate_YY a.laydate_choose,
+#laydate_box #laydate_YY label,
+#laydate_box #laydate_MM label,
+#laydate_box #laydate_MM a.laydate_choose {
+	display: none;
+}
+
+#laydate_box #laydate_YY,
+#laydate_box #laydate_MM,
+#laydate_box #laydate_YY input,
+#laydate_box #laydate_MM input {
+	border: none;
+	background: none;
+	font-size: 12px;
+}
+#laydate_box #laydate_YY,
+#laydate_box #laydate_MM {
+	width: 50%;
+	margin: 0;
+}
+#laydate_box #laydate_YY input{
+	position: absolute;
+	right: 0;
+	margin-right: 0;
+}
+
+#laydate_box #laydate_my {
+	width: 122px;
+	margin-left: 40%;
+}
+
+#laydate_box #laydate_my .laydate_tab {
+	background: #E4E9EF;
+}
+
+#laydate_box .laydate_void {
+	color: #aaa!important;
+}
+#laydate_box #laydate_table {
+	border: 0;
+	width: 100%;
+	margin: 12px 0;
+}
+#laydate_box #laydate_table thead,
+#laydate_box #laydate_table tbody,
+#laydate_box #laydate_table tfoot,
+#laydate_box #laydate_table th,
+#laydate_box #laydate_table td {
+	background: #fff;
+	border: 0;
+}
+
+#laydate_box .laydate_bottom {
+	height: 22px;
+	margin: 5px;
+	padding: 0;
+	border-bottom: 0;
+}
+
+#laydate_box .laydate_btn {
+	right: 5px;
+	top: 0;
+}
+
+#laydate_box .laydate_chtop cite {
+	position: absolute;
+	left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    margin: -7px 0 0 -5px;
+    border-width: 5px;
+    border-style: dashed;
+    border-color: transparent;
+    overflow: hidden;
+    cursor: pointer;
+    border-bottom-style: solid;
+    border-bottom-color: #666;
+}
+
+#laydate_box .laydate_chdown cite {
+	position: absolute;
+	left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    margin: -2px 0 0 -5px;
+    border-width: 5px;
+    border-style: dashed;
+    border-color: transparent;
+    overflow: hidden;
+    cursor: pointer;
+    border-top-style: solid;
+    border-top-color: #666;
+}
