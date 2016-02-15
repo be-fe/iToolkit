@@ -459,7 +459,6 @@ riot.tag('date-picker', '<yield>', function(opts) {
 });
 
 riot.tag('itk-div', '<yield>', function(opts) {
-    
     var self = this;
     var config = self.opts.opts || self.opts;
     var EL = self.root;
@@ -510,8 +509,7 @@ riot.tag('itk-div', '<yield>', function(opts) {
             self.update();
         }
     }
-
-
+    
 });
 riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></textarea>', function(opts) {
         var self = this;

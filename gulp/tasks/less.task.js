@@ -1,8 +1,17 @@
 module.exports = function (gulp, plugin, pkg, childProcess) {
+
+    var combiner = require('stream-combiner2');
+
     gulp.task('less', function () {
-        gulp.src('src/less/*.less')
-        .pipe(plugin.less())
-        .pipe(plugin.concat('itoolkit.css'))
-        .pipe(gulp.dest('src/css/'));
+        var combined = combiner.obj([
+            gulp.src('src/less/*.less'),
+            plugin.less(),
+            plugin.concat('itoolkit.css'),
+            gulp.dest('src/css')
+        ]);
+
+        combined.on('error', console.error.bind(console));
+
+        return combined;
     });
 };
