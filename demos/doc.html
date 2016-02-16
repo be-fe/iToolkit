@@ -59,7 +59,7 @@
             }
 
             .tag-list li a {
-                display: block;
+                display: inline-block;
             }
 
             #iframe {
@@ -94,11 +94,11 @@
                 <itk-div id="side-bar" class="col-xs-3">
                     <h5>introduction</h5>
                     <ul class="tag-list">
-                        <li each="{ intr }" onclick="{ goto }"><a href="#{name}">{ alias || name }</a></li>
+                        <li each="{ intr }"><a href="#{name}">{ alias || name }</a></li>
                     </ul>
                     <h5>components</h5>
                     <ul class="tag-list">
-                        <li each="{ data }" onclick="{ goto }"><a href="#{name}">{ alias || name }</a></li>
+                        <li each="{ data }"><a href="#{name}">{ alias || name }</a></li>
                     </ul>
                 </itk-div>
 
@@ -117,9 +117,17 @@
                 var subWeb = document.frames ? document.frames["iframe"].document : ifm.contentDocument;   
                 if(ifm != null && subWeb != null) {
                    ifm.height = subWeb.body.scrollHeight;
-                   console.log(ifm.height);
                 };
             };
+
+            function goto() {
+                var hash = location.hash.replace('#', '');
+                var name = hash || 'get-start';
+                var iframe = document.getElementById('iframe');
+                iframe.src = name + '.html';
+            }
+            goto();
+            window.onhashchange = goto;
 
             var sideBarOpts = {
                 intr: [{name: 'get-start', alias: "Get Start"}],
