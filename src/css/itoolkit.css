@@ -275,6 +275,7 @@ itk-select .itk-selected-container .itk-selected-option {
 }
 itk-select .itk-selected-container .itk-single-option {
   display: inline-block;
+  vertical-align: middle;
 }
 itk-select .itk-search-wrap {
   width: 1em;
