@@ -32,6 +32,16 @@
             textarea.setAttribute('id', EL.getAttribute('id'));
             EL.removeAttribute('id');
 
+<<<<<<< HEAD
+        utils.jsLoader([
+            path + type + '/ckeditor.js',
+            // path + '/need/' + 'laydate.css',
+            // path + '/skins/' + theme + '/laydate.css'
+        ], function () {
+            CKEDITOR.replace( 'editor1', {
+                image_previewText: '',
+                filebrowserImageUploadUrl: "http://localhost:9090/src/plugins/ckeditor/server/upload.php"
+=======
             utils.jsLoader([
                 path + type + '/ckeditor.js',
                 // path + '/need/' + 'laydate.css',
@@ -42,6 +52,7 @@
                     filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
                 });
                 self.update();
+>>>>>>> 452b37669e866e53df868bf7db2fe5bcf15dae5d
             });
         })
 
