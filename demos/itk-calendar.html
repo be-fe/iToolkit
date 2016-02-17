@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+    <link rel="stylesheet" href="css/demo.css">
+    <link rel="stylesheet" href="css/prism.css">        
+    <link rel="stylesheet" href="../build/itoolkit.min.css">
+    <script src="../build/itoolkit.min.js"></script>
+    <script src="js/prism.js"></script>
+</head>
+<body>
+<div id="demo-html">
+    <h3>直接挂着的日历</h3>
+    <itk-calendar id="c1"></itk-calendar>
+
+    <h3>需要呼出的日历</h3>
+    <input type="text" id="input1">
+    <itk-calendar id="c2"></itk-calendar>
+
+    <h3>初始化到某天,国际化(国际化待补充)</h3>
+    <div style="width: 500px; height:400px; margin: 0 auto;">
+        <input type="text" id="input2">
+        <itk-calendar id="c3"></itk-calendar>
+        <div>输出时间戳<span id="span1"></span></div>
+    </div>
+</div>
+<script src="js/html-code.js"></script>
+
+<script id="demo-script">
+    riot.mount('#c1');
+    var input1 = document.getElementById('input1')
+    riot.mount('#c2', {
+        element: input1,
+        showToday: true,
+        showSelected: true,
+        onSelect: function (formatter) {
+            input1.value = formatter('yyyy年m月d日');
+        }
+    });
+
+    var input2 = document.getElementById('input2')
+    riot.mount('#c3', {
+        element: input2,
+        initTime: new Date(2014, 0, 1).getTime(),
+        language: 'zh_cn',
+        showToday: false,
+        showSelected: true,
+        onSelect: function (formatter, y, m, d) {
+            input2.value = formatter('yyyy年m月d日');
+            console.log(y + '年' + m + '月' + d + '日');
+            var span = document.getElementById('span1');
+            span.innerText = '年' + y + ' 月' + m + ' 日' + d + ';' + 'timeStamp:' + formatter('unixTimeStamp') + ' unixTimeStamp:' + formatter('timeStamp');
+        }
+    });
+</script>
+<script src="js/js-code.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
+        <link rel="stylesheet" href="../build/itoolkit.min.css">
+        <script src="../build/itoolkit.min.js"></script>
+        <script src="js/prism.js"></script>
+        <style>
+           /* #slide img{
+                width:100%;
+            }*/
+        </style>
+    </head>
+    <body>
+    <div id="demo-info">
+        <h2>itk-slide</h2><hr>
+        <code>itk-slide</code>组件基于slick插件，用于构造各种轮播图，配置文档同slick.
+    </div>
+    <div id="demo-html">
+        <div style="width: 600px">
+            <itk-slide id="slide">
+                <li><img src="img/1.jpg"></li>
+                <li><img src="img/2.jpg"></li>
+                <li><img src="img/3.jpg"></li>
+            </itk-slide>
+        </div>
+    </div>
+    <script src="js/html-code.js"></script>
+
+    <script id="demo-script">
+        var opts = {
+            // width: "600px",
+            // height: "400px",
+        };
+        riot.mount('#slide', opts);
+    </script>
+    <script src="js/js-code.js"></script>
+
+    </body>
+</html>
