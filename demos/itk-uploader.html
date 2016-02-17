@@ -23,7 +23,8 @@
 
         <script id="demo-script">
             var opt = {
-                url: '/src/plugins/uploader/examples/basic_example/file_upload.php',
+                // 注意,这里的 url 需要可处理 php 文件,例如:php -S localhost:8080,并且这里还有同域的问题,测试的时候要注意.
+                url: 'http://localhost:8080/src/plugins/uploader/examples/basic_example/file_upload.php',
                 name: 'uploadfile',
                 multipart: true,
                 responseType: 'json',
