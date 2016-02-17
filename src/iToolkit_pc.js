@@ -206,7 +206,7 @@ riot.tag('itk-editor', '<textarea name="editor1" id="editor1" rows="10" cols="80
         ], function () {
             CKEDITOR.replace( 'editor1', {
                 image_previewText: '',
-                filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
+                filebrowserImageUploadUrl: "http://localhost:9090/src/plugins/ckeditor/server/upload.php"
             });
             self.update();
         });

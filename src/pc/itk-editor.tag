@@ -36,7 +36,7 @@
         ], function () {
             CKEDITOR.replace( 'editor1', {
                 image_previewText: '',
-                filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
+                filebrowserImageUploadUrl: "http://localhost:9090/src/plugins/ckeditor/server/upload.php"
             });
             self.update();
         });

@@ -2085,7 +2085,7 @@ riot.tag('itk-editor', '<textarea name="editor1" id="editor1" rows="10" cols="80
         ], function () {
             CKEDITOR.replace( 'editor1', {
                 image_previewText: '',
-                filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
+                filebrowserImageUploadUrl: "http://localhost:9090/src/plugins/ckeditor/server/upload.php"
             });
             self.update();
         });
@@ -3465,7 +3465,7 @@ riot.tag('itk-tree', '<div class="tree-item-wrap" each="{ item, i in data }" ons
     
     
 });
-riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn" id="uploadBtn">上传</div>', '#progressOuter { border: 1px solid #ccc; border-radius: 4px; height: 32px; margin: 0; background: white; border-top-right-radius: 0; border-bottom-right-radius: 0; display: none; }', function(opts) {
+riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn" id="uploadBtn">上传</div>', function(opts) {
         var self = this;
         var EL = self.root;
         var config = self.opts.opts || self.opts;
