@@ -417,7 +417,7 @@
                 validArr.push(e);
             }
         }
-        console.log(validArr);
+
         if (!validArr.length) {
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
@@ -573,24 +573,20 @@
         }
         self.data = config.data;
         self.rules = {};
-
         for (ruleConfig in self.rulesConfig) {
-            if (utils.isObject(self.rulesConfig[ruleConfig])) {
-                (function(ruleConfig) {
-                    self.rules[ruleConfig] = function(attrs) {
-                        if (attrs.value.match(self.rulesConfig[ruleConfig].regexp)) {
-                            return true;
-                        }
-                        else {
-                            return self.rulesConfig[ruleConfig].msg;
-                        }
+            (function(ruleConfig) {
+                self.rules[ruleConfig] = function(attrs) {
+                    if (attrs.value.match(self.rulesConfig[ruleConfig].regexp)) {
+                        return true;
                     }
-                })(ruleConfig);
-            }
-            else if (utils.isFunction(self.rulesConfig[ruleConfig])) {
-                self.rules[ruleConfig] = self.rulesConfig[ruleConfig];
-            }
+                    else {
+                        return self.rulesConfig[ruleConfig].msg;
+                    }
+                }
+            })(ruleConfig);
         }
+
+        //self.rules.extend(config.rules);
     };
     
 
