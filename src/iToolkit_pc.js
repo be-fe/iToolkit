@@ -547,19 +547,12 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
                 path + type + '/ckeditor.js',
 
 
-<<<<<<< HEAD
-        ], function () {
-            CKEDITOR.replace( 'editor1', {
-                image_previewText: '',
-                filebrowserImageUploadUrl: "http://localhost:9090/src/plugins/ckeditor/server/upload.php"
-=======
             ], function () {
                 CKEDITOR.replace( id, {
                     image_previewText: '',
                     filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
                 });
                 self.update();
->>>>>>> 452b37669e866e53df868bf7db2fe5bcf15dae5d
             });
         })
 

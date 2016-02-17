@@ -543,16 +543,6 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
             textarea.setAttribute('id', EL.getAttribute('id'));
             EL.removeAttribute('id');
 
-<<<<<<< HEAD
-        utils.jsLoader([
-            path + type + '/ckeditor.js',
-
-
-        ], function () {
-            CKEDITOR.replace( 'editor1', {
-                image_previewText: '',
-                filebrowserImageUploadUrl: "http://localhost:9090/src/plugins/ckeditor/server/upload.php"
-=======
             utils.jsLoader([
                 path + type + '/ckeditor.js',
 
@@ -563,7 +553,6 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
                     filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
                 });
                 self.update();
->>>>>>> 452b37669e866e53df868bf7db2fe5bcf15dae5d
             });
         })
 
@@ -953,7 +942,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                 validArr.push(e);
             }
         }
-
+        console.log(validArr);
         if (!validArr.length) {
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
@@ -1099,19 +1088,24 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
         }
         self.data = config.data;
         self.rules = {};
-        for (ruleConfig in self.rulesConfig) {
-            (function(ruleConfig) {
-                self.rules[ruleConfig] = function(attrs) {
-                    if (attrs.value.match(self.rulesConfig[ruleConfig].regexp)) {
-                        return true;
-                    }
-                    else {
-                        return self.rulesConfig[ruleConfig].msg;
-                    }
-                }
-            })(ruleConfig);
-        }
 
+        for (ruleConfig in self.rulesConfig) {
+            if (utils.isObject(self.rulesConfig[ruleConfig])) {
+                (function(ruleConfig) {
+                    self.rules[ruleConfig] = function(attrs) {
+                        if (attrs.value.match(self.rulesConfig[ruleConfig].regexp)) {
+                            return true;
+                        }
+                        else {
+                            return self.rulesConfig[ruleConfig].msg;
+                        }
+                    }
+                })(ruleConfig);
+            }
+            else if (utils.isFunction(self.rulesConfig[ruleConfig])) {
+                self.rules[ruleConfig] = self.rulesConfig[ruleConfig];
+            }
+        }
     };
     
 
