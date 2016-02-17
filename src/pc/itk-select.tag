@@ -1,11 +1,14 @@
 <itk-select>
     <yield/>
     <ul class="itk-selected-container" onmousedown="{ showOptions }">
-        <li class="itk-selected-option" each="{realData }" if="{ selected }">
+        <li class="itk-selected-option" each="{realData }" if="{ selected && parent.mutiple}">
             { name }
             <span class="itk-close" onmousedown="{ cancel }" >×</span>
         </li>
-        <li class="itk-search-wrap" style="min-height: 34px;">
+        <li class="itk-single-option" each="{ realData }" if="{ selected && !parent.mutiple}">
+            { name }
+        </li>
+        <li class="itk-search-wrap">
             <input
                 type="text"
                 class="form-control itk-select-search"
@@ -44,6 +47,14 @@
         self.initData = self.root.initData = function() {
             if (self.root.querySelector('select')) {
                 var options = self.root.querySelector('select').querySelectorAll('option');
+                var mutiple = self.root.querySelector('select').hasAttribute('mutiple');
+                if (mutiple) {
+                    self.mutiple = true;
+                }
+                else {
+                    self.mutiple = false;
+                    self.noSearch = true;
+                }
             }
             if (options && options.length && !self.gotOptions) {
                 self.options = options;
@@ -67,6 +78,10 @@
                     self.searchInput.value = '';
                     self.resetSelectOpt();
                 };
+
+                if (self.noSearch) {
+                    self.searchInput.style.width = '0px';
+                }
                 self.gotOptions = true;
                 self.update();
             }
@@ -109,11 +124,21 @@
         };
 
         self.toggle = function(e) {
-            if (e.item.selected) {
-                e.item.selected = false;
-                self.options[e.item.index].selected = false;
+            if (self.mutiple) {
+                if (e.item.selected) {
+                    e.item.selected = false;
+                    self.options[e.item.index].selected = false;
+                }
+                else {
+                    e.item.selected = true;
+                    self.options[e.item.index].selected = true;
+                }
             }
             else {
+                for (i = 0; i < self.realData.length; i++) {
+                    self.realData[i].selected = false;
+                    self.options[i].selected = false;
+                }
                 e.item.selected = true;
                 self.options[e.item.index].selected = true;
             }

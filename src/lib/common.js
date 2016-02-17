@@ -491,17 +491,4 @@ utils.extend(utils, {
  * 全局事件监控
  */
 var EventCtrl = EC = riot.observable();
-
-/*
- * 外部方法传入
- */
-var iToolkit = {};
-iToolkit.methodRegister = function (name, fn) {
-    for (var i in iToolkit) {
-        if (name === i) {
-            return;
-        }
-    }
-    iToolkit[name] = fn;
-};
-iToolkit.tableExtend = {};
+var iToolkit = itk = riot;

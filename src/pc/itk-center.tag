@@ -1,5 +1,5 @@
 <itk-center>
-    <div class={itk-loading: true, default: default} >
+    <div class="itk-loading {default: default}" >
         <yield>
     </div>
     
@@ -25,7 +25,7 @@
             var cellHeight = parseInt(window.getComputedStyle(self.childDom, null).height.replace('px', ''), 10);
             self.root.style.marginTop = '-' + cellHeight/2 + 'px';
             
-        })
+        });
 
         self.root.show = function(){
             if (self.childDom) {

@@ -1,6 +1,6 @@
 <itk-div>
     <yield>
-    
+    <script>
     var self = this;
     var config = self.opts.opts || self.opts;
     var EL = self.root;
@@ -55,5 +55,6 @@
             self.update();
         }
     }
+    </script>
 
 </itk-div>
