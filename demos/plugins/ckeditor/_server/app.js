@@ -9,14 +9,13 @@ var callback;
 http.createServer(function (req, res) {
 
 
-
-    if(req.method == "GET"){
+    if (req.method == "GET") {
         var params = [];
-        params = url.parse(request.url,true).query;
+        params = url.parse(request.url, true).query;
 
 
         res.end();
-    }else if (req.method == "POST") {
+    } else if (req.method == "POST") {
 
     }
 
