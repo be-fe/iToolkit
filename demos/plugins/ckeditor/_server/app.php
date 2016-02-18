@@ -6,11 +6,25 @@
  * Time: 下午7:58
  */
 
+// php 接受文件
+
+if ($_FILES["upload"]["error"] > 0) {
+    echo "Error: " . $_FILES["upload"]["error"] . "<br>";
+} else {
+
+    // 文件存在,则先删除
+    if (file_exists("./upload/" . $_FILES["upload"]["name"])) {
+        unlink("./upload/" . $_FILES["upload"]["name"]);
+    }
+
+    move_uploaded_file($_FILES["upload"]["tmp_name"], "upload/" . $_FILES["upload"]["name"]);
+    $path = "plugins/ckeditor/_server/" . "upload/" . $_FILES["upload"]["name"];
+
+}
+
 echo "<script type=\"text/javascript\">";
 
-echo "console.log('window');";
-
-echo "window.parent.CKEDITOR.tools.callFunction('1','http://www.leiquan.me/img/unsplash_2.jpg','')";
+echo "window.parent.CKEDITOR.tools.callFunction('1','" . $path . "','')";
 
 echo "</script>";
 
