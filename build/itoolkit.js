@@ -2384,7 +2384,19 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
         var path = '';
         var jsPath = '';
         var type = config.type || 'standard';
-        
+        var filebrowserImageUploadUrl = config.filebrowserImageUploadUrl;
+        var editorConfig = config.editorConfig;
+
+        var topConfig = {};
+
+        topConfig.image_previewText = '';
+        topConfig.filebrowserImageUploadUrl = filebrowserImageUploadUrl;
+
+
+        for (x in editorConfig) {
+            topConfig[x] = editorConfig[x];
+        }
+
         if (!config.path) {
             for (var i = 0; i < js.length; i++) {
                 if (!js[i].src) {
@@ -2400,30 +2412,33 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
         else {
             path = config.path;
         }
-        
-        self.on('mount', function() {
+
+        self.on('mount', function () {
+
             var textarea = EL.getElementsByTagName('textarea')[0];
+
             var id = EL.getAttribute('id');
-            textarea.setAttribute('name', EL.getAttribute('name'));
+
             textarea.setAttribute('id', EL.getAttribute('id'));
             EL.removeAttribute('id');
 
             utils.jsLoader([
-                path + type + '/ckeditor.js',
-
-
+                path + type + '/ckeditor.js'
             ], function () {
-                CKEDITOR.replace( id, {
-                    image_previewText: '',
 
-                    filebrowserImageUploadUrl: "http://localhost:8080/demos/plugins/ckeditor/_server/app.php"
-                });
+
+
+
+
+
+                CKEDITOR.replace(id, topConfig);
+
                 self.update();
+
             });
         })
 
-        
-        
+
     
 });
 riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(opts) {
