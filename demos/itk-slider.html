@@ -18,25 +18,50 @@
     <body>
     <div id="demo-info">
         <h2>itk-slide</h2><hr>
-        <code>itk-slide</code>组件基于slick插件，用于构造各种轮播图，配置文档同slick.
+        <code>itk-slide</code>组件是基于slick插件，用于构造各种轮播图，配置文档同slick.请参考:http://kenwheeler.github.io/slick/
     </div>
     <div id="demo-html">
+
         <div style="width: 600px">
-            <itk-slide id="slide">
+            <itk-slide id="slide1">
                 <li><img src="img/1.jpg"></li>
                 <li><img src="img/2.jpg"></li>
                 <li><img src="img/3.jpg"></li>
             </itk-slide>
         </div>
+
+        <div style="width: 600px">
+            <itk-slide id="slide2">
+                <li><img src="img/1.jpg"></li>
+                <li><img src="img/2.jpg"></li>
+                <li><img src="img/3.jpg"></li>
+            </itk-slide>
+        </div>
+
     </div>
     <script src="js/html-code.js"></script>
 
     <script id="demo-script">
-        var opts = {
+        var opts1 = {
             // width: "600px",
             // height: "400px",
         };
-        riot.mount('#slide', opts);
+        riot.mount('#slide1', opts1);
+
+        var opts2 = {
+            width: "600px",
+            height: "400px",
+            infinite: true,
+            slidesToShow: 2,
+            slidesToScroll: 2,
+            dots: true,
+            lazyLoad: 'ondemand',
+//            fade: true,
+//            cssEase: 'linear'
+        };
+        riot.mount('#slide2', opts2);
+
+
     </script>
     <script src="js/js-code.js"></script>
 
