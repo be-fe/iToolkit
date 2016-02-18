@@ -40,6 +40,7 @@
                 CKEDITOR.replace( id, {
                     image_previewText: '',
                     // filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
+                    // 注意,这里的 url 需要可处理 php 文件并且需要和页面同域, 测试这个组件的时候,建议使用:php -S localhost:8080开启服务,因为默认的 doc 页面的server 无法处理PHP 代码.
                     filebrowserImageUploadUrl: "http://localhost:8080/demos/plugins/ckeditor/_server/app.php"
                 });
                 self.update();
