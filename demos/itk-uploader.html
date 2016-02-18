@@ -1,79 +1,87 @@
 <html>
-    <head>
-        <meta charset='utf-8'>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
-        <link rel="stylesheet" href="css/demo.css">
-        <link rel="stylesheet" href="css/prism.css">        
-        <link rel="stylesheet" href="../build/itoolkit.min.css">
-        <script src="../build/itoolkit.min.js"></script>
-        <script src="js/prism.js"></script>
-    </head>
-    <body>
-        <div id="demo-info">
-            <h2>itk-uploader</h2><hr>
-            <p>
-                <code>itk-uploader</code>组件可以快速构建文件上传功能.
-            </p>
-        </div>
-        <div id="demo-html">
-            <itk-uploader></itk-uploader>
-        </div>
-        <script src="js/html-code.js"></script>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+    <link rel="stylesheet" href="css/demo.css">
+    <link rel="stylesheet" href="css/prism.css">
+    <link rel="stylesheet" href="../build/itoolkit.min.css">
+    <script src="../build/itoolkit.min.js"></script>
+    <script src="js/prism.js"></script>
+</head>
+<body>
+<div id="demo-info">
+    <h2>itk-uploader</h2>
+    <hr>
+    <p>
+        <code>itk-uploader</code>组件可以快速构建文件上传功能.
+    </p>
+</div>
+<div id="demo-html">
+    <itk-uploader></itk-uploader>
+</div>
+<script src="js/html-code.js"></script>
 
-        <script id="demo-script">
-            var opt = {
-                // 注意,这里的 url 需要可处理 php 文件并且需要和页面同域, 测试这个组件的时候,建议使用:php -S localhost:8080开启服务,因为默认的 doc 页面的server 无法处理PHP 代码.
-                url: 'http://localhost:8080/src/plugins/uploader/examples/basic_example/file_upload.php',
-                name: 'uploadfile',
-                multipart: true,
-                responseType: 'json',
+<script id="demo-script">
+    var opt = {
 
-                startXHR: function () {
+        // 注意,这里的 url 需要可处理 php 文件并且需要和页面同域,
+        // 测试这个组件的时候,建议使用:php -S localhost:8080开启服务
+        // 因为默认的 doc 页面的server 无法处理PHP 代码.
+        url: 'http://localhost:8080/src/plugins/uploader/examples/basic_example/file_upload.php',
 
-                },
+        name: 'uploadfile',
 
-                onSubmit: function () {
+        multipart: true,
 
-                },
+        // 返回类型
+        responseType: 'json',
 
-                onComplete: function (filename, response) {
+        startXHR: function () {
 
-                    console.log(response);
+        },
 
-                    if (!response) {
-                        console.log("上传文件失败!");
-                        return;
-                    }
+        onSubmit: function () {
 
-                    if (response.success === true) {
-                        console.log("上传文件成功!");
+        },
 
-                    } else {
-                        if (response.msg) {
-                            alert(response.msg);
+        // 传输完成
+        onComplete: function (filename, response) {
 
-                        } else {
-                            console.log("发生未知错误!");
-                        }
-                    }
-                },
+            console.log(response);
 
-                onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
-                    console.log(filename);
-                    console.log(errorType);
-                    console.log(status);
-                    console.log(statusText);
-                    console.log(response);
-                    console.log(uploadBtn);
-                    console.log(fileSize);
+            if (!response) {
+                alert("上传文件失败!");
+                return;
+            }
+
+            if (response.success === true) {
+                alert("上传文件成功!");
+            } else {
+                if (response.msg) {
+                    alert(response.msg);
+                } else {
+                    alert("发生未知错误!");
                 }
+            }
+        },
 
-            };
+        onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
+            console.log(filename);
+            console.log(errorType);
+            console.log(status);
+            console.log(statusText);
+            console.log(response);
+            console.log(uploadBtn);
+            console.log(fileSize);
+        }
 
-            riot.mount('itk-uploader', opt);
-        </script>
+    };
 
-        <script src="js/js-code.js"></script>
-    </body>
+    riot.mount('itk-uploader', opt);
+
+</script>
+
+<script src="js/js-code.js"></script>
+</body>
 </html>

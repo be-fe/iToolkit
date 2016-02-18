@@ -62,11 +62,18 @@
                 display: inline-block;
             }
 
+            #main {
+                height: 100%;
+            }
             #iframe {
                 width: 100%;
                 border: none;
                 overflow: hidden;
-                /*height: 800px;*/
+                height: 100%;
+            }
+
+            #container {
+                overflow: scroll;
             }
 
             #footer {
@@ -74,6 +81,9 @@
                 line-height: 70px;
                 text-align: center;
                 border-top: 1px solid #e5e5e5;
+                position: fixed;
+                bottom: 0px;
+                width: 100%;
             }
 
         </style>
@@ -89,7 +99,7 @@
                 </div>
             </div>
         </div>
-        <div class="container">
+        <div class="container" id="container">
             <div class="row">
                 <itk-div id="side-bar" class="col-xs-3">
                     <h5>introduction</h5>
@@ -119,6 +129,13 @@
                    ifm.height = subWeb.body.scrollHeight;
                 };
             };
+
+            function containerHeight () {
+                var container = document.getElementById("container");
+                container.style.height = window.innerHeight - 142 + 'px';
+            }
+
+            containerHeight();
 
             function goto() {
                 var hash = location.hash.replace('#', '');
