@@ -23,13 +23,17 @@
 </div>
 <div id="demo-html">
 
-    <div style="width: 600px">
-        <itk-slide id="slide1">
-            <li><img src="img/1.jpg"></li>
-            <li><img src="img/2.jpg"></li>
-            <li><img src="img/3.jpg"></li>
+    <div style="width: 300px; height: 200px;">
+        <itk-slide id="slide1" style="width: 300px; height: 200px;">
+            <li><img src="img/1.jpg" style="width: 300px; height: 200px;"></li>
+            <li><img src="img/2.jpg" style="width: 300px; height: 200px;"></li>
+            <li><img src="img/3.jpg" style="width: 300px; height: 200px;"></li>
         </itk-slide>
     </div>
+
+    <br>
+
+    <p></p>
 
     <div style="width: 600px">
         <itk-slide id="slide2">
@@ -49,7 +53,11 @@
 <script id="demo-script">
 
     // 默认行为
-    riot.mount('#slide1');
+    var opts1 = {
+        width: "300px",
+        height: "200px",
+    };
+    riot.mount('#slide1', opts1);
 
     var opts2 = {
         width: "600px",
