@@ -19,4 +19,4 @@ node_modules
 /src/plugins/uploader/examples/basic_example/upload_files/
 coverage
 psd
-/demos/plugins/ckeditor/_server/upload/*
+/demos/_server/upload/*

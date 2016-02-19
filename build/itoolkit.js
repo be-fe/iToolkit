@@ -2256,8 +2256,8 @@ riot.tag('date-picker', '<yield>', function(opts) {
             if (!js[i].src) {
                 continue;
             }
-            if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
-                jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+            if (/itoolkit.min.js|itoolkit.js/.test(js[i].src)) {
+                jsPath = js[i].src.replace(/itoolkit.min.js|itoolkit.js/, '');
                 break;
             }
         }
@@ -2402,12 +2402,12 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
                 if (!js[i].src) {
                     continue;
                 }
-                if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
-                    jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+                if (/itoolkit.min.js|itoolkit.js/.test(js[i].src)) {
+                    jsPath = js[i].src.replace(/itoolkit.min.js|itoolkit.js/, '');
                     break;
                 }
             }
-            path = jsPath + 'plugins/ckeditor/';
+            path = jsPath + 'plugins/ckeditor/'; 
         }
         else {
             path = config.path;
@@ -3451,8 +3451,8 @@ riot.tag('itk-slide', ' <yield>', function(opts) {
             if (!js[i].src) {
                 continue;
             }
-            if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
-                jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+            if (/itoolkit.min.js|itoolkit.js/.test(js[i].src)) {
+                jsPath = js[i].src.replace(/itoolkit.min.js|itoolkit.js/, '');
                 break;
             }
         }
@@ -3857,8 +3857,8 @@ riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn
             if (!js[i].src) {
                 continue;
             }
-            if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
-                jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+            if (/itoolkit.min.js|itoolkit.js/.test(js[i].src)) {
+                jsPath = js[i].src.replace(/itoolkit.min.js|itoolkit.js/, '');
                 break;
             }
         }
