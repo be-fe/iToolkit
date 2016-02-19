@@ -23,31 +23,54 @@
 </div>
 <div id="demo-html">
 
-    <div style="width: 300px; height: 200px; margin-bottom: 30px;">
+    <!--图片,文字,iframe 组合轮播-->
+    <div style="width: 300px; height: 200px; margin-bottom: 50px;">
         <itk-slide id="slide1" style="width: 300px; height: 200px;">
             <li><img src="img/1.jpg" style="width: 300px; height: 200px;"></li>
-            <li><img src="img/2.jpg" style="width: 300px; height: 200px;"></li>
-            <li><img src="img/3.jpg" style="width: 300px; height: 200px;"></li>
+            <li><div style="width: 300px; height: 200px; text-align: center;line-height: 200px;color: red;font-size: 20px;">文字</div></li>
+            <li><iframe src="http://map.baidu.com/" style="width: 300px; height: 200px;border: none;"></iframe></li>
         </itk-slide>
     </div>
 
-    <div style="width: 600px">
-        <itk-slide id="slide2">
-            <li><img src="img/1.jpg"></li>
-            <li><img src="img/2.jpg"></li>
-            <li><img src="img/3.jpg"></li>
-            <li><img src="img/4.jpg"></li>
-            <li><img src="img/5.jpg"></li>
-            <li><img src="img/6.jpg"></li>
-            <li><img src="img/7.jpg"></li>
+    <!--多图组合轮播-->
+    <div style="width: 450px;height: 100px;margin-bottom: 50px;">
+        <itk-slide id="slide2" style="width: 450px; height: 100px;">
+            <li><img style="width: 150px; height: 100px;" data-lazy="img/1.jpg"></li>
+            <li><img style="width: 150px; height: 100px;" data-lazy="img/2.jpg"></li>
+            <li><img style="width: 150px; height: 100px;" data-lazy="img/3.jpg"></li>
+            <li><img style="width: 150px; height: 100px;" data-lazy="img/4.jpg"></li>
+            <li><img style="width: 150px; height: 100px;" data-lazy="img/5.jpg"></li>
+            <li><img style="width: 150px; height: 100px;" data-lazy="img/6.jpg"></li>
         </itk-slide>
     </div>
 
-    <div style="width: 300px; height: 200px;">
+    <!--小圆点,渐变-->
+    <div style="width: 300px; height: 200px;margin-bottom: 50px;">
         <itk-slide id="slide3" style="width: 300px; height: 200px;">
             <li><img src="img/1.jpg" style="width: 300px; height: 200px;"></li>
             <li><img src="img/2.jpg" style="width: 300px; height: 200px;"></li>
             <li><img src="img/3.jpg" style="width: 300px; height: 200px;"></li>
+            <li><img src="img/4.jpg" style="width: 300px; height: 200px;"></li>
+        </itk-slide>
+    </div>
+
+    <!--大小图像同步-->
+    <div style="width: 600px; height: 400px;">
+        <itk-slide id="slide4" style="width: 600px; height: 400px;">
+            <li><img src="img/1.jpg" style="width: 600px; height: 400px;"></li>
+            <li><img src="img/2.jpg" style="width: 600px; height: 400px;"></li>
+            <li><img src="img/3.jpg" style="width: 600px; height: 400px;"></li>
+            <li><img src="img/4.jpg" style="width: 600px; height: 400px;"></li>
+            <li><img src="img/5.jpg" style="width: 600px; height: 400px;"></li>
+        </itk-slide>
+    </div>
+    <div style="width: 600px; height: 100px;">
+        <itk-slide id="slide5" style="width: 600px; height: 100px;">
+            <li><img src="img/1.jpg" style="width: 150px; height: 100px;"></li>
+            <li><img src="img/2.jpg" style="width: 150px; height: 100px;"></li>
+            <li><img src="img/3.jpg" style="width: 150px; height: 100px;"></li>
+            <li><img src="img/4.jpg" style="width: 150px; height: 100px;"></li>
+            <li><img src="img/5.jpg" style="width: 150px; height: 100px;"></li>
         </itk-slide>
     </div>
 
@@ -61,11 +84,10 @@
 
     // 多张同时播放
     var opts2 = {
-        infinite: true,
-        slidesToShow: 2, // 同时显示轮播的数量
-        slidesToScroll: 2,
-        dots: true, // 底部小圆点
-        lazyLoad: 'ondemand', // 懒加载
+        infinite: false,// 无限循环模式
+        slidesToShow: 3, // 同时显示轮播的数量
+        slidesToScroll: 2,// 每次轮播几张图
+        lazyLoad: 'ondemand', // 懒加载, progressive（渐进加载）|ondemand（使用时按需加载）,需要在 img 标签上使用data-lazy属性,默认为ondemand
         autoplay: true, // 自动播放
     };
     riot.mount('#slide2', opts2);
@@ -74,12 +96,34 @@
     var opts3 = {
         infinite: true,
         dots: true, // 底部小圆点
-        lazyLoad: 'ondemand', // 懒加载
         autoplay: true, // 自动播放
-        fade: true,
-        cssEase: 'linear'
+        fade: true, //渐变
+        cssEase: 'linear', // CSS3 动画效果:linear,ease,ease-in,ease-out,ease-in-out,cubic-bezier(n,n,n,n),默认为:ease
+        accessibility:true, // 箭头导航,默认为:true
+        autoplaySpeed:3000, // 自动播放速度,默认为3000
+        arrows:true, // 前后翻页箭头,默认为 true
     };
     riot.mount('#slide3', opts3);
+
+    //大小图像同步,主要设置:asNavFor,让其相互指向
+    var opts4 = {
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: false,
+        fade: true,
+        asNavFor: '#slide5',
+        dots: true,
+    };
+    riot.mount('#slide4', opts4);
+    var opts5 = {
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        asNavFor: '#slide4',
+        centerMode: true,
+        focusOnSelect: true
+    };
+    riot.mount('#slide5', opts5);
+
 
 </script>
 <script src="js/js-code.js"></script>
