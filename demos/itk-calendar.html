@@ -12,6 +12,7 @@
 </head>
 <body>
 <div id="demo-html">
+
     <h3>直接挂着的日历</h3>
     <itk-calendar id="c1"></itk-calendar>
 
@@ -25,10 +26,12 @@
         <itk-calendar id="c3"></itk-calendar>
         <div>输出时间戳<span id="span1"></span></div>
     </div>
+
 </div>
 <script src="js/html-code.js"></script>
 
 <script id="demo-script">
+
     riot.mount('#c1');
     var input1 = document.getElementById('input1')
     riot.mount('#c2', {
@@ -54,6 +57,7 @@
             span.innerText = '年' + y + ' 月' + m + ' 日' + d + ';' + 'timeStamp:' + formatter('unixTimeStamp') + ' unixTimeStamp:' + formatter('timeStamp');
         }
     });
+
 </script>
 <script src="js/js-code.js"></script>
 

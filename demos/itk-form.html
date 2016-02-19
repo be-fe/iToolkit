@@ -17,6 +17,7 @@
             </p>
         </div>
         <div id="demo-html">
+
             <itk-form action="/test">
                 <input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
 
@@ -114,12 +115,14 @@
 
                 <button type="submit" class="btn btn-primary" >提交</button>
             </itk-form>
+
             <button class="btn btn-primary" onclick="removeTip()">清除提示</button>
             <button class="btn btn-primary" onclick="reload()">reload</button>
         </div>   
         <script src="js/html-code.js"></script>
         
         <script id="demo-script">
+
             var opts = {
                 data: {
                     a: 1,
@@ -172,7 +175,6 @@
                 theForm.loadData({});  //ensure your data can be reset;
                 theForm.loadData(data);
             }
-
 
         </script>
         <script src="js/js-code.js"></script>

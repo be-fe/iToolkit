@@ -17,6 +17,7 @@
             </p>
         </div>
         <div id="demo-html">
+
             <ul id="container"></ul>
             <itk-paginate></itk-paginate>
             <p>The page number is <b id="page-number"></b></p>
@@ -26,10 +27,12 @@
             	<button class="btn btn-primary" onclick="addItem(-1)">减少一条条目</button>
             	<button class="btn btn-primary" onclick="addItem(-10)">减少十条条目</button>
             </div>
+
         </div>
         <script src="js/html-code.js"></script>
 
         <script id="demo-script">
+
             utils.httpGet('./data/pagenate.json', {
                 currentPage: 1
             }, function (data) {
@@ -78,6 +81,7 @@
                 }
                 p.addCount(num);
             }
+
         </script>
         <script src="js/js-code.js"></script>
     </body>
