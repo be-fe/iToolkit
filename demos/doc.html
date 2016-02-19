@@ -11,7 +11,7 @@
                 width: 100%;
             }
             body {
-                overflow-x: hidden; 
+                overflow-x: hidden;
             }
             #nav {
                 height: 72px;
@@ -36,7 +36,7 @@
                 padding: 0;
                 height: 100%;
             }
-            
+
             .info li,
             .info li a {
                 display: inline-block;
@@ -62,27 +62,20 @@
                 display: inline-block;
             }
 
-            #main {
-                height: 100%;
-            }
             #iframe {
                 width: 100%;
                 border: none;
                 overflow: hidden;
-                height: 100%;
             }
 
-            #container {
-                overflow: scroll;
-            }
 
             #footer {
                 height: 70px;
                 line-height: 70px;
                 text-align: center;
                 border-top: 1px solid #e5e5e5;
-                position: fixed;
-                bottom: 0px;
+                /*position: fixed;*/
+                /*bottom: 0px;*/
                 width: 100%;
             }
 
@@ -117,31 +110,34 @@
                 </div>
             </div>
         </div>
-        
+
         <div id="footer">
             百度EUX版权所有  All rights reserved
         </div>
         <script>
-            function iFrameHeight() {   
-                var ifm = document.getElementById("iframe");   
-                var subWeb = document.frames ? document.frames["iframe"].document : ifm.contentDocument;   
+            function iFrameHeight() {
+                var ifm = document.getElementById("iframe");
+                var subWeb = document.frames ? document.frames["iframe"].document : ifm.contentDocument;
                 if(ifm != null && subWeb != null) {
                    ifm.height = subWeb.body.scrollHeight;
                 };
             };
 
-            function containerHeight () {
-                var container = document.getElementById("container");
-                container.style.height = window.innerHeight - 142 + 'px';
-            }
-
-            containerHeight();
+//            function containerHeight () {
+//                var container = document.getElementById("container");
+//                container.style.height = window.innerHeight - 142 + 'px';
+//            }
+//
+//            containerHeight();
 
             function goto() {
                 var hash = location.hash.replace('#', '');
                 var name = hash || 'get-start';
                 var iframe = document.getElementById('iframe');
                 iframe.src = name + '.html';
+
+                // 重新设置高度,防止高度过大过小
+                iFrameHeight();
             }
             goto();
             window.onhashchange = goto;
