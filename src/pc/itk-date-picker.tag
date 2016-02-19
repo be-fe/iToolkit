@@ -16,8 +16,8 @@
             if (!js[i].src) {
                 continue;
             }
-            if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
-                jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+            if (/itoolkit.min.js|itoolkit.js/.test(js[i].src)) {
+                jsPath = js[i].src.replace(/itoolkit.min.js|itoolkit.js/, '');
                 break;
             }
         }

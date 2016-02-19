@@ -35,14 +35,14 @@
     // 最基本用法
     var opt1 = {
         type: "standard",// 可选值为 simple, standard,full,默认为 standard
-        filebrowserImageUploadUrl: "http://localhost:8080/demos/plugins/ckeditor/_server/app.php", // 必填,服务器接受图像上传的地址,并且服务器返回值要符合示例所展示的规范.
+        filebrowserImageUploadUrl: "/demos/_server/app.php", // 必填,服务器接受图像上传的地址,并且服务器返回值要符合示例所展示的规范.
     };
     riot.mount('#editor1', opt1);
 
     // 自定义配置项
     var opt2 = {
         type: "standard",// 可选值为 simple, standard,full,默认为 standard
-        filebrowserImageUploadUrl: "http://localhost:8080/demos/plugins/ckeditor/_server/app.php", // 必填,服务器接受图像上传的地址,并且服务器返回值要符合示例所展示的规范.
+        filebrowserImageUploadUrl: "/demos/_server/app.php", // 必填,服务器接受图像上传的地址,并且服务器返回值要符合示例所展示的规范.
 
         // 这里的配置项,将直接传递给CKEDITOR.config, 请参考:http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html,以上type 和 filebrowserImageUploadUrl单独配置,不在editorConfig中
         editorConfig: {
