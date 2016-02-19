@@ -14,7 +14,7 @@
     <h2>itk-editor</h2>
     <hr>
     <p>
-        <code>itk-editor</code>组件基于CKEditor,用于快速构建富文本编辑器。可参考:http://ckeditor.com/。
+        <code>itk-editor</code>组件基于CKEditor,用于快速构建富文本编辑器。可参考:<a href="http://ckeditor.com/">http://ckeditor.com/</a>。
         <br>注意,这里的图片上传功能例子需要用到 php, 测试这个组件的时候,建议在项目根目录执行:php -S
         localhost:8080开启服务,因为默认的 doc 页面的server 无法处理PHP 代码。并且,服务端返回的代码需要符合示例的规范。
     </p>
@@ -39,8 +39,8 @@
     };
     riot.mount('#editor1', opt1);
 
+    // 自定义配置项
     var opt2 = {
-
         type: "standard",// 可选值为 simple, standard,full,默认为 standard
         filebrowserImageUploadUrl: "http://localhost:8080/demos/plugins/ckeditor/_server/app.php", // 必填,服务器接受图像上传的地址,并且服务器返回值要符合示例所展示的规范.
 
@@ -52,10 +52,10 @@
                 ['Styles', 'Format'],
                 ['Bold', 'Italic', '-', 'NumberedList', 'BulletedList', '-', 'Link', '-', 'About']
             ]
-
         }
     };
     riot.mount('#editor2', opt2);
+
 </script>
 <script src="js/js-code.js"></script>
 </body>

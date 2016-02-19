@@ -19,21 +19,17 @@
 <div id="demo-info">
     <h2>itk-slide</h2>
     <hr>
-    <code>itk-slide</code>组件是基于slick插件，用于构造各种轮播图，配置文档同slick.请参考:http://kenwheeler.github.io/slick/
+    <code>itk-slide</code>组件是基于slick插件，用于构造各种轮播图，配置文档同slick.请参考:<a href="http://kenwheeler.github.io/slick/">http://kenwheeler.github.io/slick/</a>
 </div>
 <div id="demo-html">
 
-    <div style="width: 300px; height: 200px;">
+    <div style="width: 300px; height: 200px; margin-bottom: 30px;">
         <itk-slide id="slide1" style="width: 300px; height: 200px;">
             <li><img src="img/1.jpg" style="width: 300px; height: 200px;"></li>
             <li><img src="img/2.jpg" style="width: 300px; height: 200px;"></li>
             <li><img src="img/3.jpg" style="width: 300px; height: 200px;"></li>
         </itk-slide>
     </div>
-
-    <br>
-
-    <p></p>
 
     <div style="width: 600px">
         <itk-slide id="slide2">
@@ -47,31 +43,43 @@
         </itk-slide>
     </div>
 
+    <div style="width: 300px; height: 200px;">
+        <itk-slide id="slide3" style="width: 300px; height: 200px;">
+            <li><img src="img/1.jpg" style="width: 300px; height: 200px;"></li>
+            <li><img src="img/2.jpg" style="width: 300px; height: 200px;"></li>
+            <li><img src="img/3.jpg" style="width: 300px; height: 200px;"></li>
+        </itk-slide>
+    </div>
+
 </div>
 <script src="js/html-code.js"></script>
 
 <script id="demo-script">
 
     // 默认行为
-    var opts1 = {
-        width: "300px",
-        height: "200px",
-    };
-    riot.mount('#slide1', opts1);
+    riot.mount('#slide1');
 
+    // 多张同时播放
     var opts2 = {
-        width: "600px",
-        height: "400px",
         infinite: true,
         slidesToShow: 2, // 同时显示轮播的数量
         slidesToScroll: 2,
         dots: true, // 底部小圆点
         lazyLoad: 'ondemand', // 懒加载
         autoplay: true, // 自动播放
-        // fade: true,
-        // cssEase: 'linear'
     };
     riot.mount('#slide2', opts2);
+
+    // 渐变效果
+    var opts3 = {
+        infinite: true,
+        dots: true, // 底部小圆点
+        lazyLoad: 'ondemand', // 懒加载
+        autoplay: true, // 自动播放
+        fade: true,
+        cssEase: 'linear'
+    };
+    riot.mount('#slide3', opts3);
 
 
 </script>
