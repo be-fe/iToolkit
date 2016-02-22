@@ -1814,9 +1814,10 @@ riot.tag('itk-table', '<yield>', function(opts) {
 
     
 });
-riot.tag('itk-tree-item', '<input type="checkbox" __checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-arrow { open: item.opened }" onclick="{ toggle }" if="{ item.children }"></i> <i class="tree-item-icon" if="{ item.children }"></i> <div onclick="{ leftClick }">{ item.name }</div>', function(opts) {
+riot.tag('itk-tree-item', '<input type="checkbox" __checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-{ iconType } { open: item.opened }" onclick="{ toggle }" if="{ item.children }"></i> <i class="tree-item-icon" if="{ item.children }"></i> <i class="tree-no-{ iconType }" if="{ !item.children }"></i> <div onclick="{ leftClick }">{ item.name }</div>', function(opts) {
     
     var self = this;
+    self.iconType = self.parent.rootConfig.iconType || 'arrow';
     
     
     self.selectchildren = function(item, bool) {
