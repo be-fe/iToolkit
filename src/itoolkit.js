@@ -520,6 +520,20 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
         var jsPath = '';
         var type = config.type || 'standard';
         var filebrowserImageUploadUrl = config.filebrowserImageUploadUrl;
+
+        if (config.initContent) {
+            var initContent = config.initContent;
+        }
+        if (config.editor) {
+
+            self.opts.opts || self.opts
+
+
+
+        }
+
+
+
         var editorConfig = config.editorConfig;
 
         var topConfig = {};
@@ -529,7 +543,10 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
 
 
         for (x in editorConfig) {
-            topConfig[x] = editorConfig[x];
+
+            if (x != 'image_previewText' && x != 'filebrowserImageUploadUrl') {
+                topConfig[x] = editorConfig[x];
+            }
         }
 
         if (!config.path) {
@@ -561,14 +578,18 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
                 path + type + '/ckeditor.js'
             ], function () {
 
-
-
-
-
-
-                CKEDITOR.replace(id, topConfig);
+                var editor = CKEDITOR.replace(id, topConfig);
 
                 self.update();
+
+                if (initContent) {
+                    editor.setData(initContent);
+                }
+
+
+                console.log('内部打印:');
+                console.log(config);
+
 
             });
         })

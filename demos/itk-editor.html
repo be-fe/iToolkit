@@ -39,10 +39,17 @@
     };
     riot.mount('#editor1', opt1);
 
+
     // 自定义配置项
+    var initContent = '<h1>这里是 init 的测试内容</h1>';
+    var editor ='haha';
     var opt2 = {
         type: "standard",// 可选值为 simple, standard,full,默认为 standard
         filebrowserImageUploadUrl: "/demos/_server/app.php", // 必填,服务器接受图像上传的地址,并且服务器返回值要符合示例所展示的规范.
+
+        initContent: initContent,
+
+        editor:editor,
 
         // 这里的配置项,将直接传递给CKEDITOR.config, 请参考:http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html,以上type 和 filebrowserImageUploadUrl单独配置,不在editorConfig中
         editorConfig: {
@@ -55,6 +62,10 @@
         }
     };
     riot.mount('#editor2', opt2);
+
+    setTimeout(function() {
+        console.log(opt2);
+    }, 2000);
 
 </script>
 <script src="js/js-code.js"></script>

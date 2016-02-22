@@ -9,6 +9,23 @@
         var jsPath = '';
         var type = config.type || 'standard';
         var filebrowserImageUploadUrl = config.filebrowserImageUploadUrl;
+
+
+        // 可能存在的用户并不需要这个功能的情况,注意判断
+        if (config.initContent) {
+            var initContent = config.initContent;
+        }
+        if (config.editor) {
+
+            self.opts.opts || self.opts
+
+            // console.log(self.opts.opts.editor || self.opts.opts.editor);
+
+
+        }
+
+
+
         var editorConfig = config.editorConfig;
 
         var topConfig = {};
@@ -20,7 +37,10 @@
         // 然后将editorConfig逐一拷贝到topConfig中去
 
         for (x in editorConfig) {
-            topConfig[x] = editorConfig[x];
+            // 不能是这两个配置,否则可能会覆盖
+            if (x != 'image_previewText' && x != 'filebrowserImageUploadUrl') {
+                topConfig[x] = editorConfig[x];
+            }
         }
 
         if (!config.path) {
@@ -53,15 +73,18 @@
                 path + type + '/ckeditor.js'
             ], function () {
 
-//                CKEDITOR.replace(id, {
-//                    image_previewText: '',
-//                    // 注意,这里的 url 需要可处理 php 文件并且需要和页面同域, 测试这个组件的时候,建议使用:php -S localhost:8080开启服务,因为默认的 doc 页面的server 无法处理PHP 代码.
-//                    filebrowserImageUploadUrl: filebrowserImageUploadUrl
-//                });
-
-                CKEDITOR.replace(id, topConfig);
+                var editor = CKEDITOR.replace(id, topConfig);
 
                 self.update();
+
+                if (initContent) {
+                    editor.setData(initContent);
+                }
+
+
+                console.log('内部打印:');
+                console.log(config);
+
 
             });
         })
