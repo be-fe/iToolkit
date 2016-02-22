@@ -1630,11 +1630,9 @@ riot.tag('itk-slide', ' <yield>', function(opts) {
                                 path + 'slick/slick.js',
                             ], function () {
                                 $(document).ready(function () {
-
                                     for (var i = 0; i < elArr.length; i++) {
                                         elArr[i].style.visibility = 'visible';
                                     }
-
                                     $(EL).slick(config);
                                 });
                             });
@@ -2010,6 +2008,7 @@ riot.tag('itk-tree', '<div class="tree-item-wrap" each="{ item, i in data }" ons
     
 });
 riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn" id="uploadBtn">上传</div>', function(opts) {
+
         var self = this;
         var EL = self.root;
         var config = self.opts.opts || self.opts;
@@ -2038,8 +2037,6 @@ riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn
         utils.jsLoader(sourceArr, function () {
 
             var btn = document.getElementById(self['uploadBtn'].id);
-
-            console.log(btn);
 
             var json = {};
             json.button = btn;
