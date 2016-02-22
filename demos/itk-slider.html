@@ -110,6 +110,7 @@
         slidesToScroll: 2,// 每次轮播几张图
         lazyLoad: 'ondemand', // 懒加载, progressive（渐进加载）|ondemand（使用时按需加载）,需要在 img 标签上使用data-lazy属性,默认为ondemand
         autoplay: true, // 自动播放
+
     };
     riot.mount('#slide2', opts2);
 
@@ -120,7 +121,7 @@
         autoplay: true, // 自动播放
         fade: true, //渐变
         cssEase: 'linear', // CSS3 动画效果:linear,ease,ease-in,ease-out,ease-in-out,cubic-bezier(n,n,n,n),默认为:ease
-        accessibility:true, // 箭头导航,默认为:true
+        accessibility:true, // 箭头导航,默认为:true,目前页面有多个示例,不生效
         autoplaySpeed:3000, // 自动播放速度,默认为3000
         arrows:true, // 前后翻页箭头,默认为 true
     };
@@ -136,11 +137,14 @@
         dots: true,
     };
     riot.mount('#slide4', opts4);
+
+
     var opts5 = {
         slidesToShow: 3,
         slidesToScroll: 1,
         asNavFor: '#slide4',
         centerMode: true, // 以中心显示的图像为准,突出中间图像,即每次变换的图像居中对齐,最左侧最右侧的图像有可能显示不全
+
         focusOnSelect: true
     };
     riot.mount('#slide5', opts5);
@@ -151,7 +155,7 @@
         speed: 300,
         slidesToShow: 1,
         centerMode: false,
-        variableWidth: true
+        variableWidth: true //宽度可变
     };
     riot.mount('#slide6', opts6);
 
@@ -160,7 +164,7 @@
         infinite: true,
         speed: 300,
         slidesToShow: 1,
-        adaptiveHeight: true
+        adaptiveHeight: true, // 高度自适应
     };
     riot.mount('#slide7', opts7);
 
