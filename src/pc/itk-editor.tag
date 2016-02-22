@@ -15,16 +15,6 @@
         if (config.initContent) {
             var initContent = config.initContent;
         }
-        if (config.editor) {
-
-            self.opts.opts || self.opts
-
-            // console.log(self.opts.opts.editor || self.opts.opts.editor);
-
-
-        }
-
-
 
         var editorConfig = config.editorConfig;
 
@@ -81,9 +71,13 @@
                     editor.setData(initContent);
                 }
 
-
-                console.log('内部打印:');
-                console.log(config);
+                if (self.opts) {
+                    self.opts.editor = editor;
+                    console.log(self.opts.editor);
+                } else {
+                    self.opts.opts.editor =editor;
+                    console.log(self.opts.opts.editor);
+                }
 
 
             });
