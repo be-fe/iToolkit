@@ -2389,15 +2389,11 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
         if (config.initContent) {
             var initContent = config.initContent;
         }
-        if (config.editor) {
 
-            self.opts.opts || self.opts
-
-
-
+        var initEditor;
+        if (config.initEditor) {
+            initEditor = config.initEditor;
         }
-
-
 
         var editorConfig = config.editorConfig;
 
@@ -2409,7 +2405,7 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
 
         for (x in editorConfig) {
 
-            if (x != 'image_previewText' && x != 'filebrowserImageUploadUrl') {
+            if (x != 'image_previewText' && x != 'filebrowserImageUploadUrl' && x != 'initContent' && x != 'initEditor') {
                 topConfig[x] = editorConfig[x];
             }
         }
@@ -2451,9 +2447,11 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
                     editor.setData(initContent);
                 }
 
-
-                console.log('内部打印:');
-                console.log(config);
+                if (initEditor) {
+                    (function (editor) {
+                        initEditor(editor);
+                    })(editor);
+                }
 
 
             });

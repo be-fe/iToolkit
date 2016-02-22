@@ -16,6 +16,11 @@
             var initContent = config.initContent;
         }
 
+        var initEditor;
+        if (config.initEditor) {
+            initEditor = config.initEditor;
+        }
+
         var editorConfig = config.editorConfig;
 
         var topConfig = {};
@@ -27,8 +32,8 @@
         // 然后将editorConfig逐一拷贝到topConfig中去
 
         for (x in editorConfig) {
-            // 不能是这两个配置,否则可能会覆盖
-            if (x != 'image_previewText' && x != 'filebrowserImageUploadUrl') {
+            // 不能是这四个配置,否则可能会覆盖
+            if (x != 'image_previewText' && x != 'filebrowserImageUploadUrl' && x != 'initContent' && x != 'initEditor') {
                 topConfig[x] = editorConfig[x];
             }
         }
@@ -71,12 +76,10 @@
                     editor.setData(initContent);
                 }
 
-                if (self.opts) {
-                    self.opts.editor = editor;
-                    console.log(self.opts.editor);
-                } else {
-                    self.opts.opts.editor =editor;
-                    console.log(self.opts.opts.editor);
+                if (initEditor) {
+                    (function (editor) {
+                        initEditor(editor);
+                    })(editor);
                 }
 
 
