@@ -27,8 +27,8 @@
     <div style="width: 300px; height: 200px; margin-bottom: 50px;">
         <itk-slide id="slide1" style="width: 300px; height: 200px;">
             <li><img src="img/1.jpg" style="width: 300px; height: 200px;"></li>
-            <li><div style="width: 300px; height: 200px; text-align: center;line-height: 200px;color: red;font-size: 20px;">文字</div></li>
-            <li><iframe src="http://map.baidu.com/" style="width: 300px; height: 200px;border: none;"></iframe></li>
+            <li><div style="width: 300px; height: 200px; text-align: center;line-height: 200px;color: red;font-size: 20px;">文字DIV</div></li>
+            <li><iframe src="http://image.baidu.com/search/wiseindex?tn=wiseindex" style="width: 300px; height: 200px;border: none;"></iframe></li>
         </itk-slide>
     </div>
 
@@ -74,6 +74,27 @@
         </itk-slide>
     </div>
 
+    <!--可变宽度-->
+    <div style="width: 600px; height: 100px;margin-top: 50px;">
+        <itk-slide id="slide6" style="width: 600px; height: 100px;">
+            <li><img src="img/1.jpg" style="width: 150px; height: 100px;"></li>
+            <li><img src="img/2.jpg" style="width: 120px; height: 100px;"></li>
+            <li><img src="img/3.jpg" style="width: 200px; height: 100px;"></li>
+            <li><img src="img/4.jpg" style="width: 100px; height: 100px;"></li>
+            <li><img src="img/5.jpg" style="width: 80px; height: 100px;"></li>
+        </itk-slide>
+    </div>
+
+    <!--高度自适应-->
+    <div style="width: 150px; height: 150px;margin-top: 50px;">
+        <itk-slide id="slide7">
+            <li><img src="img/1.jpg" style="width: 150px; height: 120px;"></li>
+            <li><img src="img/2.jpg" style="width: 150px; height: 80px;"></li>
+            <li><img src="img/3.jpg" style="width: 150px; height: 110px;"></li>
+            <li><img src="img/4.jpg" style="width: 150px; height: 90px;"></li>
+            <li><img src="img/5.jpg" style="width: 150px; height: 85px;"></li>
+        </itk-slide>
+    </div>
 </div>
 <script src="js/html-code.js"></script>
 
@@ -119,10 +140,30 @@
         slidesToShow: 3,
         slidesToScroll: 1,
         asNavFor: '#slide4',
-        centerMode: true,
+        centerMode: true, // 以中心显示的图像为准,突出中间图像,即每次变换的图像居中对齐,最左侧最右侧的图像有可能显示不全
         focusOnSelect: true
     };
     riot.mount('#slide5', opts5);
+
+    // 可变宽度的轮播
+    var opts6 = {
+        infinite: true,
+        speed: 300,
+        slidesToShow: 1,
+        centerMode: false,
+        variableWidth: true
+    };
+    riot.mount('#slide6', opts6);
+
+    // 高度自适应
+    var opts7 = {
+        infinite: true,
+        speed: 300,
+        slidesToShow: 1,
+        adaptiveHeight: true
+    };
+    riot.mount('#slide7', opts7);
+
 
 
 </script>
