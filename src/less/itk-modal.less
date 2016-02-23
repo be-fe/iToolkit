@@ -33,20 +33,50 @@ itk-modal {
         font-weight: bolder;
         color: #333;
         border-radius: 6px 6px 0 0;
-        background: #f0f1f6;
+        // background: #f0f1f6;
+        border-bottom: 1px solid #e5e5e5;
     }
 
     .itk-modal-footer {
-        height: 60px;
-        // padding: 10px;
-        // box-sizing:border-box; 
-        // -moz-box-sizing:border-box; /* Firefox */ 
-        // -webkit-box-sizing:border-box; 
-        text-align: center;
+        height: 54px;
+        padding: 10px 20px;
+        text-align: right;
+        border-top: 1px solid #e5e5e5;
+
+        .itk-submit-btn {
+            color: #fff;
+            background-color: #428bca;
+            border-color: #357ebd;
+        }
+
+        .itk-cancle-btn {
+            color: #333;
+            background-color: #fff;
+            border-color: #ccc;
+        }
     }
 
     .itk-modal-footer > button{
         vertical-align: middle;
+        display: inline-block;
+        padding: 6px 12px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        background-image: none;
+        border: 1px solid transparent;
+        border-radius: 4px;
     }
 
     .itk-modal-title > span {
