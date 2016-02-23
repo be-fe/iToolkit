@@ -150,15 +150,6 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
                 day: i + 1
             });
         }
-        if (dayArr.length === 28) {
-            for (var i = 0; i < 7; i++) {
-                dayArr.push({
-                    year: '',
-                    month: '',
-                    day: i + 1
-                });
-            }
-        }
         switch (dayArr.length / 7) {
             case 4:
                 for (var i = 0; i < 7; i++) {
