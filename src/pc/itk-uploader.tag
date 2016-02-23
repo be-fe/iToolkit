@@ -9,6 +9,8 @@
 
     <script>
 
+        // 本组件来源于 https://github.com/LPology/Simple-Ajax-Uploader,不明白的地方可以参考此文档.
+
         // 初始化设置
         var self = this;
         var EL = self.root;
@@ -42,8 +44,6 @@
         utils.jsLoader(sourceArr, function () {
 
             var btn = document.getElementById(self['uploadBtn'].id);
-
-            console.log(btn);
 
             // 更新设置
             var json = {};

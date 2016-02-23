@@ -14,7 +14,8 @@
     <h2>itk-uploader</h2>
     <hr>
     <p>
-        <code>itk-uploader</code>组件可以快速构建文件上传功能.
+        <code>itk-uploader</code>组件基于Simple-Ajax-Uploader,可以快速构建文件上传功能.可参考<a
+            href="https://github.com/LPology/Simple-Ajax-Uploader">https://github.com/LPology/Simple-Ajax-Uploader</a>。
         <br>注意,这里的图片上传功能例子需要用到 php, 测试这个组件的时候,建议在项目根目录执行:php -S
         localhost:8080开启服务,因为默认的 doc 页面的server 无法处理PHP 代码。
     </p>
@@ -43,17 +44,27 @@
         // 返回类型
         responseType: 'json',
 
-        startXHR: function () {
-
+        // startXHR 在 onSubmit 之后
+        startXHR: function (filename, fileSize, uploadBtn) {
+            console.log('上传已经开始:');
+            console.log(filename);
+            console.log(fileSize);
+            console.log(uploadBtn);
         },
 
-        onSubmit: function () {
-
+        onSubmit: function (filename, extension, uploadBtn, fileSize) {
+            console.log('已经提交文件:');
+            console.log(filename);
+            console.log(extension);
+            console.log(uploadBtn);
+            console.log(fileSize);
         },
 
         // 传输完成
         onComplete: function (filename, response) {
 
+            console.log('传输完成:');
+            console.log(filename);
             console.log(response);
 
             if (!response) {
@@ -73,6 +84,7 @@
         },
 
         onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
+            console.log('发生错误');
             console.log(filename);
             console.log(errorType);
             console.log(status);
@@ -80,8 +92,7 @@
             console.log(response);
             console.log(uploadBtn);
             console.log(fileSize);
-        }
-
+        },
     };
 
     riot.mount('itk-uploader', opt);

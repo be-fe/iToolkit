@@ -340,7 +340,7 @@ itk-select .itk-option-check:after {
 }
 
 itk-slide {
-  display: none;
+  visibility: hidden;
 }
 
 itk-tab ul {
