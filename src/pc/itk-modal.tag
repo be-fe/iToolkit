@@ -10,8 +10,8 @@
            <yield>
         </div>
         <div class="itk-modal-footer">
-           <button class="btn btn-default" onclick={ close }>取消</button>
-           <button class="btn btn-primary" onclick={ confirm }>确认</button>
+           <button class="itk-cancle-btn" onclick={ close }>取消</button>
+           <button class="itk-submit-btn" onclick={ confirm }>确认</button>
         </div>
     </div>
 
@@ -32,7 +32,7 @@
             foot.style.display = 'none';
         }
         var headHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
-        var footHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
+        var footHeight = parseInt(window.getComputedStyle(foot, null).height.replace('px', ''));
         if (config.height) {
             container.style.height = (self.height - footHeight - headHeight - 2) + 'px';
         }
@@ -63,7 +63,7 @@
     }
 
     self.confirm = self.root.confirm = function(e) {
-        self.root.style.display = 'none';
+        self.close();
         self.onSubmit && self.onSubmit();
     }
 

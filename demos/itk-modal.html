@@ -36,16 +36,21 @@
             var opts = {
                 title: 'Modal-Test',
                 content: '这里是内容',
-                height: 300,
+                height: 400,    //可以为'auto'，使高度自适应
                 width: 400,
-                onClose: function() {
+                hideFooter: false,     //如为true,则不展示footer
+                onClose: function() {  //关闭时的回调
                     var email = document.getElementById('email');
                     email.value = '';
                 },
 
-                onOpen: function() {
+                onOpen: function() {    //打开时的回调
                     var name = document.getElementById('name');
                     name.value = 'test';
+                },
+
+                onSubmit: function() {  //点击确认时的回调
+                    console.log('已确认');
                 }
             }
             itk.mount('itk-modal', opts);

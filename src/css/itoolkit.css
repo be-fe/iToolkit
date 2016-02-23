@@ -1,3 +1,14 @@
+/*
+ * 移除number输入框的
+ */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 
 itk-calendar {
   position: relative;
@@ -235,14 +246,44 @@ itk-modal .itk-modal-title {
   font-weight: bolder;
   color: #333;
   border-radius: 6px 6px 0 0;
-  background: #f0f1f6;
+  border-bottom: 1px solid #e5e5e5;
 }
 itk-modal .itk-modal-footer {
-  height: 60px;
-  text-align: center;
+  height: 54px;
+  padding: 10px 20px;
+  text-align: right;
+  border-top: 1px solid #e5e5e5;
+}
+itk-modal .itk-modal-footer .itk-submit-btn {
+  color: #fff;
+  background-color: #428bca;
+  border-color: #357ebd;
+}
+itk-modal .itk-modal-footer .itk-cancle-btn {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
 }
 itk-modal .itk-modal-footer > button {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
   vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
 }
 itk-modal .itk-modal-title > span {
   padding-left: 16px;
