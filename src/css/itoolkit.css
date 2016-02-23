@@ -313,6 +313,7 @@ itk-select .itk-options-container .no-result {
 }
 itk-select .empty-icon {
   padding: 0 8px;
+  display: inline-block;
 }
 itk-select .itk-option-check {
   /* 对勾*/

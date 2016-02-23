@@ -3457,7 +3457,6 @@ riot.tag('itk-select', '<yield></yield> <ul class="itk-selected-container" onmou
 
 
 riot.tag('itk-slide', ' <yield>', function(opts) {
-
             var self = this;
             var EL = self.root;
             var config = self.opts.opts || self.opts;
@@ -3475,34 +3474,31 @@ riot.tag('itk-slide', ' <yield>', function(opts) {
                     break;
                 }
             }
-            
+
             path = jsPath + 'plugins/';
 
-            if (typeof jQuery == 'undefined') {
-                (function () {
-                    utils.jsLoader([
-                        path + 'jquery/jquery-1.12.0.min.js',
-                    ], function () {
-                        utils.jsLoader([
-                            path + 'slick/slick.css',
-                            path + 'slick/slick-theme.css',
-                            path + 'slick/slick.js',
-                        ], function () {
-                            $(EL).slick(config);
-                            EL.style.visibility = 'visible';
-                        });
-                    });
-                })();
-            } else {
+            self.loadSource = function(path) {
                 utils.jsLoader([
                     path + 'slick/slick.css',
                     path + 'slick/slick-theme.css',
-                    path + 'slick/slick.js'
+                    path + 'slick/slick.js',
                 ], function () {
                     $(EL).slick(config);
                     EL.style.visibility = 'visible';
                 });
             }
+
+            if (typeof jQuery == 'undefined') {
+                utils.jsLoader([
+                    path + 'jquery/jquery-1.12.0.min.js',
+                ], function () {
+                    self.loadSource(path);
+                });
+            } else {
+                self.loadSource(path);
+            }
+
+            
         
 });
 riot.tag('itk-table', '<yield>', function(opts) {
