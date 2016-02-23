@@ -3044,7 +3044,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
     }
     
 });
-riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> </div>', function(opts) {
+riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> <div class="itk-modal-footer"> <button class="btn btn-default" onclick="{ close }">取消</button> <button class="btn btn-primary" onclick="{ confirm }">确认</button> </div> </div>', function(opts) {
 
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -3058,17 +3058,17 @@ riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; 
     self.on('mount', function() {
         var container = self.root.querySelector('.itk-modal-container');
         var head = self.root.querySelector('.itk-modal-title');
+        var foot = self.root.querySelector('.itk-modal-footer');
+        if (self.hideFooter) {
+            foot.style.display = 'none';
+        }
         var headHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
+        var footHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
         if (config.height) {
-            container.style.height = (self.height - headHeight - 2) + 'px';
+            container.style.height = (self.height - footHeight - headHeight - 2) + 'px';
         }
 
     })
-
-    this.close = function(e) {
-        self.root.style.display = 'none';
-        self.onClose && self.onClose();
-    }.bind(this);
 
     if (document.querySelector("[modal-open-target='" + self.root.id + "']")) {
         document.querySelector("[modal-open-target='" + self.root.id + "']").onclick = function() {
@@ -3082,15 +3082,20 @@ riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; 
         self.onOpen && self.onOpen();
     }
 
-    self.root.close = function() {
+    self.close = self.root.close = function() {
         self.root.style.display = 'none';
         self.onClose && self.onClose();
     }
 
-    self.root.loadData = function(newData, colName){
+    self.loadData = self.root.loadData = function(newData, colName){
         colName = colName || 'data';
         self[colName] = newData;
         self.update();
+    }
+
+    self.confirm = self.root.confirm = function(e) {
+        self.root.style.display = 'none';
+        self.onSubmit && self.onSubmit();
     }
 
 
