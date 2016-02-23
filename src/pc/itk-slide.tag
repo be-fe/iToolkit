@@ -43,9 +43,7 @@
                 });
             } else {
                 self.loadSource(path);
-            }
-
-            
+            }            
         </script>
 
 </itk-slide>

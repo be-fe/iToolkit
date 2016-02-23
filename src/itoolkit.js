@@ -1631,9 +1631,7 @@ riot.tag('itk-slide', ' <yield>', function(opts) {
                 });
             } else {
                 self.loadSource(path);
-            }
-
-            
+            }            
         
 });
 riot.tag('itk-table', '<yield>', function(opts) {
@@ -1981,16 +1979,11 @@ riot.tag('itk-tree', '<div class="tree-item-wrap" each="{ item, i in data }" ons
     
     
 });
-riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn" id="uploadBtn">上传</div>', function(opts) {
+riot.tag('itk-uploader', '<yield> <div class="btn btn-large btn-primary itk-uploader-btn" name="uploadBtn">上传</div>', function(opts) {
 
         var self = this;
         var EL = self.root;
         var config = self.opts.opts || self.opts;
-
-        var randomNumber = function (min, max) {
-            return Math.floor(min + Math.random() * (max - min));
-        };
-        self['uploadBtn'].id = randomNumber(10000, 99999);
 
         var js = document.scripts;
         var jsPath = '';
@@ -2008,25 +2001,33 @@ riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn
             path + 'SimpleAjaxUploader.min.js',
         ];
 
-        utils.jsLoader(sourceArr, function () {
+        
+        self.on('mount', function() {
+            var defaultBtn = EL.querySelector('.itk-uploader-btn');
+            if (EL.firstElementChild === defaultBtn) {
+                defaultBtn.style.display = 'inline-block';
+            }
+            else {
+                defaultBtn = EL.firstElementChild;
+            };
 
-            var btn = document.getElementById(self['uploadBtn'].id);
+            utils.jsLoader(sourceArr, function () {
 
-            var json = {};
-            json.button = btn;
+                var json = {};
+                json.button = config.btn || defaultBtn;
 
-            json.url = config.url;
-            json.name = config.name ? config.name : "";
-            json.multipart = config.multipart ? config.multipart : true;
-            json.responseType = config.responseType ? config.responseType : "";
-            json.startXHR = config.startXHR ? config.startXHR : null;
-            json.onSubmit = config.onSubmit ? config.onSubmit : null;
-            json.onComplete = config.onComplete ? config.onComplete : null;
-            json.onError = config.onError ? config.onError : null;
+                json.url = config.url;
+                json.name = config.name ? config.name : "";
+                json.multipart = config.multipart ? config.multipart : true;
+                json.responseType = config.responseType ? config.responseType : "";
+                json.startXHR = config.startXHR ? config.startXHR : null;
+                json.onSubmit = config.onSubmit ? config.onSubmit : null;
+                json.onComplete = config.onComplete ? config.onComplete : null;
+                json.onError = config.onError ? config.onError : null;
 
 
-            var uploader = new ss.SimpleUpload(json);
-        });
-
+                var uploader = new ss.SimpleUpload(json);
+            });
+        })
     
 });

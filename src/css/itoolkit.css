@@ -472,3 +472,7 @@ itk-tree .tree-item-arrow ~ ul {
 itk-tree .tree-item-arrow.open ~ ul {
   display: block;
 }
+
+.itk-uploader-btn {
+  display: none;
+}
