@@ -3475,7 +3475,7 @@ riot.tag('itk-slide', ' <yield>', function(opts) {
                     break;
                 }
             }
-  
+            
             path = jsPath + 'plugins/';
 
             if (typeof jQuery == 'undefined') {
