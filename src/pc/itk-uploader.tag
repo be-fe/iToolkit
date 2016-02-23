@@ -1,12 +1,21 @@
 <itk-uploader>
 
+
     <style>
+        itk-uploader .itk-uploader-btn {
+            background-color: #367db9;
+            border-radius: 3px;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
 
     </style>
 
-
-    <div class="btn btn-large btn-primary" name="uploadBtn" id="uploadBtn">上传</div>
-
+    <yield>
+    <div class="itk-uploader-btn" name="uploadBtn">
+        <span style="background-image: url('../src/css/imgs/upload.png'); width: 32px; height: 32px;background-size:32px 32px; display: block; float: left;"></span>
+        <span style="display: block; float: left; width: 50px; height: 32px;line-height: 32px;color: white;text-align: center;">上传</span>
+    </div>
     <script>
 
         // 本组件来源于 https://github.com/LPology/Simple-Ajax-Uploader,不明白的地方可以参考此文档.
@@ -15,14 +24,7 @@
         var self = this;
         var EL = self.root;
         var config = self.opts.opts || self.opts;
-
-        // 通过随机数,构造 btn ID, 防止重复.
-        var randomNumber = function (min, max) {
-            return Math.floor(min + Math.random() * (max - min));
-        };
-        self['uploadBtn'].id = randomNumber(10000, 99999);
-
-
+       
         // 获取脚本路径,load 组件
         var js = document.scripts;
         var jsPath = '';
@@ -41,28 +43,36 @@
         ];
 
         // 调用组件
-        utils.jsLoader(sourceArr, function () {
+        
+        self.on('mount', function() {
+            var defaultBtn = EL.querySelector('.itk-uploader-btn');
+            if (EL.firstElementChild === defaultBtn) {
+                defaultBtn.style.display = 'inline-block';
+            }
+            else {
+                defaultBtn = EL.firstElementChild;
+            };
 
-            var btn = document.getElementById(self['uploadBtn'].id);
+            utils.jsLoader(sourceArr, function () {
+                // 更新设置
+                var json = {};
+                json.button = config.btn || defaultBtn;
 
-            // 更新设置
-            var json = {};
-            json.button = btn;
-
-            // 这些选项来源于配置
-            json.url = config.url;
-            json.name = config.name ? config.name : "";
-            json.multipart = config.multipart ? config.multipart : true;
-            json.responseType = config.responseType ? config.responseType : "";
-            json.startXHR = config.startXHR ? config.startXHR : null;
-            json.onSubmit = config.onSubmit ? config.onSubmit : null;
-            json.onComplete = config.onComplete ? config.onComplete : null;
-            json.onError = config.onError ? config.onError : null;
+                // 这些选项来源于配置
+                json.url = config.url;
+                json.name = config.name ? config.name : "";
+                json.multipart = config.multipart ? config.multipart : true;
+                json.responseType = config.responseType ? config.responseType : "";
+                json.startXHR = config.startXHR ? config.startXHR : null;
+                json.onSubmit = config.onSubmit ? config.onSubmit : null;
+                json.onComplete = config.onComplete ? config.onComplete : null;
+                json.onError = config.onError ? config.onError : null;
 
 
-            var uploader = new ss.SimpleUpload(json);
-        });
-
+               var uploader = new ss.SimpleUpload(json);
+            });
+        })
     </script>
+
 
 </itk-uploader>

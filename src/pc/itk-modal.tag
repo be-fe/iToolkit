@@ -9,6 +9,10 @@
         <div class="itk-modal-container">
            <yield>
         </div>
+        <div class="itk-modal-footer">
+           <button class="btn btn-default" onclick={ close }>取消</button>
+           <button class="btn btn-primary" onclick={ confirm }>确认</button>
+        </div>
     </div>
 
     var self = this;
@@ -23,17 +27,17 @@
     self.on('mount', function() {
         var container = self.root.querySelector('.itk-modal-container');
         var head = self.root.querySelector('.itk-modal-title');
+        var foot = self.root.querySelector('.itk-modal-footer');
+        if (self.hideFooter) {
+            foot.style.display = 'none';
+        }
         var headHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
+        var footHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
         if (config.height) {
-            container.style.height = (self.height - headHeight - 2) + 'px';
+            container.style.height = (self.height - footHeight - headHeight - 2) + 'px';
         }
         //高度存在时，计算container的高度
     })
-
-    close(e) {
-        self.root.style.display = 'none';
-        self.onClose && self.onClose();
-    }
 
     if (document.querySelector("[modal-open-target='" + self.root.id + "']")) {
         document.querySelector("[modal-open-target='" + self.root.id + "']").onclick = function() {
@@ -47,15 +51,20 @@
         self.onOpen && self.onOpen();
     }
 
-    self.root.close = function() {
+    self.close = self.root.close = function() {
         self.root.style.display = 'none';
         self.onClose && self.onClose();
     }
 
-    self.root.loadData = function(newData, colName){
+    self.loadData = self.root.loadData = function(newData, colName){
         colName = colName || 'data';
         self[colName] = newData;
         self.update();
+    }
+
+    self.confirm = self.root.confirm = function(e) {
+        self.root.style.display = 'none';
+        self.onSubmit && self.onSubmit();
     }
 
     // document.querySelector("[modal-close-target='" + self.root.id + "']").onclick = function() {

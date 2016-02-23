@@ -1273,7 +1273,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
     }
     
 });
-riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> </div>', function(opts) {
+riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> <div class="itk-modal-footer"> <button class="btn btn-default" onclick="{ close }">取消</button> <button class="btn btn-primary" onclick="{ confirm }">确认</button> </div> </div>', function(opts) {
 
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -1287,17 +1287,17 @@ riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; 
     self.on('mount', function() {
         var container = self.root.querySelector('.itk-modal-container');
         var head = self.root.querySelector('.itk-modal-title');
+        var foot = self.root.querySelector('.itk-modal-footer');
+        if (self.hideFooter) {
+            foot.style.display = 'none';
+        }
         var headHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
+        var footHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
         if (config.height) {
-            container.style.height = (self.height - headHeight - 2) + 'px';
+            container.style.height = (self.height - footHeight - headHeight - 2) + 'px';
         }
 
     })
-
-    this.close = function(e) {
-        self.root.style.display = 'none';
-        self.onClose && self.onClose();
-    }.bind(this);
 
     if (document.querySelector("[modal-open-target='" + self.root.id + "']")) {
         document.querySelector("[modal-open-target='" + self.root.id + "']").onclick = function() {
@@ -1311,15 +1311,20 @@ riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; 
         self.onOpen && self.onOpen();
     }
 
-    self.root.close = function() {
+    self.close = self.root.close = function() {
         self.root.style.display = 'none';
         self.onClose && self.onClose();
     }
 
-    self.root.loadData = function(newData, colName){
+    self.loadData = self.root.loadData = function(newData, colName){
         colName = colName || 'data';
         self[colName] = newData;
         self.update();
+    }
+
+    self.confirm = self.root.confirm = function(e) {
+        self.root.style.display = 'none';
+        self.onSubmit && self.onSubmit();
     }
 
 
@@ -1725,9 +1730,7 @@ riot.tag('itk-slide', ' <yield>', function(opts) {
                 });
             } else {
                 self.loadSource(path);
-            }
-
-            
+            }            
         
 });
 riot.tag('itk-table', '<yield>', function(opts) {
@@ -2075,16 +2078,11 @@ riot.tag('itk-tree', '<div class="tree-item-wrap" each="{ item, i in data }" ons
     
     
 });
-riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn" id="uploadBtn">上传</div>', function(opts) {
+riot.tag('itk-uploader', '<yield> <div class="itk-uploader-btn" name="uploadBtn"> <span style="background-image: url(\'../src/css/imgs/upload.png\'); width: 32px; height: 32px;background-size:32px 32px; display: block; float: left;"></span> <span style="display: block; float: left; width: 50px; height: 32px;line-height: 32px;color: white;text-align: center;">上传</span> </div>', 'itk-uploader .itk-uploader-btn { background-color: #367db9; border-radius: 3px; padding-left: 5px; padding-right: 5px; }', function(opts) {
 
         var self = this;
         var EL = self.root;
         var config = self.opts.opts || self.opts;
-
-        var randomNumber = function (min, max) {
-            return Math.floor(min + Math.random() * (max - min));
-        };
-        self['uploadBtn'].id = randomNumber(10000, 99999);
 
         var js = document.scripts;
         var jsPath = '';
@@ -2102,25 +2100,33 @@ riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn
             path + 'SimpleAjaxUploader.min.js',
         ];
 
-        utils.jsLoader(sourceArr, function () {
+        
+        self.on('mount', function() {
+            var defaultBtn = EL.querySelector('.itk-uploader-btn');
+            if (EL.firstElementChild === defaultBtn) {
+                defaultBtn.style.display = 'inline-block';
+            }
+            else {
+                defaultBtn = EL.firstElementChild;
+            };
 
-            var btn = document.getElementById(self['uploadBtn'].id);
+            utils.jsLoader(sourceArr, function () {
 
-            var json = {};
-            json.button = btn;
+                var json = {};
+                json.button = config.btn || defaultBtn;
 
-            json.url = config.url;
-            json.name = config.name ? config.name : "";
-            json.multipart = config.multipart ? config.multipart : true;
-            json.responseType = config.responseType ? config.responseType : "";
-            json.startXHR = config.startXHR ? config.startXHR : null;
-            json.onSubmit = config.onSubmit ? config.onSubmit : null;
-            json.onComplete = config.onComplete ? config.onComplete : null;
-            json.onError = config.onError ? config.onError : null;
+                json.url = config.url;
+                json.name = config.name ? config.name : "";
+                json.multipart = config.multipart ? config.multipart : true;
+                json.responseType = config.responseType ? config.responseType : "";
+                json.startXHR = config.startXHR ? config.startXHR : null;
+                json.onSubmit = config.onSubmit ? config.onSubmit : null;
+                json.onComplete = config.onComplete ? config.onComplete : null;
+                json.onError = config.onError ? config.onError : null;
 
 
-            var uploader = new ss.SimpleUpload(json);
-        });
-
+               var uploader = new ss.SimpleUpload(json);
+            });
+        })
     
 });
