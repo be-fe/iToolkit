@@ -2,7 +2,7 @@ itk-calendar {
     position: relative;
     width: 254px;
     display: block;
-    border: 1px solid #95A0A6;
+    border: 1px solid #F6F6F6;
     color: #95A0A6;
     background: #fff;
     text-align: center;
@@ -10,11 +10,18 @@ itk-calendar {
             border-radius: 2px;
     -webkit-box-sizing: border-box;
             box-sizing: border-box;
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,.1);
     overflow: hidden;
+    font-size: 12px;
 
     .itk-calendar-head {
         height: 35px;
-        line-height: 35px;
+        line-height: 22px;
+        padding: 7px 0;
+        font-size: 14px;
+        background: #6881B9;
+        color: #fff;
         :after {
             width: 0;
             height: 0;
@@ -22,35 +29,48 @@ itk-calendar {
             content: "";
             clear: both;
         }
-        > div {
-            display: inline-block;
-            width: 30px;
-        }
-        .itk-calendar-month-prev,
-        .itk-calendar-year-prev {
-            float: left;
-        }
-        .itk-calendar-month-next,
-        .itk-calendar-year-next {
-            float: right;
-        }
-        .btn {
-            cursor: pointer;
-        }
-        .btn:hover {
-                background: #F9FAFA;
-            }
-
         .itk-calendar-month,
         .itk-calendar-year {
-            width: 62px;
+            width: 50%;
+            float: left;
+
+        }
+        .itk-calendar-month {
+            border-left: 1px solid #fff;
+        }
+        .itk-calendar-year {
+            cursor: pointer;
+        }
+        .itk-calendar-month-left,
+        .itk-calendar-month-right {
+            width: 14px;
+            height: 22px;
+            cursor: pointer;
+        }
+        .itk-calendar-month-left {
+            float: left;
+            margin-left: 16px;
+            background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAMAgMAAADT+0+DAAAAA3NCSVQICAjb4U/gAAAADFBMVEX////////////////1pQ5zAAAABHRSTlMA/8wRAPTqxwAAAAlwSFlzAAALEgAACxIB0t1+/AAAABd0RVh0Q3JlYXRpb24gVGltZQAyMDE2LjIuMjLBGmTjAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAACVJREFUCJljYHjBwDyFgS+GwbKA4ekBhukMIARkALlAQaAUwwsAq9oJnZOX5xYAAAAASUVORK5CYII=") no-repeat 50% 50%;
+        }
+        .itk-calendar-month-right {
+            float: right;
+            margin-right: 16px;
+            background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAANAgMAAADprMerAAAAA3NCSVQICAjb4U/gAAAADFBMVEX////////////////1pQ5zAAAABHRSTlMAEf/Mr4HcNAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABd0RVh0Q3JlYXRpb24gVGltZQAyMDE2LjIuMjLBGmTjAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAACdJREFUCJljCGFgeMvAUO3AIHeBgX0LAyOQkw0igWygCFAcKBDCAAC5rgmSTAt0gAAAAABJRU5ErkJggg==") no-repeat 50% 50%;
+        }
+        .itk-calendar-select-icon {
+            display: inline-block;
+            width: 24px;
+            height: 12px;
+            vertical-align: baseline;
+            background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAJAgMAAAB71iXHAAAAA3NCSVQICAjb4U/gAAAADFBMVEX////////////////1pQ5zAAAABHRSTlMA/xHMzAD//AAAAAlwSFlzAAALEgAACxIB0t1+/AAAABd0RVh0Q3JlYXRpb24gVGltZQAyMDE2LjIuMjLBGmTjAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAACxJREFUCJljWMDAxRDBoMoQxjCVYWpTGINuZgUDd+gDBqbrDQwM+xgYGDQYAJJ/CA1LweTOAAAAAElFTkSuQmCC") no-repeat 50% 50%;
         }
     }
     .itk-calendar-body {
+        color: #373B55;
         .itk-calendar-weeks {
             height: 36px;
             line-height: 36px;
-            background: #F9FAFA;
+            background: #F3F5F6;
             > div {
                 width: 36px;
                 display: inline-block;
@@ -58,24 +78,90 @@ itk-calendar {
         }
         .itk-calendar-day {
             display: inline-block;
-            height: 36px;
-            width: 36px;
-            line-height: 34px;
+            height: 30px;
+            width: 30px;
+            line-height: 30px;
+            margin: 3px;
             border: 1px solid #fff;
             -webkit-border-radius: 50%;
                     border-radius: 50%;
-            
-            
-        }
-        .itk-calendar-day.cursor {
             cursor: pointer;
         }
+        .itk-calendar-day.overflow {
+            margin: 0 3px;
+        }
+        .itk-calendar-day.defuse {
+            cursor: default;
+            color: #BBC5CB;
+        }
         .itk-calendar-day.today {
-            border-color: #95A0A6;
+            border-color: #6881B9;
         }
         .itk-calendar-day.selected,
+        .itk-calendar-day.selected:hover {
+            border-color: #6881B9;
+            background: #6881B9;
+            color: #fff;
+        }
         .itk-calendar-day:hover {
-            background: #F9FAFA;
+            background: #F3F5F6;
+        }
+        .itk-calendar-day.defuse:hover {
+            background: transparent;
         }
     }
+
+    .itk-calendar-years {
+        position: absolute;
+        top: 40px;
+        bottom: 5px;
+        width: 126px;
+        background: #fff;
+        border: 1px solid #F6F6F6;
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-border-radius: 2px;
+                border-radius: 2px;
+        -webkit-box-shadow: 2px 2px 5px rgba(0,0,0,.1);
+                box-shadow: 2px 2px 5px rgba(0,0,0,.1);
+
+        .itk-calendar-year-item {
+            height: 32px;
+            padding-left: 10px;
+            line-height: 32px;
+            text-align: left;
+            cursor: pointer;
+        }
+        .itk-calendar-year-item.selected {
+            background: #F6F9F9;
+        }
+    }
+}
+
+.itk-calendar-label {
+    display: inline-block;
+    width: 168px;
+    height: 32px;
+    border: 1px solid #E1E1E1;
+    margin-bottom: 5px;
+    font-weight: bold;
+    -webkit-border-radius: 2px;
+            border-radius: 2px;
+    .itk-calendar-input {
+        display: inline-block;
+        width: 134px;
+        height: 30px;
+        line-height: 30px;
+        border: 0;
+        padding: 0 0 0 8px;
+        outline: 0;
+        vertical-align: top;
+    }
+}
+.itk-calendar-calendarIcon {
+    display: inline-block;
+    width: 32px;
+    height: 30px;
+    cursor: pointer;
+    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAA3NCSVQICAjb4U/gAAAAFVBMVEX////////39//09fbo6+7R1tykrrqDRjKLAAAAB3RSTlMA////////pX+m+wAAAAlwSFlzAAALEgAACxIB0t1+/AAAABd0RVh0Q3JlYXRpb24gVGltZQAyMDE2LjIuMjLBGmTjAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAAD1JREFUCJljCEtzTEsTTEtlSEsLBSMgAwKwMUJcgMAVyBAEAREQIy0sJQ2V4WLi5IJDCqYLbg7M5DAInQoAzAUosqZOo5MAAAAASUVORK5CYII=") no-repeat 50% 50%;
 }
