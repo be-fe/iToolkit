@@ -69,7 +69,7 @@
                 json.onError = config.onError ? config.onError : null;
 
 
-               var uploader = new ss.SimpleUpload(json);
+               // var uploader = new ss.SimpleUpload(json);
             });
         })
     </script>

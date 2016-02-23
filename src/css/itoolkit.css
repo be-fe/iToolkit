@@ -570,3 +570,9 @@ itk-tree .tree-item-arrow.open ~ ul {
 .itk-uploader-btn {
   display: none;
 }
+itk-uploader .itk-uploader-btn {
+  background-color: #367db9;
+  border-radius: 3px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
