@@ -3,65 +3,49 @@
     <!--详细配置文档:http://kenwheeler.github.io/slick/-->
 
     <yield>
-
-    <script>
-
-        var self = this;
-        var EL = self.root;
-        var config = self.opts.opts || self.opts;
-        var js = document.scripts;
-        var path = '';
-        var jsPath = '';
+        <script>
+            var self = this;
+            var EL = self.root;
+            var config = self.opts.opts || self.opts;
+            var js = document.scripts;
+            var path = '';
+            var jsPath = '';
 
 
-        for (var i = 0; i < js.length; i++) {
-            if (!js[i].src) {
-                continue;
+            for (var i = 0; i < js.length; i++) {
+                if (!js[i].src) {
+                    continue;
+                }
+                if (/itoolkit.min.js|itoolkit.js/.test(js[i].src)) {
+                    jsPath = js[i].src.replace(/itoolkit.min.js|itoolkit.js/, '');
+                    break;
+                }
             }
-            if (/itoolkit.min.js|itoolkit.js/.test(js[i].src)) {
-                jsPath = js[i].src.replace(/itoolkit.min.js|itoolkit.js/, '');
-                break;
-            }
-        }
 
-        path = jsPath + 'plugins/';
+            path = jsPath + 'plugins/';
 
-        if (typeof jQuery == 'undefined') {
-            (function () {
-                utils.jsLoader([
-                    path + 'jquery/jquery-1.12.0.min.js',
-                ], function () {
-                    // $.noConflict();
-                    jQuery(document).ready(function ($) {
-                        utils.jsLoader([
-                            path + 'slick/slick.css',
-                            path + 'slick/slick-theme.css',
-                            path + 'slick/slick.js',
-                        ], function () {
-                            $(document).ready(function () {
-                                $(EL).slick(config);
-                            });
-                        });
-                    });
-                });
-            })();
-        } else {
-            jQuery(document).ready(function ($) {
+            self.loadSource = function(path) {
                 utils.jsLoader([
                     path + 'slick/slick.css',
                     path + 'slick/slick-theme.css',
-                    path + 'slick/slick.js'
+                    path + 'slick/slick.js',
                 ], function () {
-                    $(document).ready(function () {
-                        $(EL).slick(config);
-                    });
+                    $(EL).slick(config);
+                    EL.style.visibility = 'visible';
                 });
-            });
-        }
+            }
 
-        self.on('mount', function() {
-            self.root.style.display = 'block';
-        })
-    </script>
+            if (typeof jQuery == 'undefined') {
+                utils.jsLoader([
+                    path + 'jquery/jquery-1.12.0.min.js',
+                ], function () {
+                    self.loadSource(path);
+                });
+            } else {
+                self.loadSource(path);
+            }
+
+            
+        </script>
 
 </itk-slide>

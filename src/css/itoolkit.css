@@ -353,8 +353,8 @@ itk-select .itk-selected-container {
 itk-select .itk-selected-container .itk-selected-option {
   display: inline-block;
   padding: 4px 8px;
-  background: #3c8dbc;
-  border-color: #367fa9;
+  background: #45a5e5;
+  border-color: #45a5e5;
   color: #ffffff;
   border-radius: 4px;
   margin: 1px 5px 0 0;
@@ -399,7 +399,8 @@ itk-select .itk-options-container .no-result {
   padding: 6px 0;
 }
 itk-select .empty-icon {
-  padding: 0 6px;
+  padding: 0 8px;
+  display: inline-block;
 }
 itk-select .itk-option-check {
   /* 对勾*/
@@ -407,6 +408,7 @@ itk-select .itk-option-check {
   height: 16px;
   width: 16px;
   position: relative;
+  vertical-align: middle;
 }
 itk-select .itk-option-check:after {
   -webkit-transition: opacity 0.05s ease-in-out;
@@ -414,19 +416,19 @@ itk-select .itk-option-check:after {
   -webkit-transform: rotate(-45deg);
   transform: rotate(-45deg);
   position: absolute;
-  top: 33%;
-  left: 25%;
+  top: 20%;
+  left: 15%;
   display: table;
   width: 12px;
   height: 6px;
-  border: 2px solid #333333;
+  border: 2px solid #a4aeba;
   border-top: 0;
   border-right: 0;
   content: ' ';
 }
 
 itk-slide {
-  display: none;
+  visibility: hidden;
 }
 
 itk-tab ul {
@@ -458,17 +460,13 @@ itk-tree .tree-item-wrap {
   position: relative;
 }
 itk-tree .tree-item-icon {
-  /*display: inline-block;
-        height: 13px;
-        width: 20px;
-        background: url(../imgs/icons.png) no-repeat;
-        background-position: -256px -64px; */
   cursor: pointer;
 }
 itk-tree .tree-item-wrap input {
-  vertical-align: top;
+  vertical-align: middle;
   z-index: 2;
   position: relative;
+  margin: 0;
 }
 itk-tree .tree-item-name {
   display: inline-block;
@@ -510,24 +508,47 @@ itk-tree .tree-child-wrap {
   padding: 0;
   position: relative;
 }
+itk-tree .tree-item-folder,
 itk-tree .tree-item-arrow {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAWCAYAAABtwKSvAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpEQzgyQ0M2OUNGMjQxMUU1ODRBMkM4NTgwNjk3ODQzNCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpEQzgyQ0M2QUNGMjQxMUU1ODRBMkM4NTgwNjk3ODQzNCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkRDODJDQzY3Q0YyNDExRTU4NEEyQzg1ODA2OTc4NDM0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkRDODJDQzY4Q0YyNDExRTU4NEEyQzg1ODA2OTc4NDM0Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+t9sybQAAAS5JREFUeNpi/P//P8NwASxL1++hikHRgS4D7hkmhmEEYJ7xBOJnQPwfC34GlR8ynpkLxJI41EhC5YeMZ2AeqQZidiBmhNLVSPKDPtbQ80wnEP+CskF0DwH9gyrWWND4f9H4v6CxhAv8x5M8qQYIlbiwknQolWYrgViMlJj5T88QJbGuCgNiByDOAeLVA1nPrMZRgPzH5TAcABQzq6BYjJBnGEnExIJsIH6NRfwNVI5UEArEl6E03WPmFRBnYRHPhMqRAzAClJ4FwBooxsUn1SwdaHIbsLZZNjQmXpOZvED6wqHJ6xWh0oweyS0biU1qbGTj00dvzzBQkLRCiW0BPEdqf5EKXgyWPg7MMynQNpYEifqfAnEarR1JbKDAPLONHm2s0Z4mKRXPcBrQAAgwACm3T917Ygx9AAAAAElFTkSuQmCC);
+}
+itk-tree .tree-item-folder {
+  background-position: 3px 0px;
   display: inline-block;
-  margin: 5px 2px 0 0;
+  height: 24px;
+  width: 24px;
   vertical-align: top;
-  border-top: 5px solid transparent;
-  border-left: 10px solid #999999;
-  border-bottom: 5px solid transparent;
+  cursor: pointer;
+}
+itk-tree .tree-item-arrow {
+  background-position: -35px -4px;
+  display: inline-block;
+  vertical-align: middle;
+  height: 16px;
+  width: 16px;
   cursor: pointer;
   position: relative;
   z-index: 100;
 }
+itk-tree .tree-no-folder {
+  display: inline-block;
+  width: 3px;
+}
+itk-tree .tree-no-arrow {
+  display: inline-block;
+  width: 3px;
+}
 itk-tree .tree-item-arrow.open {
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 10px solid #999999;
+  background-position: -20px -5px;
+}
+itk-tree .tree-item-row {
+  display: inline-block;
+  padding: 2px 0;
 }
 itk-tree .tree-item-row > div {
   display: inline-block;
+  font-size: 16px;
+  vertical-align: middle;
 }
 itk-tree .tree-item-arrow.empty {
   border: none;

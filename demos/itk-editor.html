@@ -27,6 +27,11 @@
 
     <itk-editor id="editor2"></itk-editor>
 
+    <input type="button" id="setContent" value="设置第二个编辑器的值"
+           style="width: 180px; height: 30px;  text-align: center; margin-top: 50px;"/>
+    <input type="button" id="getContent" value="获取第二个编辑器的值"
+           style="width: 180px; height: 30px;  text-align: center; margin-top: 50px;margin-left: 20px;"/>
+
 </div>
 <script src="js/html-code.js"></script>
 
@@ -34,17 +39,43 @@
 
     // 最基本用法
     var opt1 = {
-        type: "standard",// 可选值为 simple, standard,full,默认为 standard
-        filebrowserImageUploadUrl: "/demos/_server/app.php", // 必填,服务器接受图像上传的地址,并且服务器返回值要符合示例所展示的规范.
+        type: "standard",// 非必需,可选值为 simple, standard,full,默认为 standard
+        filebrowserImageUploadUrl: "/demos/_server/app.php", // 必需,服务器接受图像上传的地址,并且服务器返回值要符合示例所展示的规范.
+        initEditor: function (editor) {
+            console.log(editor);
+        }, // 必需,编辑器对象会被放到这个函数的参数里面
     };
     riot.mount('#editor1', opt1);
 
-    // 自定义配置项
-    var opt2 = {
-        type: "standard",// 可选值为 simple, standard,full,默认为 standard
-        filebrowserImageUploadUrl: "/demos/_server/app.php", // 必填,服务器接受图像上传的地址,并且服务器返回值要符合示例所展示的规范.
 
-        // 这里的配置项,将直接传递给CKEDITOR.config, 请参考:http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html,以上type 和 filebrowserImageUploadUrl单独配置,不在editorConfig中
+    /*
+     * 自定义配置项
+     */
+    // 初始化的内容
+    var initContent = '<h1>这里是 init 的测试内容</h1>';
+    // 得到编辑器对象,然后可以再这里 getData 和 setData,其他复杂属性和方法请参考:http://ckeditor.com/
+    var initEditor2 = function (editor) {
+
+        var setContent = document.getElementById('setContent');
+        var getContent = document.getElementById('getContent');
+
+        getContent.onclick = function () {
+            alert(editor.getData());
+        };
+
+        setContent.onclick = function () {
+            editor.setData('<h2>啊啊啊啊啊啊啊啊啊</h2>');
+        };
+
+    };
+    var opt2 = {
+        type: "standard",
+        filebrowserImageUploadUrl: "/demos/_server/app.php",
+
+        initContent: initContent,// 非必需,编辑器的初始化内容
+        initEditor: initEditor2,
+
+        // 这里的配置项,将直接传递给CKEDITOR.config, 请参考:http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html,以上四个配置比较重要,需要单独配置,不在下面editorConfig中
         editorConfig: {
             toolbar: 'Basic',
             uiColor: '#9AB8F3',

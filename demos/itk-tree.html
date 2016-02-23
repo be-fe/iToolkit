@@ -16,10 +16,8 @@
                 <code>itk-tree</code>组件可以快速构建树状组织结构，支持checkbox联动，默认展开层级，点击/选择回调等高级用法。
             </p>
         </div>
-        <div id="demo-html">
-
+        <div id="demo-html" style="height: 230px;">
             <itk-tree></itk-tree>
-
         </div>
         <script src="js/html-code.js"></script>
 
@@ -27,7 +25,7 @@
 
             var treeOpts = {
                 data: [
-                    {id: 1, pid: null, title: 'root'},
+                    {id: 1, pid: null, title: '根节点'},
                     {id: 2, pid: 1, title: 'item1'},
                     {id: 3, pid: 1, title: 'item2'},
                     {id: 4, pid: 2, title: 'item3'},
@@ -43,12 +41,12 @@
                     alert('This item\'s id is: ' + item.id);
                 },
                 //左键点击的回调。第一个参数为对应的数据item, 第二个参数为对应的dom
-                folder: true, //展示folder icon,点击name进行展开操作
+                iconType: 'arrow', //icon的选择：folder或arrow
 
                 //***check支持***********
 
                 showCheck: true,   //是否展示checkbox, 默认为false;
-                linkCheck: true,   //是否递归选中, 未实现
+                linkCheck: true,   //是否递归选中
                 onCheck: function(item, target) {
                     alert(item.id + 'checked');
                 },  //checkbox选中时的回调

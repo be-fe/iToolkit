@@ -623,6 +623,16 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
         var jsPath = '';
         var type = config.type || 'standard';
         var filebrowserImageUploadUrl = config.filebrowserImageUploadUrl;
+
+        if (config.initContent) {
+            var initContent = config.initContent;
+        }
+
+        var initEditor;
+        if (config.initEditor) {
+            initEditor = config.initEditor;
+        }
+
         var editorConfig = config.editorConfig;
 
         var topConfig = {};
@@ -632,7 +642,10 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
 
 
         for (x in editorConfig) {
-            topConfig[x] = editorConfig[x];
+
+            if (x != 'image_previewText' && x != 'filebrowserImageUploadUrl' && x != 'initContent' && x != 'initEditor') {
+                topConfig[x] = editorConfig[x];
+            }
         }
 
         if (!config.path) {
@@ -664,14 +677,20 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
                 path + type + '/ckeditor.js'
             ], function () {
 
-
-
-
-
-
-                CKEDITOR.replace(id, topConfig);
+                var editor = CKEDITOR.replace(id, topConfig);
 
                 self.update();
+
+                if (initContent) {
+                    editor.setData(initContent);
+                }
+
+                if (initEditor) {
+                    (function (editor) {
+                        initEditor(editor);
+                    })(editor);
+                }
+
 
             });
         })
@@ -1676,64 +1695,49 @@ riot.tag('itk-select', '<yield></yield> <ul class="itk-selected-container" onmou
 
 
 riot.tag('itk-slide', ' <yield>', function(opts) {
+            var self = this;
+            var EL = self.root;
+            var config = self.opts.opts || self.opts;
+            var js = document.scripts;
+            var path = '';
+            var jsPath = '';
 
-        var self = this;
-        var EL = self.root;
-        var config = self.opts.opts || self.opts;
-        var js = document.scripts;
-        var path = '';
-        var jsPath = '';
 
-
-        for (var i = 0; i < js.length; i++) {
-            if (!js[i].src) {
-                continue;
+            for (var i = 0; i < js.length; i++) {
+                if (!js[i].src) {
+                    continue;
+                }
+                if (/itoolkit.min.js|itoolkit.js/.test(js[i].src)) {
+                    jsPath = js[i].src.replace(/itoolkit.min.js|itoolkit.js/, '');
+                    break;
+                }
             }
-            if (/itoolkit.min.js|itoolkit.js/.test(js[i].src)) {
-                jsPath = js[i].src.replace(/itoolkit.min.js|itoolkit.js/, '');
-                break;
-            }
-        }
 
-        path = jsPath + 'plugins/';
+            path = jsPath + 'plugins/';
 
-        if (typeof jQuery == 'undefined') {
-            (function () {
-                utils.jsLoader([
-                    path + 'jquery/jquery-1.12.0.min.js',
-                ], function () {
-
-                    jQuery(document).ready(function ($) {
-                        utils.jsLoader([
-                            path + 'slick/slick.css',
-                            path + 'slick/slick-theme.css',
-                            path + 'slick/slick.js',
-                        ], function () {
-                            $(document).ready(function () {
-                                $(EL).slick(config);
-                            });
-                        });
-                    });
-                });
-            })();
-        } else {
-            jQuery(document).ready(function ($) {
+            self.loadSource = function(path) {
                 utils.jsLoader([
                     path + 'slick/slick.css',
                     path + 'slick/slick-theme.css',
-                    path + 'slick/slick.js'
+                    path + 'slick/slick.js',
                 ], function () {
-                    $(document).ready(function () {
-                        $(EL).slick(config);
-                    });
+                    $(EL).slick(config);
+                    EL.style.visibility = 'visible';
                 });
-            });
-        }
+            }
 
-        self.on('mount', function() {
-            self.root.style.display = 'block';
-        })
-    
+            if (typeof jQuery == 'undefined') {
+                utils.jsLoader([
+                    path + 'jquery/jquery-1.12.0.min.js',
+                ], function () {
+                    self.loadSource(path);
+                });
+            } else {
+                self.loadSource(path);
+            }
+
+            
+        
 });
 riot.tag('itk-table', '<yield>', function(opts) {
         var self = this;
@@ -1917,9 +1921,10 @@ riot.tag('itk-table', '<yield>', function(opts) {
 
     
 });
-riot.tag('itk-tree-item', '<input type="checkbox" __checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-arrow { open: item.opened }" onclick="{ toggle }" if="{ item.children }"></i> <i class="tree-item-icon" if="{ item.children }"></i> <div onclick="{ leftClick }">{ item.name }</div>', function(opts) {
+riot.tag('itk-tree-item', '<input type="checkbox" __checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-{ iconType } { open: item.opened }" onclick="{ toggle }" if="{ item.children }"></i> <i class="tree-item-icon" if="{ item.children }"></i> <i class="tree-no-{ iconType }" if="{ !item.children }"></i> <div onclick="{ leftClick }">{ item.name }</div>', function(opts) {
     
     var self = this;
+    self.iconType = self.parent.rootConfig.iconType || 'arrow';
     
     
     self.selectchildren = function(item, bool) {
@@ -2080,6 +2085,7 @@ riot.tag('itk-tree', '<div class="tree-item-wrap" each="{ item, i in data }" ons
     
 });
 riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn" id="uploadBtn">上传</div>', function(opts) {
+
         var self = this;
         var EL = self.root;
         var config = self.opts.opts || self.opts;
@@ -2108,8 +2114,6 @@ riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn
         utils.jsLoader(sourceArr, function () {
 
             var btn = document.getElementById(self['uploadBtn'].id);
-
-            console.log(btn);
 
             var json = {};
             json.button = btn;

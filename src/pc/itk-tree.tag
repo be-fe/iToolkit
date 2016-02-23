@@ -1,10 +1,12 @@
 <itk-tree-item>
     <input type="checkbox" checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"/>
-    <i class="tree-item-arrow { open: item.opened }" onclick="{ toggle }" if={ item.children }></i>
+    <i class="tree-item-{ iconType } { open: item.opened }" onclick="{ toggle }" if={ item.children }></i>
     <i class="tree-item-icon" if="{ item.children }"></i>
+    <i class="tree-no-{ iconType }" if="{ !item.children }"></i>
     <div onclick="{ leftClick }">{ item.name }</div>
     
     var self = this;
+    self.iconType = self.parent.rootConfig.iconType || 'arrow';
     
     /*
     *  选中所有子元素
