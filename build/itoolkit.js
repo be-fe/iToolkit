@@ -3967,7 +3967,6 @@ riot.tag('itk-uploader', '<yield> <div class="itk-uploader-btn" name="uploadBtn"
                 path + 'SimpleAjaxUploader.min.js',
             ];
 
-
             self.on('mount', function () {
 
                 var defaultBtn = EL.querySelector('.itk-uploader-btn');
@@ -3979,13 +3978,12 @@ riot.tag('itk-uploader', '<yield> <div class="itk-uploader-btn" name="uploadBtn"
                     defaultBtn = EL.firstElementChild;
                 }// else 则是用户在配置中指定了 btn
 
-
                 utils.jsLoader(sourceArr, function () {
 
                     var json = {};
                     json.button = config.btn || defaultBtn;
 
-                    json.url = config.url;
+                    json.url = config.url ? config.url : "";
                     json.name = config.name ? config.name : "";
                     json.multipart = config.multipart ? config.multipart : true;
                     json.responseType = config.responseType ? config.responseType : "";

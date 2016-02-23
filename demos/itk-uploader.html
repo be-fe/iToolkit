@@ -56,12 +56,12 @@
         // 注意,这里的 url 需要可处理 php 文件并且需要和页面同域,
         // 测试这个组件的时候,建议使用:php -S localhost:8080开启服务
         // 因为默认的 doc 页面的server 无法处理PHP 代码.
-        url: 'http://localhost:8080/src/plugins/uploader/examples/basic_example/file_upload.php',
+        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
 
-        // post 接受的 name
+        // post 接受的 name, 后台需要用到
         name: 'uploadfile',
 
-        // 分隔
+        // 是否 multipart
         multipart: true,
 
         // 返回类型
@@ -120,7 +120,7 @@
 
     // 控件内的第一个元素将替换默认的上传按钮
     var opt2 = {
-        url: 'http://localhost:8080/src/plugins/uploader/examples/basic_example/file_upload.php',
+        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
         name: 'uploadfile',
         multipart: true,
         responseType: 'json',
@@ -138,16 +138,13 @@
             console.log(fileSize);
         },
         onComplete: function (filename, response) {
-
             console.log('传输完成:');
             console.log(filename);
             console.log(response);
-
             if (!response) {
                 alert("上传文件失败!");
                 return;
             }
-
             if (response.success === true) {
                 alert("上传文件成功!");
             } else {
@@ -158,7 +155,6 @@
                 }
             }
         },
-
         onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
             console.log('发生错误');
             console.log(filename);
@@ -173,7 +169,7 @@
 
     // 自定义默认上传按钮的文字
     var opt3 = {
-        url: 'http://localhost:8080/src/plugins/uploader/examples/basic_example/file_upload.php',
+        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
         name: 'uploadfile',
         multipart: true,
 
@@ -225,7 +221,7 @@
 
     // 指定上传触发器
     var opt4 = {
-        url: 'http://localhost:8080/src/plugins/uploader/examples/basic_example/file_upload.php',
+        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
         name: 'uploadfile',
         multipart: true,
 

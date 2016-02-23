@@ -36,7 +36,6 @@
             ];
 
             // 调用组件
-
             self.on('mount', function () {
 
                 var defaultBtn = EL.querySelector('.itk-uploader-btn');
@@ -49,7 +48,6 @@
                     defaultBtn = EL.firstElementChild;
                 }// else 则是用户在配置中指定了 btn
 
-
                 utils.jsLoader(sourceArr, function () {
 
                     // 更新设置
@@ -57,7 +55,7 @@
                     json.button = config.btn || defaultBtn;
 
                     // 这些选项来源于配置
-                    json.url = config.url;
+                    json.url = config.url ? config.url : "";
                     json.name = config.name ? config.name : "";
                     json.multipart = config.multipart ? config.multipart : true;
                     json.responseType = config.responseType ? config.responseType : "";
@@ -70,6 +68,5 @@
                 });
             })
         </script>
-
 
 </itk-uploader>
