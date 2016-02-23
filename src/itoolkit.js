@@ -2078,53 +2078,59 @@ riot.tag('itk-tree', '<div class="tree-item-wrap" each="{ item, i in data }" ons
     
     
 });
-riot.tag('itk-uploader', '<yield> <div class="itk-uploader-btn" name="uploadBtn"> <span style="background-image: url(\'../src/css/imgs/upload.png\'); width: 32px; height: 32px;background-size:32px 32px; display: block; float: left;"></span> <span style="display: block; float: left; width: 50px; height: 32px;line-height: 32px;color: white;text-align: center;">上传</span> </div>', function(opts) {
+riot.tag('itk-uploader', '<yield> <div class="itk-uploader-btn" name="uploadBtn"> <span class="icon"></span> <span class="text">{ text }</span> </div>', function(opts) {
 
-        var self = this;
-        var EL = self.root;
-        var config = self.opts.opts || self.opts;
+            var self = this;
+            var EL = self.root;
+            var config = self.opts.opts || self.opts;
 
-        var js = document.scripts;
-        var jsPath = '';
-        for (var i = 0; i < js.length; i++) {
-            if (!js[i].src) {
-                continue;
+            self.text = config.buttonText || '上传文件';
+
+            var js = document.scripts;
+            var jsPath = '';
+            for (var i = 0; i < js.length; i++) {
+                if (!js[i].src) {
+                    continue;
+                }
+                if (/itoolkit.min.js|itoolkit.js/.test(js[i].src)) {
+                    jsPath = js[i].src.replace(/itoolkit.min.js|itoolkit.js/, '');
+                    break;
+                }
             }
-            if (/itoolkit.min.js|itoolkit.js/.test(js[i].src)) {
-                jsPath = js[i].src.replace(/itoolkit.min.js|itoolkit.js/, '');
-                break;
-            }
-        }
-        path = jsPath + 'plugins/uploader/';
-        var sourceArr = [
-            path + 'SimpleAjaxUploader.min.js',
-        ];
+            path = jsPath + 'plugins/uploader/';
+            var sourceArr = [
+                path + 'SimpleAjaxUploader.min.js',
+            ];
 
+
+            self.on('mount', function () {
+
+                var defaultBtn = EL.querySelector('.itk-uploader-btn');
+
+                if (EL.firstElementChild === defaultBtn && !config.btn) { // 默认按钮
+                    defaultBtn.style.display = 'inline-block';
+                }
+                else if (EL.firstElementChild !== defaultBtn && !config.btn) { // 控件内第一个元素作为按钮
+                    defaultBtn = EL.firstElementChild;
+                }// else 则是用户在配置中指定了 btn
+
+
+                utils.jsLoader(sourceArr, function () {
+
+                    var json = {};
+                    json.button = config.btn || defaultBtn;
+
+                    json.url = config.url;
+                    json.name = config.name ? config.name : "";
+                    json.multipart = config.multipart ? config.multipart : true;
+                    json.responseType = config.responseType ? config.responseType : "";
+                    json.startXHR = config.startXHR ? config.startXHR : null;
+                    json.onSubmit = config.onSubmit ? config.onSubmit : null;
+                    json.onComplete = config.onComplete ? config.onComplete : null;
+                    json.onError = config.onError ? config.onError : null;
+
+                    var uploader = new ss.SimpleUpload(json);
+                });
+            })
         
-        self.on('mount', function() {
-            var defaultBtn = EL.querySelector('.itk-uploader-btn');
-            if (EL.firstElementChild === defaultBtn) {
-                defaultBtn.style.display = 'inline-block';
-            }
-            else {
-                defaultBtn = EL.firstElementChild;
-            };
-
-            utils.jsLoader(sourceArr, function () {
-
-                var json = {};
-                json.button = config.btn || defaultBtn;
-
-                json.url = config.url;
-                json.name = config.name ? config.name : "";
-                json.multipart = config.multipart ? config.multipart : true;
-                json.responseType = config.responseType ? config.responseType : "";
-                json.startXHR = config.startXHR ? config.startXHR : null;
-                json.onSubmit = config.onSubmit ? config.onSubmit : null;
-                json.onComplete = config.onComplete ? config.onComplete : null;
-                json.onError = config.onError ? config.onError : null;
-
-            });
-        })
-    
 });

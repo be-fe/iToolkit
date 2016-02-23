@@ -576,3 +576,23 @@ itk-uploader .itk-uploader-btn {
   padding-left: 5px;
   padding-right: 5px;
 }
+itk-uploader .icon {
+  background-image: url('../src/css/imgs/upload.png');
+  width: 32px;
+  height: 32px;
+  background-size: 32px 32px;
+  display: block;
+  float: left;
+}
+itk-uploader .text {
+  display: block;
+  float: left;
+  width: auto;
+  min-width: 50px;
+  height: 32px;
+  line-height: 32px;
+  color: white;
+  text-align: center;
+  padding-left: 3px;
+  padding-right: 3px;
+}
