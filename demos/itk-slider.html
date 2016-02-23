@@ -22,33 +22,38 @@
 <div id="demo-html">
 
     <!--图片,文字,iframe 组合轮播-->
-    <div style="width: 300px; height: 200px; margin-bottom: 50px;">
-        <itk-slide id="slide1" style="width: 300px; height: 200px;">
-            <li><img src="img/1.jpg" style="width: 300px; height: 200px;"></li>
-            <li><div style="width: 300px; height: 200px; text-align: center;line-height: 200px;color: red;font-size: 20px;">文字DIV</div></li>
-            <li><iframe src="http://image.baidu.com/search/wiseindex?tn=wiseindex" style="width: 300px; height: 200px;border: none;"></iframe></li>
+    <div style="width: 600px; height: 400px; margin-bottom: 50px;">
+        <itk-slide id="slide1" style="width: 600px; height: 400px;">
+            <li><img src="img/1.jpg" style="width: 600px; height: 400px;"></li>
+            <li><div style="width: 600px; height: 400px; text-align: center;line-height: 400px;color: red;font-size: 20px;">文字DIV</div></li>
+            <li><iframe src="http://image.baidu.com/search/wiseindex?tn=wiseindex" style="width: 600px; height: 400px;border: none;"></iframe></li>
         </itk-slide>
     </div>
 
     <!--多图组合轮播-->
     <div style="width: 450px;height: 100px;margin-bottom: 50px;">
-        <itk-slide id="slide2" style="width: 450px; height: 100px;">
+        <itk-slide id="slide2" style="width: 600px; height: 100px;">
             <li><img style="width: 150px; height: 100px;" data-lazy="img/1.jpg"></li>
             <li><img style="width: 150px; height: 100px;" data-lazy="img/2.jpg"></li>
             <li><img style="width: 150px; height: 100px;" data-lazy="img/3.jpg"></li>
             <li><img style="width: 150px; height: 100px;" data-lazy="img/4.jpg"></li>
             <li><img style="width: 150px; height: 100px;" data-lazy="img/5.jpg"></li>
             <li><img style="width: 150px; height: 100px;" data-lazy="img/6.jpg"></li>
+            <li><img style="width: 150px; height: 100px;" data-lazy="img/7.jpg"></li>
+            <li><img style="width: 150px; height: 100px;" data-lazy="img/8.jpg"></li>
         </itk-slide>
     </div>
 
     <!--小圆点,渐变-->
-    <div style="width: 300px; height: 200px;margin-bottom: 50px;">
-        <itk-slide id="slide3" style="width: 300px; height: 200px;">
-            <li><img src="img/1.jpg" style="width: 300px; height: 200px;"></li>
-            <li><img src="img/2.jpg" style="width: 300px; height: 200px;"></li>
-            <li><img src="img/3.jpg" style="width: 300px; height: 200px;"></li>
-            <li><img src="img/4.jpg" style="width: 300px; height: 200px;"></li>
+    <div style="width: 600px; height: 400px;margin-bottom: 50px;">
+        <itk-slide id="slide3" style="width: 600px; height: 400px;">
+            <li><img src="img/1.jpg" style="width: 600px; height: 400px;"></li>
+            <li><img src="img/2.jpg" style="width: 600px; height: 400px;"></li>
+            <li><img src="img/3.jpg" style="width: 600px; height: 400px;"></li>
+            <li><img src="img/4.jpg" style="width: 600px; height: 400px;"></li>
+            <li><img src="img/5.jpg" style="width: 600px; height: 400px;"></li>
+            <li><img src="img/6.jpg" style="width: 600px; height: 400px;"></li>
+            <li><img src="img/7.jpg" style="width: 600px; height: 400px;"></li>
         </itk-slide>
     </div>
 
@@ -72,25 +77,15 @@
         </itk-slide>
     </div>
 
-    <!--可变宽度-->
-    <div style="width: 600px; height: 100px;margin-top: 50px;">
-        <itk-slide id="slide6" style="width: 600px; height: 100px;">
-            <li><img src="img/1.jpg" style="width: 150px; height: 100px;"></li>
-            <li><img src="img/2.jpg" style="width: 120px; height: 100px;"></li>
-            <li><img src="img/3.jpg" style="width: 200px; height: 100px;"></li>
-            <li><img src="img/4.jpg" style="width: 100px; height: 100px;"></li>
-            <li><img src="img/5.jpg" style="width: 80px; height: 100px;"></li>
-        </itk-slide>
-    </div>
 
     <!--高度自适应-->
-    <div style="width: 150px; height: 150px;margin-top: 50px;">
-        <itk-slide id="slide7">
-            <li><img src="img/1.jpg" style="width: 150px; height: 120px;"></li>
-            <li><img src="img/2.jpg" style="width: 150px; height: 80px;"></li>
-            <li><img src="img/3.jpg" style="width: 150px; height: 110px;"></li>
-            <li><img src="img/4.jpg" style="width: 150px; height: 90px;"></li>
-            <li><img src="img/5.jpg" style="width: 150px; height: 85px;"></li>
+    <div style="width: 600px; height: 500px;margin-top: 50px;">
+        <itk-slide id="slide6">
+            <li><img src="img/1.jpg" style="width: 600px; height: 480px;"></li>
+            <li><img src="img/2.jpg" style="width: 600px; height: 320px;"></li>
+            <li><img src="img/3.jpg" style="width: 600px; height: 440px;"></li>
+            <li><img src="img/4.jpg" style="width: 600px; height: 360px;"></li>
+            <li><img src="img/5.jpg" style="width: 600px; height: 340px;"></li>
         </itk-slide>
     </div>
 </div>
@@ -103,9 +98,9 @@
 
     // 多张同时播放
     var opts2 = {
-        infinite: false,// 无限循环模式
-        slidesToShow: 3, // 同时显示轮播的数量
-        slidesToScroll: 2,// 每次轮播几张图
+        infinite: true,// 无限循环模式
+        slidesToShow: 4, // 同时显示轮播的数量
+        slidesToScroll: 3,// 每次轮播几张图
         lazyLoad: 'ondemand', // 懒加载, progressive（渐进加载）|ondemand（使用时按需加载）,需要在 img 标签上使用data-lazy属性,默认为ondemand
         autoplay: true, // 自动播放
 
@@ -136,7 +131,6 @@
     };
     riot.mount('#slide4', opts4);
 
-
     var opts5 = {
         slidesToShow: 3,
         slidesToScroll: 1,
@@ -147,24 +141,15 @@
     };
     riot.mount('#slide5', opts5);
 
-    // 可变宽度的轮播
-    var opts6 = {
-        infinite: true,
-        speed: 300, // 速度
-        slidesToShow: 1,
-        centerMode: false,
-        variableWidth: true //宽度可变
-    };
-    riot.mount('#slide6', opts6);
 
     // 高度自适应
-    var opts7 = {
+    var opts6 = {
         infinite: true,
         speed: 300,
         slidesToShow: 1,
         adaptiveHeight: true, // 高度自适应
     };
-    riot.mount('#slide7', opts7);
+    riot.mount('#slide6', opts6);
 
 
 

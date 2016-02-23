@@ -1,6 +1,21 @@
 <itk-uploader>
+
+
+    <style>
+        itk-uploader .itk-uploader-btn {
+            background-color: #367db9;
+            border-radius: 3px;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+    </style>
+
     <yield>
-    <div class="btn btn-large btn-primary itk-uploader-btn" name="uploadBtn">上传</div>
+    <div class="itk-uploader-btn" name="uploadBtn">
+        <span style="background-image: url('../src/css/imgs/upload.png'); width: 32px; height: 32px;background-size:32px 32px; display: block; float: left;"></span>
+        <span style="display: block; float: left; width: 50px; height: 32px;line-height: 32px;color: white;text-align: center;">上传</span>
+    </div>
     <script>
 
         // 本组件来源于 https://github.com/LPology/Simple-Ajax-Uploader,不明白的地方可以参考此文档.
@@ -54,9 +69,10 @@
                 json.onError = config.onError ? config.onError : null;
 
 
-                var uploader = new ss.SimpleUpload(json);
+               // var uploader = new ss.SimpleUpload(json);
             });
         })
     </script>
+
 
 </itk-uploader>

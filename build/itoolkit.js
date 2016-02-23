@@ -3943,7 +3943,7 @@ riot.tag('itk-tree', '<div class="tree-item-wrap" each="{ item, i in data }" ons
     
     
 });
-riot.tag('itk-uploader', '<yield> <div class="btn btn-large btn-primary itk-uploader-btn" name="uploadBtn">上传</div>', function(opts) {
+riot.tag('itk-uploader', '<yield> <div class="itk-uploader-btn" name="uploadBtn"> <span style="background-image: url(\'../src/css/imgs/upload.png\'); width: 32px; height: 32px;background-size:32px 32px; display: block; float: left;"></span> <span style="display: block; float: left; width: 50px; height: 32px;line-height: 32px;color: white;text-align: center;">上传</span> </div>', 'itk-uploader .itk-uploader-btn { background-color: #367db9; border-radius: 3px; padding-left: 5px; padding-right: 5px; }', function(opts) {
 
         var self = this;
         var EL = self.root;
@@ -3989,8 +3989,6 @@ riot.tag('itk-uploader', '<yield> <div class="btn btn-large btn-primary itk-uplo
                 json.onComplete = config.onComplete ? config.onComplete : null;
                 json.onError = config.onError ? config.onError : null;
 
-
-                var uploader = new ss.SimpleUpload(json);
             });
         })
     
