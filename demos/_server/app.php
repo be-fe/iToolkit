@@ -19,7 +19,7 @@ if ($_FILES["upload"]["error"] > 0) {
 
     // 移动文件到 upload 文件夹
     move_uploaded_file($_FILES["upload"]["tmp_name"], "upload/" . $_FILES["upload"]["name"]);
-    $path = "plugins/ckeditor/_server/" . "upload/" . $_FILES["upload"]["name"];
+    $path = "/demos/_server/" . "upload/" . $_FILES["upload"]["name"];
 
 }
 

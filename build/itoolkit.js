@@ -2480,8 +2480,9 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
         var type = config.type || 'standard';
         var filebrowserImageUploadUrl = config.filebrowserImageUploadUrl;
 
+        var initContent;
         if (config.initContent) {
-            var initContent = config.initContent;
+            initContent = config.initContent;
         }
 
         var initEditor;
@@ -2489,19 +2490,22 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
             initEditor = config.initEditor;
         }
 
-        var editorConfig = config.editorConfig;
-
         var topConfig = {};
 
         topConfig.image_previewText = '';
         topConfig.filebrowserImageUploadUrl = filebrowserImageUploadUrl;
 
+        if (config.editorConfig) {
 
-        for (x in editorConfig) {
+            var editorConfig = config.editorConfig;
 
-            if (x != 'image_previewText' && x != 'filebrowserImageUploadUrl' && x != 'initContent' && x != 'initEditor') {
-                topConfig[x] = editorConfig[x];
+            for (x in editorConfig) {
+
+                if (x != 'image_previewText' && x != 'filebrowserImageUploadUrl' && x != 'initContent' && x != 'initEditor') {
+                    topConfig[x] = editorConfig[x];
+                }
             }
+
         }
 
         if (!config.path) {
@@ -2522,6 +2526,8 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
 
         self.on('mount', function () {
 
+            EL.style.visibility = 'hidden';
+
             var textarea = EL.getElementsByTagName('textarea')[0];
 
             var id = EL.getAttribute('id');
@@ -2535,6 +2541,8 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
 
                 var editor = CKEDITOR.replace(id, topConfig);
 
+                EL.style.visibility = 'visible';
+
                 self.update();
 
                 if (initContent) {
@@ -2542,15 +2550,11 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
                 }
 
                 if (initEditor) {
-                    (function (editor) {
-                        initEditor(editor);
-                    })(editor);
+                    initEditor(editor);
                 }
-
 
             });
         })
-
 
     
 });

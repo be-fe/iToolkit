@@ -10,10 +10,10 @@
         var type = config.type || 'standard';
         var filebrowserImageUploadUrl = config.filebrowserImageUploadUrl;
 
-
         // 可能存在的用户并不需要这个功能的情况,注意判断
+        var initContent;
         if (config.initContent) {
-            var initContent = config.initContent;
+            initContent = config.initContent;
         }
 
         var initEditor;
@@ -21,21 +21,24 @@
             initEditor = config.initEditor;
         }
 
-        var editorConfig = config.editorConfig;
-
         var topConfig = {};
 
         // 先将两个必须配置写进去
         topConfig.image_previewText = '';
         topConfig.filebrowserImageUploadUrl = filebrowserImageUploadUrl;
 
-        // 然后将editorConfig逐一拷贝到topConfig中去
+        if (config.editorConfig) {
 
-        for (x in editorConfig) {
-            // 不能是这四个配置,否则可能会覆盖
-            if (x != 'image_previewText' && x != 'filebrowserImageUploadUrl' && x != 'initContent' && x != 'initEditor') {
-                topConfig[x] = editorConfig[x];
+            var editorConfig = config.editorConfig;
+
+            // 然后将editorConfig逐一拷贝到topConfig中去
+            for (x in editorConfig) {
+                // 不能是这四个配置,否则可能会覆盖
+                if (x != 'image_previewText' && x != 'filebrowserImageUploadUrl' && x != 'initContent' && x != 'initEditor') {
+                    topConfig[x] = editorConfig[x];
+                }
             }
+
         }
 
         if (!config.path) {
@@ -56,9 +59,10 @@
 
         self.on('mount', function () {
 
+            EL.style.visibility = 'hidden';
+
             var textarea = EL.getElementsByTagName('textarea')[0];
 
-            // 如果没有写 id 呢?这里要随机生成,name 也是这个道理. 哦,id 是必须的,不然无法挂载,那 name 呢,去掉也没有关系,那么哪里使用了?
             var id = EL.getAttribute('id');
             // textarea.setAttribute('name', EL.getAttribute('name'));
             textarea.setAttribute('id', EL.getAttribute('id'));
@@ -70,6 +74,8 @@
 
                 var editor = CKEDITOR.replace(id, topConfig);
 
+                EL.style.visibility = 'visible';
+
                 self.update();
 
                 if (initContent) {
@@ -77,15 +83,11 @@
                 }
 
                 if (initEditor) {
-                    (function (editor) {
-                        initEditor(editor);
-                    })(editor);
+                    initEditor(editor);
                 }
-
 
             });
         })
-
 
     </script>
 </itk-editor>

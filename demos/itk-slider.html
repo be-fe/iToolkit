@@ -124,7 +124,7 @@
 <div id="demo-info">
     <h2>itk-slide</h2>
     <hr>
-    <code>itk-slide</code>组件是基于slick插件，用于构造各种轮播图。可参考:<a href="http://kenwheeler.github.io/slick/">http://kenwheeler.github.io/slick/</a>
+    <code>itk-slide</code>组件是基于slick插件，用于快速构造各种轮播图。可参考:<a href="http://kenwheeler.github.io/slick/">http://kenwheeler.github.io/slick/</a>
 </div>
 <div id="demo-html">
 
@@ -195,6 +195,7 @@
             <li><img src="img/5.jpg" style="width: 600px; height: 340px;"></li>
         </itk-slide>
     </div>
+
 </div>
 <script src="js/html-code.js"></script>
 
@@ -210,7 +211,6 @@
         slidesToScroll: 3,// 每次轮播几张图
         lazyLoad: 'ondemand', // 懒加载, progressive（渐进加载）|ondemand（使用时按需加载）,需要在 img 标签上使用data-lazy属性,默认为ondemand
         autoplay: true, // 自动播放
-
     };
     riot.mount('#slide2', opts2);
 
@@ -243,7 +243,6 @@
         slidesToScroll: 1,
         asNavFor: '#slide4',
         centerMode: true, // 以中心显示的图像为准,突出中间图像,即每次变换的图像居中对齐,最左侧最右侧的图像有可能显示不全
-
         focusOnSelect: true
     };
     riot.mount('#slide5', opts5);
