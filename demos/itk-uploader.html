@@ -22,25 +22,25 @@
 </div>
 <div id="demo-html">
 
-    <!--默认的上传按钮-->
+    <h4>默认样式</h4>
     <itk-uploader id="uploader1"></itk-uploader>
 
     <hr/>
 
-    <!--控件内的第一个元素将替换默认的上传按钮-->
+    <h4>自定义上传按钮</h4>
     <itk-uploader id="uploader2">
         <button class="btn btn-default">上传文件</button>
     </itk-uploader>
 
     <hr/>
 
-    <!--自定义默认上传按钮的文字-->
+    <h4>修改默认文字</h4>
     <itk-uploader id="uploader3">
     </itk-uploader>
 
     <hr/>
 
-    <!--指定上传触发器-->
+    <h4>通过配置选择上传按钮</h4>
     <itk-uploader id="uploader4">
     </itk-uploader>
     <button id="my-upload-btn">我是指定的上传按钮</button>
@@ -50,46 +50,22 @@
 
 <script id="demo-script">
 
-    // 默认的上传按钮
+    // 常用配置项
     var opt1 = {
-
-        // 注意,这里的 url 需要可处理 php 文件并且需要和页面同域,
-        // 测试这个组件的时候,建议使用:php -S localhost:8080开启服务
-        // 因为默认的 doc 页面的server 无法处理PHP 代码.
         url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
-
-        // post 接受的 name, 后台需要用到
-        name: 'uploadfile',
-
-        // 是否 multipart
+        name: 'uploadfile',  // post 接受的 name, 后台需要用到
         multipart: true,
-
-        // 返回类型
         responseType: 'json',
-
         // startXHR 在 onSubmit 之后
         startXHR: function (filename, fileSize, uploadBtn) {
             console.log('上传已经开始:');
-            console.log(filename);
-            console.log(fileSize);
-            console.log(uploadBtn);
         },
-
         onSubmit: function (filename, extension, uploadBtn, fileSize) {
             console.log('已经提交文件:');
-            console.log(filename);
-            console.log(extension);
-            console.log(uploadBtn);
-            console.log(fileSize);
         },
-
-        // 传输完成
+        
         onComplete: function (filename, response) {
-
-            console.log('传输完成:');
-            console.log(filename);
-            console.log(response);
-
+            // 传输完成的回调
             if (!response) {
                 alert("上传文件失败!");
                 return;
@@ -106,179 +82,30 @@
             }
         },
 
-        onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
+        onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize){
             console.log('发生错误');
-            console.log(filename);
-            console.log(errorType);
-            console.log(status);
-            console.log(statusText);
-            console.log(response);
-            console.log(uploadBtn);
-            console.log(fileSize);
-        },
-    };
-
-    // 控件内的第一个元素将替换默认的上传按钮
-    var opt2 = {
-        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
-        name: 'uploadfile',
-        multipart: true,
-        responseType: 'json',
-        startXHR: function (filename, fileSize, uploadBtn) {
-            console.log('上传已经开始:');
-            console.log(filename);
-            console.log(fileSize);
-            console.log(uploadBtn);
-        },
-        onSubmit: function (filename, extension, uploadBtn, fileSize) {
-            console.log('已经提交文件:');
-            console.log(filename);
-            console.log(extension);
-            console.log(uploadBtn);
-            console.log(fileSize);
-        },
-        onComplete: function (filename, response) {
-            console.log('传输完成:');
-            console.log(filename);
-            console.log(response);
-            if (!response) {
-                alert("上传文件失败!");
-                return;
-            }
-            if (response.success === true) {
-                alert("上传文件成功!");
-            } else {
-                if (response.msg) {
-                    alert(response.msg);
-                } else {
-                    alert("发生未知错误!");
-                }
-            }
-        },
-        onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
-            console.log('发生错误');
-            console.log(filename);
-            console.log(errorType);
-            console.log(status);
-            console.log(statusText);
-            console.log(response);
-            console.log(uploadBtn);
-            console.log(fileSize);
         },
     };
 
     // 自定义默认上传按钮的文字
+    var opt2 = {
+        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
+        name: 'uploadfile',
+        buttonText: '上传图片',// 默认为'上传文件',用户可以自定义上传按钮的文字
+    };
+
+    // 配置指定上传按钮
     var opt3 = {
         url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
         name: 'uploadfile',
-        multipart: true,
-
-        buttonText: '上传图片',// 默认为'上传文件',用户可以自定义上传按钮的文字,若用户需要自定义上传出发控件,这里可以不填写.
-
-        responseType: 'json',
-        startXHR: function (filename, fileSize, uploadBtn) {
-            console.log('上传已经开始:');
-            console.log(filename);
-            console.log(fileSize);
-            console.log(uploadBtn);
-        },
-        onSubmit: function (filename, extension, uploadBtn, fileSize) {
-            console.log('已经提交文件:');
-            console.log(filename);
-            console.log(extension);
-            console.log(uploadBtn);
-            console.log(fileSize);
-        },
-        onComplete: function (filename, response) {
-            console.log('传输完成:');
-            console.log(filename);
-            console.log(response);
-            if (!response) {
-                alert("上传文件失败!");
-                return;
-            }
-            if (response.success === true) {
-                alert("上传文件成功!");
-            } else {
-                if (response.msg) {
-                    alert(response.msg);
-                } else {
-                    alert("发生未知错误!");
-                }
-            }
-        },
-        onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
-            console.log('发生错误');
-            console.log(filename);
-            console.log(errorType);
-            console.log(status);
-            console.log(statusText);
-            console.log(response);
-            console.log(uploadBtn);
-            console.log(fileSize);
-        },
-    };
-
-    // 指定上传触发器
-    var opt4 = {
-        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
-        name: 'uploadfile',
-        multipart: true,
-
         btn: '#my-upload-btn',// 用户指定某个元素作为上传触发器
-
-        responseType: 'json',
-        startXHR: function (filename, fileSize, uploadBtn) {
-            console.log('上传已经开始:');
-            console.log(filename);
-            console.log(fileSize);
-            console.log(uploadBtn);
-        },
-        onSubmit: function (filename, extension, uploadBtn, fileSize) {
-            console.log('已经提交文件:');
-            console.log(filename);
-            console.log(extension);
-            console.log(uploadBtn);
-            console.log(fileSize);
-        },
-        onComplete: function (filename, response) {
-            console.log('传输完成:');
-            console.log(filename);
-            console.log(response);
-            if (!response) {
-                alert("上传文件失败!");
-                return;
-            }
-            if (response.success === true) {
-                alert("上传文件成功!");
-            } else {
-                if (response.msg) {
-                    alert(response.msg);
-                } else {
-                    alert("发生未知错误!");
-                }
-            }
-        },
-        onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
-            console.log('发生错误');
-            console.log(filename);
-            console.log(errorType);
-            console.log(status);
-            console.log(statusText);
-            console.log(response);
-            console.log(uploadBtn);
-            console.log(fileSize);
-        },
+        
     };
-
 
     riot.mount('#uploader1', opt1);
-
-    riot.mount('#uploader2', opt2);
-
-    riot.mount('#uploader3', opt3);
-
-    riot.mount('#uploader4', opt4);
+    riot.mount('#uploader2', opt1);
+    riot.mount('#uploader3', opt2);
+    riot.mount('#uploader4', opt3);
 
 </script>
 
