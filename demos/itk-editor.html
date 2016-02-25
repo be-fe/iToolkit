@@ -21,12 +21,13 @@
 <div id="demo-html">
 
     <h3>最基本用法</h3>
-    <itk-editor id="editor1"></itk-editor>
-
+        <itk-editor id="editor1"></itk-editor>
     <hr>
 
     <h3>自定义配置项</h3>
-    <itk-editor id="editor2"></itk-editor>
+    <div style="width: 600px; height:400px;">
+        <itk-editor id="editor2"></itk-editor>
+    </div>
 
     <input type="button" id="setContent" value="设置第二个编辑器的值" style="margin-top: 20px;" class="btn btn-primary"/>
     <input type="button" id="getContent" value="获取第二个编辑器的值" style="margin-top: 20px;" class="btn btn-primary"/>
@@ -67,6 +68,8 @@
 
         // 这里的配置项,将直接传递给CKEDITOR.config, 请参考:http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html,以上四个配置比较重要,需要单独配置,不在下面editorConfig中
         editorConfig: {
+            width: 500,
+            height: 229,// 注意,这里的高度是编辑区域的高度,不包括工具栏和状态栏的高度,目前这个样式下,他们的高度为71px, border 为1px,设置的时候均需要考虑
             toolbar: 'Basic',
             uiColor: '#9AB8F3',
             toolbar: [

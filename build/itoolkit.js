@@ -2541,6 +2541,8 @@ riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></te
 
                 var editor = CKEDITOR.replace(id, topConfig);
 
+                console.log(topConfig);
+
                 EL.style.visibility = 'visible';
 
                 self.update();

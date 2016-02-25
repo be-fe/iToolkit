@@ -74,6 +74,8 @@
 
                 var editor = CKEDITOR.replace(id, topConfig);
 
+                console.log(topConfig);
+
                 EL.style.visibility = 'visible';
 
                 self.update();

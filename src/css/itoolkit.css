@@ -190,6 +190,10 @@ itk-div {
   display: none;
 }
 
+itk-editor {
+  visibility: hidden;
+}
+
 itk-form {
   display: none;
 }
