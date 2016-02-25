@@ -1,0 +1,55 @@
+itk-paginate {    
+
+    .itk-paginate {
+        display: inline-block;
+        padding: 0;
+    }
+    .itk-paginate li {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        padding: 6px 12px;
+        margin-left: -1px;
+        line-height: 1.42857143;
+        color: #337ab7;
+        text-decoration: none;
+        background-color: #fff;
+        border: 1px solid #ddd;
+    }
+
+    .itk-paginate li.active {
+        color: #23527c;
+        background-color: #eee;
+        border-color: #ddd;
+    }
+
+    .itk-paginate .itk-paginate-tips{
+        position: absolute;
+        padding: 5px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        -webkit-box-shadow: 0 0 10px #ccc;
+        box-shadow: 0 0 10px #ccc;
+    }
+    .itk-paginate .itk-paginate-tips:before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        top: -16px;
+        left: 10px;
+        border: 8px solid transparent;
+        border-bottom-color: #ddd;
+    }
+    .itk-paginate .itk-paginate-tips:after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        top: -15px;
+        left: 10px;
+        border: 8px solid transparent;
+        border-bottom-color: #fff;
+    }
+
+}

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+    <link rel="stylesheet" href="css/demo.css">
+    <link rel="stylesheet" href="css/prism.css">
+    <link rel="stylesheet" href="../build/itoolkit.min.css">
+    <script src="../build/itoolkit.min.js"></script>
+    <script src="js/prism.js"></script>
+    <style>
+
+        #slide1-wraper {
+            width: 600px;
+            height: 400px;
+            margin-bottom: 50px;
+        }
+        #slide1 li {
+            width: 600px;
+            height: 400px;
+        }
+        #slide1 li div{
+            width: 600px;
+            height: 400px;
+            text-align: center;
+            line-height: 400px;
+            color: red;
+            font-size: 20px;
+        }
+        #slide1 li iframe{
+            width: 600px;
+            height: 400px;
+        }
+
+
+        #slide2-wraper {
+            width: 600px;
+            height: 100px;
+            margin-bottom: 50px;
+        }
+        #slide2 {
+            width: 600px;
+            height: 100px;
+        }
+        #slide2 li img {
+            width: 150px;
+            height: 100px;
+        }
+        #slide2 .slick-prev {
+            margin-top: 0px;
+        }
+        #slide2 .slick-next {
+            margin-top: 0px;
+        }
+
+        #slide3-wraper {
+            width: 600px;
+            height: 400px;
+            margin-bottom: 50px;
+        }
+        #slide3 {
+            width: 600px;
+            height: 400px;
+        }
+        #slide3 li img {
+            width: 600px;
+            height: 400px;
+        }
+
+        #slide4-wraper {
+            width: 600px;
+            height: 400px;
+        }
+        #slide4 {
+            width: 600px;
+            height: 400px;
+        }
+        #slide4 li img {
+            width: 600px;
+            height: 400px;
+        }
+
+        #slide5-wraper {
+            width: 600px;
+            height: 110px;
+            margin-bottom: 50px;
+        }
+        #slide5 {
+            width: 560px;
+            height: 110px;
+            margin-left: 20px;
+        }
+        #slide5 .slick-prev {
+            left: -20px;
+            margin-top: 0px;
+        }
+        #slide5 .slick-next {
+            right: -20px;
+            margin-top: 0px;
+        }
+
+        #slide5 img {
+            width: 150px;
+            height: 100px;
+            margin-top: 5px;
+            opacity: 0.5;
+        }
+
+        #slide5 .slick-center img {
+            width: 150px;
+            height: 100px;
+            opacity: 1.0;
+        }
+
+        #slide6-wraper {
+            width: 600px;
+            height: 500px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="demo-info">
+    <h2>itk-slide</h2>
+    <hr>
+    <code>itk-slide</code>组件是基于slick插件，用于快速构造各种轮播图。可参考:<a href="http://kenwheeler.github.io/slick/">http://kenwheeler.github.io/slick/</a>
+</div>
+<div id="demo-html">
+
+    <h3>图片,文字,iframe 组合轮播</h3>
+    <!--图片,文字,iframe 组合轮播-->
+    <div id="slide1-wraper">
+        <itk-slide id="slide1">
+            <li><img src="img/1.jpg"></li>
+            <li><div>文字DIV</div></li>
+            <li><iframe src="http://image.baidu.com/search/wiseindex?tn=wiseindex"></iframe></li>
+        </itk-slide>
+    </div>
+
+    <hr>
+
+    <h3>多图组合轮播</h3>
+    <!--多图组合轮播-->
+    <div id="slide2-wraper">
+        <itk-slide id="slide2">
+            <li><img data-lazy="img/1.jpg"></li>
+            <li><img data-lazy="img/2.jpg"></li>
+            <li><img data-lazy="img/3.jpg"></li>
+            <li><img data-lazy="img/4.jpg"></li>
+            <li><img data-lazy="img/5.jpg"></li>
+            <li><img data-lazy="img/6.jpg"></li>
+            <li><img data-lazy="img/7.jpg"></li>
+            <li><img data-lazy="img/8.jpg"></li>
+        </itk-slide>
+    </div>
+
+    <hr>
+
+    <h3>小圆点,渐变</h3>
+    <!--小圆点,渐变-->
+    <div id="slide3-wraper">
+        <itk-slide id="slide3">
+            <li><img src="img/1.jpg"></li>
+            <li><img src="img/2.jpg"></li>
+            <li><img src="img/3.jpg"></li>
+            <li><img src="img/4.jpg"></li>
+            <li><img src="img/5.jpg"></li>
+            <li><img src="img/6.jpg"></li>
+            <li><img src="img/7.jpg"></li>
+        </itk-slide>
+    </div>
+
+    <hr>
+
+    <h3>大小图像同步</h3>
+    <!--大小图像同步-->
+    <div id="slide4-wraper">
+        <itk-slide id="slide4">
+            <li><img src="img/1.jpg"></li>
+            <li><img src="img/2.jpg"></li>
+            <li><img src="img/3.jpg"></li>
+            <li><img src="img/4.jpg"></li>
+            <li><img src="img/5.jpg"></li>
+        </itk-slide>
+    </div>
+    <div id="slide5-wraper">
+        <itk-slide id="slide5">
+            <li><img src="img/1.jpg"></li>
+            <li><img src="img/2.jpg"></li>
+            <li><img src="img/3.jpg"></li>
+            <li><img src="img/4.jpg"></li>
+            <li><img src="img/5.jpg"></li>
+        </itk-slide>
+    </div>
+
+    <hr>
+
+
+    <h3>高度自适应</h3>
+    <!--高度自适应-->
+    <div id="slide6-wraper">
+        <itk-slide id="slide6">
+            <li><img src="img/1.jpg" style="width: 600px; height: 480px;"></li>
+            <li><img src="img/2.jpg" style="width: 600px; height: 320px;"></li>
+            <li><img src="img/3.jpg" style="width: 600px; height: 440px;"></li>
+            <li><img src="img/4.jpg" style="width: 600px; height: 360px;"></li>
+            <li><img src="img/5.jpg" style="width: 600px; height: 340px;"></li>
+        </itk-slide>
+    </div>
+
+    <hr>
+
+</div>
+<script src="js/html-code.js"></script>
+
+<script id="demo-script">
+
+    // 默认行为
+    riot.mount('#slide1');
+
+    // 多张同时播放
+    var opts2 = {
+        infinite: true,// 无限循环模式
+        slidesToShow: 4, // 同时显示轮播的数量
+        slidesToScroll: 3,// 每次轮播几张图
+        lazyLoad: 'ondemand', // 懒加载, progressive（渐进加载）|ondemand（使用时按需加载）,需要在 img 标签上使用data-lazy属性,默认为ondemand
+        autoplay: true, // 自动播放
+    };
+    riot.mount('#slide2', opts2);
+
+    // 渐变效果
+    var opts3 = {
+        infinite: true,
+        dots: true, // 底部小圆点
+        autoplay: true, // 自动播放
+        fade: true, //渐变
+        cssEase: 'linear', // CSS3 动画效果:linear,ease,ease-in,ease-out,ease-in-out,cubic-bezier(n,n,n,n),默认为:ease
+        accessibility:true, // 箭头导航,默认为:true,目前页面有多个示例,不生效
+        autoplaySpeed:3000, // 自动播放速度,默认为3000
+        arrows:true, // 前后翻页箭头,默认为 true
+    };
+    riot.mount('#slide3', opts3);
+
+    //大小图像同步,主要设置:asNavFor,让其相互指向
+    var opts4 = {
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: false,
+        fade: true,
+        asNavFor: '#slide5',
+        dots: true,
+    };
+    riot.mount('#slide4', opts4);
+
+    var opts5 = {
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        asNavFor: '#slide4',
+        centerMode: true, // 以中心显示的图像为准,突出中间图像,即每次变换的图像居中对齐,最左侧最右侧的图像有可能显示不全
+        focusOnSelect: true
+    };
+    riot.mount('#slide5', opts5);
+
+
+    // 高度自适应
+    var opts6 = {
+        infinite: true,
+        speed: 300,
+        slidesToShow: 1,
+        adaptiveHeight: true, // 高度自适应
+    };
+    riot.mount('#slide6', opts6);
+
+
+
+</script>
+<script src="js/js-code.js"></script>
+
+</body>
+</html>

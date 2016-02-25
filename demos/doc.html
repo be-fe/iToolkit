@@ -1,0 +1,180 @@
+<html>
+<head>
+    <title>iToolkit Documents</title>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+    <link rel="stylesheet" href="../build/itoolkit.min.css">
+    <script src="../build/itoolkit.min.js"></script>
+    <style>
+        html {
+            width: 100%;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        #nav {
+            height: 72px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .brand {
+            font-size: 28px;
+            font-family: "DINPro Regular";
+            height: 100%;
+            line-height: 72px;
+            float: left;
+        }
+
+        .brand a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .info {
+            float: right;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        .info li,
+        .info li a {
+            display: inline-block;
+            font-size: 18px;
+            list-style: none;
+            line-height: 72px;
+            font-weight: 300;
+            font-family: "Helvetica";
+            padding: 0 10px;
+        }
+
+        .tag-list {
+            padding-left: 10px;
+        }
+
+        .tag-list li {
+            list-style: none;
+            line-height: 30px;
+            cursor: pointer;
+        }
+
+        .tag-list li a {
+            display: inline-block;
+        }
+
+        #iframe {
+            width: 100%;
+            border: none;
+            overflow: hidden;
+        }
+
+        #footer {
+            height: 70px;
+            line-height: 70px;
+            text-align: center;
+            border-top: 1px solid #e5e5e5;
+            /*position: fixed;*/
+            /*bottom: 0px;*/
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+<div id="nav">
+    <div class="container">
+        <div class="brand"><a href="index.html">iToolkit</a></div>
+        <ul class="info">
+            <li><a href="https://github.com/be-fe/iToolkit">Github</a></li>
+            <li><a href="https://github.com/be-fe/iToolkit/releases">Download</a></li>
+        </ul>
+    </div>
+</div>
+</div>
+<div class="container" id="container">
+    <div class="row">
+        <itk-div id="side-bar" class="col-xs-3">
+            <h5>introduction</h5>
+            <ul class="tag-list">
+                <li each="{ intr }"><a href="#{name}">{ alias || name }</a></li>
+            </ul>
+            <h5>components</h5>
+            <ul class="tag-list">
+                <li each="{ data }"><a href="#{name}">{ alias || name }</a></li>
+            </ul>
+        </itk-div>
+
+        <div id="main" class="col-xs-9">
+            <iframe id="iframe" src="get-start.html" onload="iFrameHeight()"></iframe>
+        </div>
+    </div>
+</div>
+
+<div id="footer">
+    百度EUX版权所有 All rights reserved
+</div>
+<script>
+    function iFrameHeight() {
+        var ifm = document.getElementById("iframe");
+        var subWeb = document.frames ? document.frames["iframe"].document : ifm.contentDocument;
+        if (ifm != null && subWeb != null) {
+
+            // 从大的高度跳转到低的高度,底部会产生空白!先设置为0,再撑起来!完美解决!
+
+            ifm.height = 0;
+            ifm.height = subWeb.body.scrollHeight;
+
+//            console.log(subWeb.body.scrollHeight);
+//            console.log(ifm.contentWindow.document.body);// 元素查看区域正确,但是高度依旧不对.
+//            console.log(window.document);
+
+            // 通过如下方法,能够正确处理编辑器的双滚动条问题,但是画面会有抖动.这个双滚动条问题是因为编辑器的渲染需要时间,他会撑大 iframe 的高度.因而会出现双滚动条.
+            // 而轮播为什么下面会有很大的空白呢?发现其 document 和 body 的高度不一致导致的
+//            setTimeout(function () {
+//                ifm.height = subWeb.body.scrollHeight;
+//            }, 100);
+
+        }
+    }
+
+
+
+
+    function goto() {
+        var hash = location.hash.replace('#', '');
+        var name = hash || 'get-start';
+        var iframe = document.getElementById('iframe');
+        iframe.src = name + '.html';
+    }
+    goto();
+    window.onhashchange = goto;
+
+    var sideBarOpts = {
+        intr: [{name: 'get-start', alias: "Get Start"}],
+        data: [
+            {name: 'itk-div', alias: "普通模板"},
+            {name: 'itk-modal', alias: "模态弹出框"},
+            {name: 'itk-select', alias: "下拉选择器"},
+            {name: 'itk-table', alias: "表格"},
+            {name: 'itk-form', alias: "表单"},
+            {name: 'itk-tree', alias: "树结构"},
+            {name: 'itk-uploader', alias: "文件上传"},
+            {name: 'itk-paginate', alias: "分页"},
+            {name: 'itk-center', alias: "居中"},
+            {name: 'itk-slider', alias: "轮播"},
+            {name: 'itk-editor', alias: "富文本编辑器"},
+            {name: 'itk-calendar', alias: "日历控件"}
+        ],
+        goto: function (e) {
+            var name = e.item.name;
+            var iframe = document.getElementById('iframe');
+            iframe.src = name + '.html';
+        }
+    };
+    itk.mount("#side-bar", sideBarOpts);
+</script>
+</body>
+</html>

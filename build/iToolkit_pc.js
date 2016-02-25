@@ -1588,7 +1588,8 @@ var utils = {
     },
 
     deepCopy: function (parent, child) {
-        var child = child || {};
+        var defaultWrapper = (toString.call(parent) === '[object Array]') ? [] : {};
+        var child = child || defaultWrapper;
         for (var i in parent) {
             if (toString.call(parent[i]) === '[object Object]') {
                 child[i] = {}; //新建数组或者object来达到目的
@@ -1861,21 +1862,384 @@ utils.extend(utils, {
  * 全局事件监控
  */
 var EventCtrl = EC = riot.observable();
+var iToolkit = itk = riot;
+riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-calendar-head"> <div class="itk-calendar-month-prev btn" onclick="{ prevMonth }">⟨</div> <div class="itk-calendar-year-prev btn" onclick="{ prevYear }">⟪</div> <div class="itk-calendar-month">{ month.text }</div> <div class="itk-calendar-year">{ year.text }</div> <div class="itk-calendar-year-next btn" onclick="{ nextMonth }">⟩</div> <div class="itk-calendar-month-next btn" onclick="{ nextYear }">⟫</div> </div> <div class="itk-calendar-body"> <div class="itk-calendar-weeks"> <div class="itk-calendar-week" each="{ text in weekArr }">{ text }</div> </div> <div class="itk-calendar-days"> <div each="{ dayArr }" class="itk-calendar-day { selected: parent.showSelected && parent.selectedYear === year && parent.selectedMonth === month && parent.selectedDay === day } { today: parent.showToday && parent.toYear === year && parent.toMonth === month && parent.today === day } { cursor: year && month && day }" data-year="{ year }" data-month="{ month }" data-day="{ day }" onclick="{ (year && month) ? dayClicked : \'return false;\' }" >{ day }</div> </div> </div> </div>', 'hide="{ !open }"', function(opts) {
 
-/*
- * 外部方法传入
- */
-var iToolkit = {};
-iToolkit.methodRegister = function (name, fn) {
-    for (var i in iToolkit) {
-        if (name === i) {
+
+
+    var self = this;
+
+    self.i18n = {
+        zh_cn: {
+            weekArr: ['日','一','二','三','四','五','六'],
+            monthArr: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+        },
+        en_us: {
+            weekArr: ['Su','Mo','Tu','We','Th','Fr','Sa'],
+            monthArr: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+        }
+    };
+
+
+
+    var el = self.root;
+
+    var config = self.opts.opts || self.opts || {};
+
+    
+    self.mapping = function (opts) {
+        if (!utils.isObject(opts)) {
+            throw new TypeError('Config is not a object!');
             return;
         }
-    }
-    iToolkit[name] = fn;
-};
-iToolkit.tableExtend = {};
+        for (var i in opts) {
+            self[i] = opts[i];
+        }
+    };
 
+    self.mapping(config);
+
+    
+    self.initWeekList = function (language) {
+        var list = self.i18n[language];
+        if (list) {
+            self.weekArr = list.weekArr;
+            self.monthArr = list.monthArr;
+        }
+        else {
+            if (!self.weekArr || !self.monthArr) {
+                var list = self.i18n.en_us;
+                self.weekArr = list.weekArr;
+                self.monthArr = list.monthArr;
+            }
+        }
+    };
+
+    self.initWeekList(self.language);
+
+    self.getDaysCount = function (year, month) {
+        var ret = 0;
+        switch (month) {
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            case 12:
+            case 0:
+            case 13:
+                ret = 31;
+                break;
+            case 4:
+            case 6:
+            case 9:
+            case 11:
+                ret = 30;
+                break;
+            case 2:
+                ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) ? ret = 29 : ret = 28;
+                break;
+            default:
+                throw new Error('你算错了');
+                break;
+        }
+        return ret;
+    };
+
+    self.drawDays = function (timeStamp) {
+        var date;
+        if (timeStamp) {
+            date = new Date(timeStamp);
+        }
+        else {
+            date = new Date();
+        }
+        var thisMonth = date.getMonth();
+        var thisYear = date.getFullYear();
+
+        self.month = {
+            text: self.monthArr[thisMonth],
+            val: thisMonth + 1
+        };
+
+        self.year = {
+            text: thisYear,
+            val: thisYear
+        };
+
+        thisMonth = thisMonth + 1;
+
+        var thisMonthDays = self.getDaysCount(thisYear, thisMonth);
+        var prevMonthDays = self.getDaysCount(thisYear, thisMonth - 1);
+        var nextMonthDays = self.getDaysCount(thisYear, thisMonth + 1);
+        date.setDate(1);
+        var firstDay = date.getDay();
+        date.setDate(thisMonthDays);
+        var lastDay = date.getDay();
+        var dayArr = [];
+        dayArr = dayArr
+            .concat((new Array(firstDay === 0 ? 1 : ((7 - firstDay) ^ 7) + 1).join(0).split('')).map(function (v, i) {
+                return {
+                    year: '',
+                    month: '',
+                    day: prevMonthDays - i
+                }
+            }).reverse());
+        dayArr = dayArr.concat((new Array(thisMonthDays + 1).join(0).split('')).map(function (v, i){
+                return {
+                    year: thisYear,
+                    month: thisMonth,
+                    day: i + 1
+                }
+            }));
+        dayArr = dayArr.concat((new Array(lastDay === 0 ? 7 : (6 - lastDay) + 1).join(0).split('')).map(function (v, i){
+                return {
+                    year: '',
+                    month: '',
+                    day: i + 1
+                }
+            }));
+        return dayArr;
+    };
+
+    self.initDays = function (timeStamp) {
+        if (self.showToday) {
+            var tmp_date = new Date();
+            self.today = tmp_date.getDate();
+            self.toMonth = tmp_date.getMonth() + 1;
+            self.toYear = tmp_date.getFullYear();
+        }
+
+        if (self.defaultSelected) {
+            var tmp_date = new Date();
+            self.selectedDay = tmp_date.getDate();
+            self.selectedMonth = tmp_date.getMonth() + 1;
+            self.selectedYear = tmp_date.getFullYear();
+        }
+
+        
+        self.dayArr = self.drawDays(timeStamp);
+        self.update();
+    };
+
+    self.initDays(self.initTime);
+
+    self.getNum = function (v) {
+        return v > 10 ? v : '0' + v;
+    }
+
+    self.formatter = function (type) {
+        var date = new Date(self.selectedYear, self.selectedMonth - 1, self.selectedDay, 0, 0, 0);
+        var timeStamp = date.getTime();
+        var ret;
+        switch (type) {
+            case 'unixTimeStamp':
+                ret = self.getUnixTimeStamp(timeStamp);
+                break;
+            case 'timeStamp':
+                ret = self.getTimeStamp(timeStamp);
+                break;
+            default:
+                if (!type) {
+                    var type = 'yyyy/mm/dd';
+                }
+                ret = type.replace(/(yyyy|mm|dd|yy|m|d)/ig, function (v) {
+                    if (v === 'yyyy') {
+                        return self.selectedYear;
+                    }
+                    if (v === 'mm') {
+                        return self.getNum(self.selectedMonth);
+                    }
+                    if (v === 'dd') {
+                        return self.getNum(self.selectedDay);
+                    }
+                    if (v === 'yy') {
+                        return self.selectedYear.toString().substr(2, 4);
+                    }
+                    if (v === 'm') {
+                        return self.selectedMonth;
+                    }
+                    if (v === 'd') {
+                        return self.selectedDay;
+                    }
+                });
+                break;
+        }
+        return ret;
+    };
+
+    
+    self.dayClicked = function (e) {
+        self.selectedDay = e.item.day;
+        self.selectedMonth = e.item.month;
+        self.selectedYear = e.item.year;
+        self.onSelect && self.onSelect(self.formatter, self.getYear(), self.getMonth(), self.getDay());
+        self.update();
+    };
+
+    self.open = false;
+
+    self.getAbsPoint = function (elm) {
+        var x = elm.offsetLeft;
+        var y = elm.offsetTop;
+        while (elm = elm.offsetParent) {
+            x += elm.offsetLeft;
+            y += elm.offsetTop;
+        }
+        return {
+            'x': x,
+            'y': y
+        };
+    };
+
+    self.location = function (e) {
+        if (self.element) {
+            var pos = self.getAbsPoint(self.element);
+            self.root.style.position = 'absolute';
+            self.root.style.top = pos.y + self.element.offsetHeight;
+            self.root.style.left = pos.x;
+        }
+    };
+
+    self.closeIt = function (e) {
+        var className = e.target.className;
+        if (
+            e.target === self.element ||
+            className &&
+            className.indexOf('itk-calendar') !== -1 &&
+            className !== 'itk-calendar-days'
+        ) {
+            return;
+        }
+        self.open = false;
+        self.update();
+    };
+
+    self.openIt = function (e) {
+        self.open = true;
+        self.update();
+        self.location(e);
+    };
+
+    
+    self.unbindEvent = function () {
+        if (self.element) {
+            document.removeEventListener('click', self.closeIt, false);
+            self.element.removeEventListener('click', self.openIt, false);
+        }
+    };
+
+    self.on('mount', function () {
+        if (self.element) {
+            document.addEventListener('click', self.closeIt, false);
+            self.element.addEventListener('click', self.openIt, false);
+        }
+        else {
+            self.open = true;
+        }
+        self.update();
+    });
+
+    self.on('unmount', function () {
+        self.unbindEvent();
+    });
+
+    
+    self.getTimeStamp = function (timeStamp) {
+        return timeStamp;
+    };
+
+    
+    self.getUnixTimeStamp = function (timeStamp) {
+        return Math.ceil(timeStamp / 1000).toString();
+    };
+
+    
+    self.getYear = function () {
+        return self.selectedYear;
+    };
+
+    
+    self.getMonth = function () {
+        return self.selectedMonth;
+    };
+
+    
+    self.getDay = function () {
+        return self.selectedDay;
+    };
+
+    self.nextYear = function () {
+        var year = self.year.val + 1;
+        self.dayArr = self.drawDays(new Date(year, self.month.val - 1, 1).getTime());
+        self.update();
+    };
+
+    self.nextMonth = function () {
+        var month = self.month.val - 1;
+        var year = self.year.val;
+        year = month === 11 ? year + 1 : year;
+        month = month === 11 ? 0 : month + 1;
+        var date = new Date(year, month, 1);
+        self.dayArr = self.drawDays(date.getTime());
+        self.update();
+    };
+
+    self.prevYear = function () {
+        var year = self.year.val - 1;
+        self.dayArr = self.drawDays(new Date(year, self.month.val - 1, 1).getTime());
+        self.update();
+    };
+
+    self.prevMonth = function () {
+        var month = self.month.val - 1;
+        var year = self.year.val;
+        year = month === 0 ? year - 1 : year;
+        month = month === 0 ? 11 : month - 1;
+        var date = new Date(year, month, 1);
+        self.dayArr = self.drawDays(date.getTime());
+        self.update();
+    };
+    
+});
+riot.tag('itk-center', '<div class="itk-loading {default: default}" > <yield> </div>', function(opts) {
+        var self = this;
+        var config = self.opts.opts || self.opts;
+        self.default = false;
+        
+        self.on('mount', function() {
+            var parentDom = self.root.parentNode;
+            var parentPosition = window.getComputedStyle(parentDom, null).position;
+            if (parentPosition === 'static') {
+                parentDom.style.position = 'relative';
+            }
+
+            self.childDom = self.root.getElementsByClassName('itk-loading')[0];
+
+            if (self.childDom.innerHTML.trim()) {
+                self.default = false;
+                self.update();
+            }
+
+            var cellHeight = parseInt(window.getComputedStyle(self.childDom, null).height.replace('px', ''), 10);
+            self.root.style.marginTop = '-' + cellHeight/2 + 'px';
+            
+        });
+
+        self.root.show = function(){
+            if (self.childDom) {
+                self.childDom.style.display = 'block';
+            }
+        }
+
+        self.root.hide = function(){
+            if (self.childDom) {
+                self.childDom.style.display = 'none';
+            }
+        }
+    
+});
 riot.tag('date-picker', '<yield>', function(opts) {
     var self = this;
     var EL = self.root;
@@ -1959,685 +2323,7 @@ riot.tag('date-picker', '<yield>', function(opts) {
     
 });
 
-riot.tag('dropdown', '<yield> <div class="r-dropdown">{ title }</div> <ul class="r-downdown-menu"> <li class="r-dropdown-list" each="{ data }"><a href="{ link|\'javascript:void(0)\' }">{ name }</a></li> </ul>', function(opts) {
-	var self = this;
-    var EL = self.root;
-    var config = self.opts.opts || self.opts;
-	
-});
-riot.tag('editable-link', '<a href="javascript:void(0);" if="{ !editable }" onclick="{ open }">{ value }</a> <super-form if="{ editable }" action="{ action }" opts="{ formOpts }"> <input type="text" value="{ parent.value }" name="{ parent.name }" class="editable-link-input"> <input type="submit" value="提交"> <button onclick="{ parent.close }">取消</button> </super-form>', function(opts) {
-
-    var self = this;
-    self.editlink = false;
-    var EL = self.root;
-    var config = self.opts.opts || self.opts;
-
-    self.on('mount', function() {
-        self.action = EL.getAttribute('action');
-        self.value = EL.getAttribute('text');
-        self.name = EL.getAttribute('name');
-        self.update();
-    })
-
-    this.open = function(e) {
-        self.editable = true;
-        self.update();
-    }.bind(this);
-
-    this.close = function(e) {
-        self.editable = false;
-        self.update();
-    }.bind(this);
-
-    self.formOpts = {
-        errCallback: function() {
-            config.errCallback();
-            EL.querySelector('.editable-link-input').value = self.value;
-            self.editable = false;
-            self.update();
-        },
-        callback: function(value) {
-            config.callback();
-            self.value = EL.querySelector('.editable-link-input').value;
-            self.editable = false;
-            self.update();
-        }
-    }
-
-});
-riot.tag('goto-top', '<div class="itoolkit-goto-top" show="{ showGotoTop }" onclick="{ gotoTop }"> <yield> <span class="itoolkit-goto-top-icon" show="{ showDefault }"><span class="icon-arrowUp"></span></span> </div>', 'goto-top .itoolkit-goto-top{ display: block; position: fixed; bottom: 50px; right: 40px; height: 60px; width: 60px; z-index: 10000; text-align: center; opicity: 0.5; cursor: pointer; } goto-top .itoolkit-goto-top .itoolkit-goto-top-icon{ font-size: 3em; margin: auto; float: none; }', function(opts) {
-
-    var self = this;
-    self.config = self.opts.opts || self.opts;
-    var avalibleHeight = window.screen.availHeight;
-    var EL = self.root;
-    
-    self.on('mount', function() {
-        self.root.querySelector('.itoolkit-goto-top').style.bottom = self.config.bottom;
-        self.root.querySelector('.itoolkit-goto-top').style.right = self.config.right;
-        if (EL.querySelector('.itoolkit-goto-top').firstElementChild.className === 'itoolkit-goto-top-icon') {
-            self.showDefault = true;
-        }
-        window.addEventListener('scroll', self.controlGotoTop);
-    })
-    
-    self.controlGotoTop = function() {
-        var body = document.body;
-        if (body.scrollTop > avalibleHeight && !self.showGotoTop) {
-            self.showGotoTop = true;
-            self.update();
-        }
-        else if (body.scrollTop < avalibleHeight && self.showGotoTop) {
-            self.showGotoTop = false;
-            self.update();
-        }
-    }
-
-    this.gotoTop = function(e) {
-        var length = document.body.scrollTop / 100 * 16;
-        var timer = setInterval(function() {
-            document.body.scrollTop = document.body.scrollTop - length;
-            if (document.body.scrollTop < 10) {
-                clearInterval(timer);
-            }
-        }, 16);
-    }.bind(this);
-    
-
-});
-riot.tag('loading', '<div class="{itoolkit-loading: true, default: default}" > <yield> </div>', 'loading .itoolkit-loading { text-align: center; }', function(opts) {
-
-    var self = this;
-    var config = self.opts.opts || self.opts;
-    self.default = true;
-    
-    self.on('mount', function() {
-        var parentDom = self.root.parentNode;
-        var parentPosition = window.getComputedStyle(parentDom, null).position;
-        if (parentPosition === 'static') {
-            parentDom.style.position = 'relative';
-        }
-
-        self.childDom = self.root.getElementsByClassName('itoolkit-loading')[0];
-
-        if (self.childDom.innerHTML.trim()) {
-            self.default = false;
-            self.update();
-        }
-
-        var cellHeight = parseInt(window.getComputedStyle(self.childDom, null).height.replace('px', ''), 10);
-        self.root.style.marginTop = '-' + cellHeight/2 + 'px';
-        
-    })
-
-    self.root.show = function(){
-        if (self.childDom) {
-            self.childDom.style.display = 'block';
-        }
-    }
-
-    self.root.hide = function(){
-        if (self.childDom) {
-            self.childDom.style.display = 'none';
-        }
-    }
-    
-
-});
-riot.tag('modal', '<div class="itoolkit-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itoolkit-modal-title"> <span>{ title }</span> <div class="itoolkit-modal-close-wrap" onclick="{ close }"> <div class="itoolkit-modal-close"></div> </div> </div> <div class="itoolkit-modal-container"> <yield> </div> </div>', function(opts) {
-
-    var self = this;
-    var config = self.opts.opts || self.opts;
-    var EL = self.root;
-    for (i in config) {
-        self[i] = config[i];
-    }
-    self.width = config.width || 600;
-    self.height = config.height || 'auto';
-
-    self.on('mount', function() {
-        var container = self.root.querySelector('.itoolkit-modal-container');
-        var head = self.root.querySelector('.itoolkit-modal-title');
-        var headHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
-        if (config.height) {
-            container.style.height = (self.height - headHeight - 2) + 'px';
-        }
-
-    })
-
-    this.close = function(e) {
-        self.root.style.display = 'none';
-        self.onClose && self.onClose();
-    }.bind(this);
-
-    if (document.querySelector("[modal-open-target='" + self.root.id + "']")) {
-        document.querySelector("[modal-open-target='" + self.root.id + "']").onclick = function() {
-            self.root.style.display = 'block';
-            self.onOpen && self.onOpen();
-        }
-    }
-
-    self.root.open = function() {
-        self.root.style.display = 'block';
-        self.onOpen && self.onOpen();
-    }
-
-    self.root.close = function() {
-        self.root.style.display = 'none';
-        self.onClose && self.onClose();
-    }
-
-    self.root.loadData = function(newData, colName){
-        colName = colName || 'data';
-        self[colName] = newData;
-        self.update();
-    }
-
-
-
-
-});
-riot.tag('paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="paginate"> <form onsubmit="{ redirect }" style="position:relative;"> <span class="redirect" if="{ redirect }">跳转到<input class="jumpPage" name="page" riot-type={"number"} style="width: 40px;">页 </span> <div class="paginate-tips" riot-style="top: { tipsTop }; left: { tipsLeft }; display: { showTip }"> 请输入1～{ pageCount }之间的数字 </div> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', '.paginate .paginate-tips{ position: absolute; padding: 5px; border: 1px solid #ddd; background-color: #fff; -webkit-box-shadow: 0 0 10px #ccc; box-shadow: 0 0 10px #ccc; } .paginate .paginate-tips:before { content: ""; position: absolute; width: 0; height: 0; top: -16px; left: 10px; border: 8px solid transparent; border-bottom-color: #ddd; } .paginate .paginate-tips:after { content: ""; position: absolute; width: 0; height: 0; top: -15px; left: 10px; border: 8px solid transparent; border-bottom-color: #fff; }', function(opts) {
-    var self = this;
-    var EL = self.root;
-    var config = self.opts.opts || self.opts;
-    self.showTip = 'none';
-    self.count = config.count || 0;
-    self.pagesize = config.pagesize || 20;
-    self.pageCount = config.pageCount || Math.ceil(self.count/self.pagesize) || 1;
-    self.currentPage = config.currentPage || 1;
-    self.url = config.url || '';
-    self.showNumber = config.showNumber || 5;
-
-    self.redirect = config.redirect || true;
-    self.showPageCount = config.showPageCount || true;
-    self.showItemCount = config.showItemCount || true;
-    self.needInit = config.needInit || false;
-
-    self.updateCurrentPage = function () {
-        if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
-            self.pages = [];
-            if (self.pageCount - self.currentPage > 2) {
-                var origin = self.currentPage - Math.ceil(self.showNumber/2);
-                var last = self.currentPage + Math.floor(self.showNumber/2);
-            }
-            else {
-                var last = self.pageCount;
-                var origin = self.pageCount - self.showNumber;
-            }
-            for (i = origin; i < last; i++) {
-                self.pages.push({page: i + 1});
-                self.update();
-            }
-        }
-        else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
-            self.pages = [];
-            for (i = 0; i < self.showNumber; i++) {
-                self.pages.push({page: i + 1});
-            }
-            self.pages.push({page: '...'});
-        }
-    };
-    EL.addCount = function (num) {
-        var count = self.count + num;
-        var oldPageCount = self.pageCount;
-        count < 0
-        ? self.count = 0
-        : self.count = count;
-
-        self.pageCount = Math.ceil(self.count/self.pagesize) || 1;
-        self.currentPage = (
-            self.currentPage > self.pageCount
-            ? self.pageCount
-            : self.currentPage
-        );
-
-        if (self.pageCount <= self.showNumber) {
-            self.pages = [];
-            for (var i = 0; i < self.pageCount; i++) {
-                self.pages.push({page: i + 1});
-            }
-        }
-
-        if (
-
-            self.needInit
-
-            || (self.pageCount < oldPageCount && self.currentPage <= self.pageCount)
-        ) {
-            config.callback(self.currentPage);
-        }
-
-        self.pageChange(self.currentPage)
-        self.update();
-    };
-
-    self.pages = [];
-    
-    if (self.pageCount < (self.showNumber + 1)) {
-        for (i = 0; i < self.pageCount; i++) {
-            self.pages.push({page: i + 1});
-        }
-    } 
-    else {
-        for (i = 0; i < self.showNumber; i++) {
-            self.pages.push({page: i + 1});
-        }
-        self.pages.push({page: '...'});
-    }
-
-    if (self.needInit) {
-        config.callback(self.currentPage);
-    }
-    self.updateCurrentPage();
-    self.update();
-
-    this.goFirst = function(e) {
-        self.pageChange(1);
-    }.bind(this);
-
-    this.goPrev = function(e) {
-        if (self.currentPage > 1) {
-            self.pageChange(self.currentPage - 1);
-        }
-    }.bind(this);
-
-    this.goNext = function(e) {
-        if (self.currentPage < self.pageCount) {
-            self.pageChange(self.currentPage + 1);
-        }
-    }.bind(this);
-    
-    this.goLast = function(e) {
-        self.pageChange(self.pageCount);
-    }.bind(this);
-
-    this.redirect = function(e) {
-        var index = parseInt(self.page.value, 10);
-        if (
-            index &&
-            index < (self.pageCount + 1) &&
-            index > 0
-        ) {
-            self.pageChange(parseInt(index, 10));
-        }
-        else {
-            self.tipsLeft = self.page.offsetLeft;
-            self.tipsTop = self.page.offsetTop + self.page.offsetHeight + 8;
-            self.showTip = 'block';
-            setTimeout(function () {
-                self.showTip = 'none';
-                self.update();
-            }, 1500)
-            self.update();
-        }
-    }.bind(this);
-
-    this.changePage = function(e) {
-        var page = e.item.page
-        if (typeof(page) === 'string') {
-            return false;
-        }
-        else {
-            self.pageChange(page);
-        }
-    }.bind(this);
-
-    self.pageChange = function(page) {
-        if (self.currentPage != page) {
-            self.currentPage = page;
-            config.callback(page);
-        }
-        self.updateCurrentPage();
-    };
-
-    
-});
-riot.tag('select-muti-wrap', '<yield></yield> <ul class="itoolkit-selected-container" onmousedown="{ showOptions }"> <li class="itoolkit-selected-option" each="{realData }" if="{ selected }"> { name } <span class="itoolkit-close" onmousedown="{ cancel }" >×</span> </li> <li class="itoolkit-search-wrap" style="min-height: 34px;"> <input type="text" class="form-control itoolkit-select-search" oninput="{ filter }" onfocus="{ filter }" onkeyup="{ keyboardHandle }"> </li> </ul> <ul class="itoolkit-options-container"> <li class="itoolkit-options" each="{ realData }" onmousedown="{ toggle }" if="{ !hide }"> <span class="itoolkit-option-check" if="{ selected }">√</span> <span class="empty-icon" if="{ !selected }"></span> { name } </li> <li class="no-result" if="{ noResult }">无搜索结果</li> </ul>', 'select-muti-wrap { display: block; position: relative; cursor: pointer; } select-muti-wrap select { display: none; } select-muti-wrap .itoolkit-selected-container { box-sizing: border-box; list-style: none; margin: 0; padding: 0 5px; width: 100%; display: inline-block; /*overflow-x: hidden;*/ /*overflow-y: auto;*/ border-radius: 0; border: 1px solid #d2d6de; text-align: left; } select-muti-wrap .itoolkit-selected-container .itoolkit-selected-option { display: inline-block; padding: 4px 8px; background: #3c8dbc; border-color: #367fa9; color: #ffffff; border-radius: 4px; margin: 2px 5px 2px 0; } select-muti-wrap .itoolkit-search-wrap { width: 1em; display: inline-block; } select-muti-wrap .itoolkit-search-wrap input { padding-left: 0; padding-right: 0; height: 30px; border:none; } select-muti-wrap .itoolkit-options-container { padding: 0; text-align: left; position: absolute; width: 100%; border: 1px solid #d2d6de; border-top: none; z-index: 10000; background: #ffffff; display: none; max-height: 150px; overflow-y: auto; } select-muti-wrap .itoolkit-options-container .itoolkit-options { padding: 6px 12px; } select-muti-wrap .itoolkit-options-container .itoolkit-options:hover { background: #eff3f8; } select-muti-wrap .itoolkit-options-container .no-result { text-align: center; padding: 6px 0; } select-muti-wrap .empty-icon { padding: 0 9px; } select-muti-wrap .itoolkit-option-check { /* 对勾*/ } select-muti-wrap .itoolkit-close { /* 叉叉*/ }', function(opts) {
-        var self = this;
-        var config = self.opts.opts || self.opts;
-        self.gotOptions = false;
-
-        self.init = self.root.init = function() {
-            self.gotOptions = false;
-            self.update();
-        };
-
-        
-        self.realData = [];
-        self.root.realData = self.realData;
-        self.root.getSelectedData = function () {
-            var selectedData = [];
-            for (var i = 0, l= self.realData.length; i < l; i ++) {
-                if (self.realData[i].selected) {
-                    selectedData.push({
-                        id: parseInt(self.realData[i].value, 10)
-                    });
-                }
-            }
-            return selectedData;
-        };
-
-        self.initData = self.root.initData = function() {
-            if (self.root.querySelector('select')) {
-                var options = self.root.querySelector('select').querySelectorAll('option');
-            }
-            if (options && options.length && !self.gotOptions) {
-                self.options = options;
-                self.searchInput = self.root.querySelector('.itoolkit-select-search');
-                self.optionsWrap = self.root.querySelector('.itoolkit-options-container');
-                self.realData = [];
-                for (i = 0; i < options.length; i++) {
-                    self.realData.push({
-                        name: options[i].innerHTML,
-                        value: options[i].getAttribute('value'),
-                        selected: options[i].getAttribute('selected'),
-                        index: i
-                    });
-                }
-                self.searchInput.onfocus = function () {
-                    self.optionsWrap.style.display = 'block';
-                };
-
-                self.searchInput.onblur = function () {
-                    self.optionsWrap.style.display = 'none';
-                    self.resetSelectOpt();
-                };
-                self.gotOptions = true;
-                self.update();
-                console.log(self.realData);
-            }
-        };
-
-
-        self.on('update', function() { 
-            setTimeout(function() {
-                self.initData();
-            }, 0)
-            
-        });
-
-
-
-        self.on('mount', function() {
-            if (config) {
-                utils.extend(self, config);
-                self.update();
-            }
-        });
-
-        self.filter = function(e) {
-            self.resetSelectOpt();
-            var v = e.target.value;
-            e.target.style.width = (0.9 * v.length + 1) + 'em';
-            var match;
-            for (i = 0; i < self.realData.length; i++) {
-                if (!self.realData[i].name.match(v)) {
-                    self.realData[i].hide = true;
-                }
-                else {
-                    self.realData[i].hide = false;
-                    match = true;
-                }
-            }
-            self.noResult = !match;
-        };
-
-        self.toggle = function(e) {
-            if (e.item.selected) {
-                e.item.selected = false;
-                self.options[e.item.index].selected = false;
-            }
-            else {
-                e.item.selected = true;
-                self.options[e.item.index].selected = true;
-            }
-            self.update();
-        };
-
-        self.cancel = function(e) {
-            e.stopPropagation();
-            e.item.selected = false;
-            self.options[e.item.index].selected = false;
-            self.update();
-        };
-
-        self.showOptions = function(e) {
-            if (self.searchInput && self.searchInput !== document.activeElement) {
-                self.searchInput.focus();
-            }
-            else {
-                self.searchInput.blur();
-            }
-        };
-
-        
-        self.keyboardHandle = function(e) {
-            var searchInput = e.target;
-            searchInput.options = document.querySelectorAll('.itoolkit-options');
-            if (searchInput.seletedIndex === undefined ){
-                searchInput.seletedIndex = -1;
-            }
-
-            var keyCode = e.keyCode;
-            if (keyCode === 37 || keyCode === 38){
-                self.clearSelectedOpt(searchInput);
-                searchInput.seletedIndex--;
-                if (searchInput.seletedIndex < 0){
-                    searchInput.seletedIndex = searchInput.options.length - 1;
-                }
-                self.setSelectedOpt(searchInput);
-            }
-            else if (keyCode === 39 || keyCode === 40){
-                self.clearSelectedOpt(searchInput);
-                searchInput.seletedIndex++;
-                if (searchInput.seletedIndex >= searchInput.options.length){
-                    searchInput.seletedIndex = 0;
-                }
-                self.setSelectedOpt(searchInput);
-            }
-            else if (keyCode === 13){
-                self.chooseByKeyboard(searchInput);
-            }
-            else if (keyCode === 27){
-                self.searchInput.blur();
-            }
-        };
-
-        self.chooseByKeyboard = function(target){
-            var e = document.createEvent("MouseEvents");
-            var dom = target.options[target.seletedIndex];
-            e.initEvent("mousedown", true, true);
-            if (dom) {
-                dom.dispatchEvent(e);
-            }
-        };
-
-        self.clearSelectedOpt = function(target){
-            if (target.options) {
-                var dom = target.options[target.seletedIndex];
-                if (target.seletedIndex >= 0 && dom) {
-                    dom.style.background = "";
-                    dom.scrollIntoView();
-                }
-            }
-        };
-
-        self.resetSelectOpt = function() {
-            self.clearSelectedOpt(self.searchInput);
-            self.searchInput.seletedIndex = -1;
-        };
-
-        self.setSelectedOpt = function(target){
-            var dom = target.options[target.seletedIndex];
-            if (dom) {
-                dom.style.background = "#eff3f8";
-                dom.scrollIntoView();
-            }
-        };
-    
-});
-
-
-riot.tag('select-box', '<div class="r-select" onclick="{ clicked }">{ placeholder }</div> <ul class="r-select-body" hide="{ hide }"> <li each="{ data }" index="{ index }" value="{ value }" class="r-select-item { selected }" onclick="{ parent.clickItem }">{ innerText }</li> </ul> <div style="display:none" class="inputHide"></div>', function(opts) {
-    var self = this;
-    var EL = self.root;
-    self.config = self.opts.opts || self.opts;
-
-    self.data = [];
-
-    self.placeholder = self.config.placeholder;
-
-    self.callback = self.config.callback;
-
-    self.name = self.config.name;
-
-    self.value = [];
-
-    self.prevNode = null;
-
-    EL.getValue = function () {
-        return self.value;
-    };
-
-    self.hide = true;
-
-    this.clicked = function(e) {
-        self.hide = false;
-        self.update();
-    }.bind(this);
-
-    this.updateValue = function(item) {
-        for (var i = 0; i < self.data.length; i++) {
-            if (self.data[i].selected) {
-                self.value.push(self.data[i].value);
-                self.placeholder.push(self.data[i].innerText);
-            }
-        }
-        if (self.value.length == self.size) {
-            self.hide = true;
-        }
-        self.placeholder = self.placeholder.join(',');
-        self.prevNode = item;
-        self.callback && self.callback(self);
-        self.update();
-    }.bind(this);
- 
-    this.clickItem = function(e) {
-        var item = e.target || e.srcElement;
-        var index = +item.getAttribute('index');
-        self.value.length = 0;
-        self.placeholder = [];
-        if (self.mutiple) {
-            self.data[index].selected = self.data[index].selected ? '' : 'selected';
-            self.updateValue(null);
-            return;
-        }
-        if (self.prevNode) {
-            self.data[+self.prevNode.getAttribute('index')].selected = '';
-        }
-        self.data[index].selected = 'selected';
-        self.updateValue(item);
-    }.bind(this);
-
-    self.one('mount', function () {
-        for (var i = 0; i < self.config.data.length; i++) {
-            var child = self.config.data[i];
-            child.selected = '',
-            child.index = i;
-            self.data.push(child);
-        }
-        self.mutiple = self.config.mutiple || false;
-        self.size = self.mutiple ? (self.config.size ? self.config.size : self.data.length) : 1;
-        self.update();
-    });
-    
-});
-riot.tag('side-list', '<ul > <li each="{ data }"> <img riot-src="{ logoUrl }" if="{ isLogo }"> <span>{ name }</span> </li> </ul>', function(opts) {
-
-});
-riot.tag('slide', '', function(opts) {
-
-
-});
-riot.tag('super-table', '<yield>', function(opts) {
-        var self = this;
-        var config = self.opts.opts || self.opts;
-        var EL = self.root;
-        
-        self.init = function() {
-            EL.style.display = 'block';
-            for (i in config) {
-                if (!self[i]) {
-                    self[i] = config[i];
-                }
-            }
-
-        }
-
-        self.on('mount', function() {
-            self.init();
-        });
-        
-        self.compare = function(a, b) {
-            if (a[self.orderkeyName] > b[self.orderkeyName]) {
-                return 1;
-            } 
-            else if (a[self.orderkeyName] === b[self.orderkeyName]) {
-                return 0;
-            }
-            else {
-                return -1;
-            }
-        }
-        
-        self.orderBy = EL.orderBy = function(col) {
-            self.orderkeyName = col;
-            if (self.ordered !== col) {
-                if (self.reversed !== col) {
-                    self.data = self.data.sort(self.compare)
-                }
-                else {
-                    self.data = self.data.reverse();
-                }
-            }
-            else {
-                return
-            }
-            self.ordered = col;
-            self.reversed = false;
-            self.update()
-        };
-
-        self.loadData = EL.loadData = function(data) {
-            self.data = data;
-
-            self.update();
-        };
-        self.append = EL.loadData = function(rows) {
-            if (utils.isObject(rows)) {
-                self.data.push(rows);
-            }
-            else if (utils.isArray(rows)) {
-                self.data = self.data.concat(rows);
-            }
-        };
-        self.insertBefore = EL.insertBefore = function(rows) {
-            if (utils.isObject(rows)) {
-                self.data.unshift(rows);
-            }
-            else if (utils.isArray(rows)) {
-                self.data = rows.concat(self.data);
-            }
-        };
-        self.reverseBy = EL.reverseBy = function(col) {};
-
-
-
-    
-});
-riot.tag('super-div', '<yield>', 'super-div{ display: block; }', function(opts) {
-    
+riot.tag('itk-div', '<yield>', function(opts) {
     var self = this;
     var config = self.opts.opts || self.opts;
     var EL = self.root;
@@ -2688,10 +2374,58 @@ riot.tag('super-div', '<yield>', 'super-div{ display: block; }', function(opts) 
             self.update();
         }
     }
-
-
+    
 });
-riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function(opts) {
+riot.tag('itk-editor', '<textarea rows="10" cols="80" style="display:none;"></textarea>', function(opts) {
+        var self = this;
+        var EL = self.root;
+        var config = self.opts.opts || self.opts;
+        var js = document.scripts;
+        var path = '';
+        var jsPath = '';
+        var type = config.type || 'standard';
+        
+        if (!config.path) {
+            for (var i = 0; i < js.length; i++) {
+                if (!js[i].src) {
+                    continue;
+                }
+                if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
+                    jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+                    break;
+                }
+            }
+            path = jsPath + 'plugins/ckeditor/';
+        }
+        else {
+            path = config.path;
+        }
+        
+        self.on('mount', function() {
+            var textarea = EL.getElementsByTagName('textarea')[0];
+            var id = EL.getAttribute('id');
+            textarea.setAttribute('name', EL.getAttribute('name'));
+            textarea.setAttribute('id', EL.getAttribute('id'));
+            EL.removeAttribute('id');
+
+            utils.jsLoader([
+                path + type + '/ckeditor.js',
+
+
+            ], function () {
+                CKEDITOR.replace( id, {
+                    image_previewText: '',
+                    filebrowserImageUploadUrl: "admin/UserArticleFileUpload.do"
+                });
+                self.update();
+            });
+        })
+
+        
+        
+    
+});
+riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(opts) {
     var self = this;
     var EL = self.root;
     var config = self.opts.opts || self.opts;
@@ -3231,7 +2965,8 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 }
             })(ruleConfig);
         }
-    }
+
+    };
     
 
     
@@ -3269,38 +3004,661 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
     
 });
-riot.tag('tab', '<ul> <li each="{ data }" onclick="{ parent.toggle }" class="{ active: parent.currentIndex==index }">{ title }</li> </ul> <div class="tab-content" riot-tag="tab-content"></div>', function(opts) {
+riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> </div>', function(opts) {
 
-    var self = this
+    var self = this;
     var config = self.opts.opts || self.opts;
-
-    self.data = config.data;
-    if (self.data.length > 0) {
-        self.currentIndex = 0;
-        self.content = self.data[0].content;
-        for (i = 0; i < self.data.length; i++) {
-            self.data[i].index = i;
-        }
+    var EL = self.root;
+    for (i in config) {
+        self[i] = config[i];
     }
-    
+    self.width = config.width || 600;
+    self.height = config.height || 'auto';
 
-    this.toggle = function(e) {
-        self.content = e.item.content;
-        self.currentIndex = e.item.index;
-        self.update();
+    self.on('mount', function() {
+        var container = self.root.querySelector('.itk-modal-container');
+        var head = self.root.querySelector('.itk-modal-title');
+        var headHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
+        if (config.height) {
+            container.style.height = (self.height - headHeight - 2) + 'px';
+        }
+
+    })
+
+    this.close = function(e) {
+        self.root.style.display = 'none';
+        self.onClose && self.onClose();
     }.bind(this);
 
+    if (document.querySelector("[modal-open-target='" + self.root.id + "']")) {
+        document.querySelector("[modal-open-target='" + self.root.id + "']").onclick = function() {
+            self.root.style.display = 'block';
+            self.onOpen && self.onOpen();
+        }
+    }
+
+    self.root.open = function() {
+        self.root.style.display = 'block';
+        self.onOpen && self.onOpen();
+    }
+
+    self.root.close = function() {
+        self.root.style.display = 'none';
+        self.onClose && self.onClose();
+    }
+
+    self.root.loadData = function(newData, colName){
+        colName = colName || 'data';
+        self[colName] = newData;
+        self.update();
+    }
+
+
+
+
+});
+riot.tag('itk-paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="itk-paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="itk-paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="itk-paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="itk-paginate"> <form onsubmit="{ redirect }" style="position:relative;"> <span class="redirect" if="{ redirect }">跳转到<input class="jumpPage" name="page" riot-type={"number"} style="width: 40px;">页 </span> <div class="itk-paginate-tips" riot-style="top: { tipsTop }; left: { tipsLeft }; display: { showTip }"> 请输入1～{ pageCount }之间的数字 </div> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
+        var self = this;
+        var EL = self.root;
+        var config = self.opts.opts || self.opts;
+        self.showTip = 'none';
+        self.count = config.count || 0;
+        self.pagesize = config.pagesize || 20;
+        self.pageCount = config.pageCount || Math.ceil(self.count/self.pagesize) || 1;
+        self.currentPage = config.currentPage || 1;
+        self.url = config.url || '';
+        self.showNumber = config.showNumber || 5;
+
+        self.redirect = config.redirect || true;
+        self.showPageCount = config.showPageCount || true;
+        self.showItemCount = config.showItemCount || true;
+        self.needInit = config.needInit || false;
+
+        self.updateCurrentPage = function () {
+            if (self.currentPage > Math.ceil(self.showNumber/2) && self.pageCount > self.showNumber) {
+                self.pages = [];
+                if (self.pageCount - self.currentPage > 2) {
+                    var origin = self.currentPage - Math.ceil(self.showNumber/2);
+                    var last = self.currentPage + Math.floor(self.showNumber/2);
+                }
+                else {
+                    var last = self.pageCount;
+                    var origin = self.pageCount - self.showNumber;
+                }
+                for (i = origin; i < last; i++) {
+                    self.pages.push({page: i + 1});
+                    self.update();
+                }
+            }
+            else if (self.currentPage < (Math.ceil(self.showNumber/2) + 1) && self.pageCount > self.showNumber){
+                self.pages = [];
+                for (i = 0; i < self.showNumber; i++) {
+                    self.pages.push({page: i + 1});
+                }
+                self.pages.push({page: '...'});
+            }
+        };
+        EL.addCount = function (num) {
+            var count = self.count + num;
+            var oldPageCount = self.pageCount;
+            count < 0
+            ? self.count = 0
+            : self.count = count;
+
+            self.pageCount = Math.ceil(self.count/self.pagesize) || 1;
+            self.currentPage = (
+                self.currentPage > self.pageCount
+                ? self.pageCount
+                : self.currentPage
+            );
+
+            if (self.pageCount <= self.showNumber) {
+                self.pages = [];
+                for (var i = 0; i < self.pageCount; i++) {
+                    self.pages.push({page: i + 1});
+                }
+            }
+
+            if (
+
+                self.needInit
+
+                || (self.pageCount < oldPageCount && self.currentPage <= self.pageCount)
+            ) {
+                config.callback(self.currentPage);
+            }
+
+            self.pageChange(self.currentPage)
+            self.update();
+        };
+
+        self.pages = [];
+        
+        if (self.pageCount < (self.showNumber + 1)) {
+            for (i = 0; i < self.pageCount; i++) {
+                self.pages.push({page: i + 1});
+            }
+        } 
+        else {
+            for (i = 0; i < self.showNumber; i++) {
+                self.pages.push({page: i + 1});
+            }
+            self.pages.push({page: '...'});
+        }
+
+        if (self.needInit) {
+            config.callback(self.currentPage);
+        }
+        self.updateCurrentPage();
+        self.update();
+
+        this.goFirst = function(e) {
+            self.pageChange(1);
+        }.bind(this);
+
+        this.goPrev = function(e) {
+            if (self.currentPage > 1) {
+                self.pageChange(self.currentPage - 1);
+            }
+        }.bind(this);
+
+        this.goNext = function(e) {
+            if (self.currentPage < self.pageCount) {
+                self.pageChange(self.currentPage + 1);
+            }
+        }.bind(this);
+        
+        this.goLast = function(e) {
+            self.pageChange(self.pageCount);
+        }.bind(this);
+
+        this.redirect = function(e) {
+            var index = parseInt(self.page.value, 10);
+            if (
+                index &&
+                index < (self.pageCount + 1) &&
+                index > 0
+            ) {
+                self.pageChange(parseInt(index, 10));
+            }
+            else {
+                self.tipsLeft = self.page.offsetLeft;
+                self.tipsTop = self.page.offsetTop + self.page.offsetHeight + 8;
+                self.showTip = 'block';
+                setTimeout(function () {
+                    self.showTip = 'none';
+                    self.update();
+                }, 1500)
+                self.update();
+            }
+        }.bind(this);
+
+        this.changePage = function(e) {
+            var page = e.item.page
+            if (typeof(page) === 'string') {
+                return false;
+            }
+            else {
+                self.pageChange(page);
+            }
+        }.bind(this);
+
+        self.pageChange = function(page) {
+            if (self.currentPage != page) {
+                self.currentPage = page;
+                config.callback(page);
+            }
+            self.updateCurrentPage();
+        };
+
+    
+});
+riot.tag('itk-select', '<yield></yield> <ul class="itk-selected-container" onmousedown="{ showOptions }"> <li class="itk-selected-option" each="{realData }" if="{ selected && parent.mutiple}"> { name } <span class="itk-close" onmousedown="{ cancel }" >×</span> </li> <li class="itk-single-option" each="{ realData }" if="{ selected && !parent.mutiple}"> { name } </li> <li class="itk-search-wrap"> <input type="text" class="form-control itk-select-search" oninput="{ filter }" onfocus="{ filter }" onkeyup="{ keyboardHandle }"> </li> </ul> <ul class="itk-options-container"> <li class="itk-options" each="{ realData }" onmousedown="{ toggle }" if="{ !hide }"> <span class="itk-option-check" if="{ selected }"></span> <span class="empty-icon" if="{ !selected }"></span> { name } </li> <li class="no-result" if="{ noResult }">无搜索结果</li> </ul>', function(opts) {
+        var self = this;
+        var config = self.opts.opts || self.opts;
+        self.gotOptions = false;
+        self.chooseOnce = true;
+
+        self.init = self.root.init = function() {
+            self.gotOptions = false;
+            self.update();
+        };
+
+        
+        self.realData = [];
+        self.root.exportData = self.realData;
+
+        self.initData = self.root.initData = function() {
+            if (self.root.querySelector('select')) {
+                var options = self.root.querySelector('select').querySelectorAll('option');
+                var mutiple = self.root.querySelector('select').hasAttribute('mutiple');
+                if (mutiple) {
+                    self.mutiple = true;
+                }
+                else {
+                    self.mutiple = false;
+                    self.noSearch = true;
+                }
+            }
+            if (options && options.length && !self.gotOptions) {
+                self.options = options;
+                self.searchInput = self.root.querySelector('.itk-select-search');
+                self.optionsWrap = self.root.querySelector('.itk-options-container');
+                self.realData = [];
+                for (i = 0; i < options.length; i++) {
+                    self.realData.push({
+                        name: options[i].innerHTML,
+                        value: options[i].getAttribute('value'),
+                        selected: options[i].getAttribute('selected'),
+                        index: i
+                    });
+                }
+                self.searchInput.onfocus = function () {
+                    self.optionsWrap.style.display = 'block';
+                };
+
+                self.searchInput.onblur = function () {
+                    self.optionsWrap.style.display = 'none';
+                    self.searchInput.value = '';
+                    self.resetSelectOpt();
+                };
+
+                if (self.noSearch) {
+                    self.searchInput.style.width = '0px';
+                }
+                self.gotOptions = true;
+                self.update();
+            }
+        };
+
+
+        self.on('update', function() { 
+            setTimeout(function() {
+                self.initData();
+            }, 0)
+            
+        });
+
+
+
+        self.on('mount', function() {
+            if (config) {
+                for (var i in config) {
+                    self[i] = config[i];
+                }
+                self.update();
+            }
+        });
+
+        self.filter = function(e) {
+            self.resetSelectOpt();
+            var v = e.target.value;
+            e.target.style.width = (0.9 * v.length + 1) + 'em';
+            var match;
+            for (i = 0; i < self.realData.length; i++) {
+                if (!self.realData[i].name.match(v)) {
+                    self.realData[i].hide = true;
+                }
+                else {
+                    self.realData[i].hide = false;
+                    match = true;
+                }
+            }
+            self.noResult = !match;
+        };
+
+        self.toggle = function(e) {
+            if (self.mutiple) {
+                if (e.item.selected) {
+                    e.item.selected = false;
+                    self.options[e.item.index].selected = false;
+                }
+                else {
+                    e.item.selected = true;
+                    self.options[e.item.index].selected = true;
+                }
+            }
+            else {
+                for (i = 0; i < self.realData.length; i++) {
+                    self.realData[i].selected = false;
+                    self.options[i].selected = false;
+                }
+                e.item.selected = true;
+                self.options[e.item.index].selected = true;
+            }
+            self.update();
+            if (self.chooseOnce) {
+                self.searchInput.blur();
+            }
+        };
+
+        self.cancel = function(e) {
+            e.stopPropagation();
+            e.item.selected = false;
+            self.options[e.item.index].selected = false;
+            self.update();
+        };
+
+        self.showOptions = function(e) {
+            if (self.searchInput && self.searchInput !== document.activeElement) {
+                self.searchInput.focus();
+            }
+            else {
+                self.searchInput.blur();
+            }
+        };
+
+        
+        self.keyboardHandle = function(e) {
+            var searchInput = e.target;
+            searchInput.options = self.root.querySelectorAll('.itk-options');
+            if (searchInput.seletedIndex === undefined ){
+                searchInput.seletedIndex = -1;
+            }
+
+            var keyCode = e.keyCode;
+            if (keyCode === 37 || keyCode === 38){
+                self.clearSelectedOpt(searchInput);
+                searchInput.seletedIndex--;
+                if (searchInput.seletedIndex < 0){
+                    searchInput.seletedIndex = searchInput.options.length - 1;
+                }
+                self.setSelectedOpt(searchInput);
+            }
+            else if (keyCode === 39 || keyCode === 40){
+                self.clearSelectedOpt(searchInput);
+                searchInput.seletedIndex++;
+                if (searchInput.seletedIndex >= searchInput.options.length){
+                    searchInput.seletedIndex = 0;
+                }
+                self.setSelectedOpt(searchInput);
+            }
+            else if (keyCode === 13){
+                self.chooseByKeyboard(searchInput);
+            }
+            else if (keyCode === 27){
+                self.searchInput.blur();
+            }
+        };
+
+        self.chooseByKeyboard = function(target){
+            var e = document.createEvent("MouseEvents");
+            var dom = target.options[target.seletedIndex];
+            e.initEvent("mousedown", true, true);
+            if (dom) {
+                dom.dispatchEvent(e);
+            }
+        };
+
+        self.clearSelectedOpt = function(target){
+            if (target.options) {
+                var dom = target.options[target.seletedIndex];
+                if (target.seletedIndex >= 0 && dom) {
+                    dom.style.background = "";
+                    dom.scrollIntoView();
+                }
+            }
+        };
+
+        self.resetSelectOpt = function() {
+            self.clearSelectedOpt(self.searchInput);
+            self.searchInput.seletedIndex = -1;
+        };
+
+        self.setSelectedOpt = function(target){
+            var dom = target.options[target.seletedIndex];
+            if (dom) {
+                dom.style.background = "#eff3f8";
+                dom.scrollIntoView();
+            }
+        };
+    
 });
 
-riot.tag('tab-content', '', function(opts) {
-    var self = this;
-   
-    self.parent.on('update', function() {
-        self.root.innerHTML = self.parent.content;
-    });
 
+riot.tag('itk-slide', ' <yield>', function(opts) {
+
+        var self = this;
+        var EL = self.root;
+        var config = self.opts.opts || self.opts;
+        var js = document.scripts;
+        var path = '';
+        var jsPath = '';
+
+
+        for (var i = 0; i < js.length; i++) {
+            if (!js[i].src) {
+                continue;
+            }
+            if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
+                jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+                break;
+            }
+        }
+
+        path = jsPath + 'plugins/';
+
+        if (typeof jQuery == 'undefined') {
+            (function () {
+                utils.jsLoader([
+                    path + 'jquery/jquery-1.12.0.min.js',
+                ], function () {
+
+                    jQuery(document).ready(function ($) {
+                        utils.jsLoader([
+                            path + 'slick/slick.css',
+                            path + 'slick/slick-theme.css',
+                            path + 'slick/slick.js',
+                        ], function () {
+                            $(document).ready(function () {
+                                $(EL).slick(config);
+                            });
+                        });
+                    });
+                });
+            })();
+        } else {
+            jQuery(document).ready(function ($) {
+                utils.jsLoader([
+                    path + 'slick/slick.css',
+                    path + 'slick/slick-theme.css',
+                    path + 'slick/slick.js'
+                ], function () {
+                    $(document).ready(function () {
+                        $(EL).slick(config);
+                    });
+                });
+            });
+        }
+
+        self.on('mount', function() {
+            self.root.style.display = 'block';
+        })
+    
 });
-riot.tag('tree-item', '<input type="checkbox" __checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-arrow { open: item.opened }" onclick="{ toggle }" if="{ item.children }"></i> <i class="tree-item-icon" if="{ item.children }"></i> <div onclick="{ leftClick }">{ item.name }</div>', function(opts) {
+riot.tag('itk-table', '<yield>', function(opts) {
+        var self = this;
+        var config = self.opts.opts || self.opts;
+        var EL = self.root;
+        
+        self.init = function() {
+            EL.style.display = 'block';
+            for (i in config) {
+                if (!self[i]) {
+                    self[i] = config[i];
+                }
+            }
+            self.originData = utils.deepCopy(self.data);
+            self.update();
+        };
+
+
+        self.on('mount', function() {
+            self.init();
+        });
+
+        
+        self.compare = function(a, b) {
+            if (a[self.orderkeyName] > b[self.orderkeyName]) {
+                return 1;
+            } 
+            else if (a[self.orderkeyName] === b[self.orderkeyName]) {
+                return 0;
+            }
+            else {
+                return -1;
+            }
+        }
+
+        self.clearOrder = function() {
+            self.ordered = false;
+            self.reversed = false;
+        }
+
+        
+        self.loadData = EL.loadData = function(data) {
+            self.data = data;
+            self.originData = utils.deepCopy(data);
+            self.update();
+            return self.data;
+        };
+        
+        
+        self.exportData = EL.exportData = function() {
+            return self.data;
+        }
+        
+        
+        self.reset = EL.reset = function() {
+            self.data = utils.deepCopy(self.originData);
+            self.update();
+        };
+
+        
+        self.orderBy = function(col) {
+            return function() {
+                self.orderkeyName = col;
+                if (self.ordered !== col) {
+                    if (self.reversed !== col) {
+                        self.data = self.data.sort(self.compare)
+                    }
+                    else {
+                        self.data = self.data.reverse();
+                    }
+                    self.ordered = col;
+                    self.reversed = false;
+                    self.update()
+                }
+                return self.data;
+            }
+        };
+
+        EL.orderBy = function(col) {
+            self.orderBy(col)();
+        };
+
+        
+        self.reverseBy = function(col) {
+            return function() {
+                self.orderkeyName = col;
+                if (self.reversed !== col) {
+                    if (self.ordered !== col) {
+                        self.data = self.data.sort(self.compare);
+                        self.data = self.data.reverse();
+                    }
+                    else {
+                        self.data = self.data.reverse();
+                    }
+                    self.ordered = false;
+                    self.reversed = col;
+                    self.update()
+                }
+                return self.data;
+            }
+        };
+        
+        EL.reverseBy = function(col) {
+            self.reverseBy(col)();
+        };
+        
+        self.toggleBy = function(col) {
+            if (self.ordered === col) {
+                return self.reverseBy(col);
+            }
+            else {
+                return self.orderBy(col);
+            }
+        };
+
+        EL.toggleBy = function(col) {
+            if (self.ordered === col) {
+                EL.reverseBy(col);
+            }
+            else {
+                EL.orderBy(col);
+            }
+        };
+
+        
+        
+        self.append = function(rows) {
+            return function() {
+                self.clearOrder();
+                if (utils.isObject(rows)) {
+                    self.data.push(rows);
+                }
+                else if (utils.isArray(rows)) {
+                    self.data = self.data.concat(rows);
+                }
+                self.update();
+            }
+        };
+
+        EL.append = function(rows) {
+            self.append(rows)();
+        };
+        
+        
+        self.prepend = function(rows) {
+            return function() {
+                self.clearOrder();
+                if (utils.isObject(rows)) {
+                    self.data.unshift(rows);
+                }
+                else if (utils.isArray(rows)) {
+                    self.data = rows.concat(self.data);
+                }
+                self.update();
+            }
+        };
+        EL.prepend = function(rows) {
+            self.prepend(rows)();
+        };
+        
+        
+        self.deleteBy = function(col, value) {
+            return function() {
+                if (col && value) {
+                    self.clearOrder();
+                    for (var i = 0 ; i < self.data.length; i++) {
+                        if (self.data[i][col] === value) {
+                            self.data.splice(i, 1);
+                            i = i - 1;
+                        }
+                    }
+                    self.update();
+                }
+            };
+        }
+
+        EL.deleteBy = function (col, value) {
+            self.deleteBy(col, value)();
+        }
+
+
+    
+});
+riot.tag('itk-tree-item', '<input type="checkbox" __checked="{ item.selected }" if="{ parent.rootConfig.showCheck }" onchange="{ checkHandle }"> <i class="tree-item-arrow { open: item.opened }" onclick="{ toggle }" if="{ item.children }"></i> <i class="tree-item-icon" if="{ item.children }"></i> <div onclick="{ leftClick }">{ item.name }</div>', function(opts) {
     
     var self = this;
     
@@ -3386,7 +3744,7 @@ riot.tag('tree-item', '<input type="checkbox" __checked="{ item.selected }" if="
 
 });
 
-riot.tag('tree', '<div class="tree-item-wrap" each="{ item, i in data }" onselectstart="return false" ondragstart="return false"> <tree-item class="tree-item-row { root: item.level==1 }" riot-style="padding-left: { countPadding(item.level) }"></tree-item> <ul class="tree-child-wrap" if="{ item.opened && item.children }"> <tree data="{ item.children }"></tree> </ul> </div>', function(opts) {
+riot.tag('itk-tree', '<div class="tree-item-wrap" each="{ item, i in data }" onselectstart="return false" ondragstart="return false"> <itk-tree-item class="tree-item-row { root: item.level==1 }" riot-style="padding-left: { countPadding(item.level) }"></itk-tree-item> <ul class="tree-child-wrap" if="{ item.opened && item.children }"> <itk-tree data="{ item.children }"></itk-tree> </ul> </div>', function(opts) {
     var self = this;
     self.config = self.opts.opts || self.opts;
 
@@ -3438,7 +3796,7 @@ riot.tag('tree', '<div class="tree-item-wrap" each="{ item, i in data }" onselec
     };
     
     
-    if (!self.parent || self.parent.root.tagName !== 'TREE') {
+    if (!self.parent || self.parent.root.tagName !== 'ITK-TREE') {
         if (self.config.handleData) {
             var tree = self.dataHandle(self.config.data);
             self.data = tree;
@@ -3460,5 +3818,55 @@ riot.tag('tree', '<div class="tree-item-wrap" each="{ item, i in data }" onselec
         return (level - 1) * padding + 'px';
     }.bind(this);
     
+    
+});
+riot.tag('itk-uploader', '<div class="btn btn-large btn-primary" name="uploadBtn" id="uploadBtn">上传</div>', function(opts) {
+        var self = this;
+        var EL = self.root;
+        var config = self.opts.opts || self.opts;
+
+        var randomNumber = function (min, max) {
+            return Math.floor(min + Math.random() * (max - min));
+        };
+        self['uploadBtn'].id = randomNumber(10000, 99999);
+
+        var js = document.scripts;
+        var jsPath = '';
+        for (var i = 0; i < js.length; i++) {
+            if (!js[i].src) {
+                continue;
+            }
+            if (/iToolkit_pc.min.js|iToolkit_pc.js/.test(js[i].src)) {
+                jsPath = js[i].src.replace(/iToolkit_pc.min.js|iToolkit_pc.js/, '');
+                break;
+            }
+        }
+        path = jsPath + 'plugins/uploader/';
+        var sourceArr = [
+            path + 'SimpleAjaxUploader.min.js',
+        ];
+
+        utils.jsLoader(sourceArr, function () {
+
+            var btn = document.getElementById(self['uploadBtn'].id);
+
+            console.log(btn);
+
+            var json = {};
+            json.button = btn;
+
+            json.url = config.url;
+            json.name = config.name ? config.name : "";
+            json.multipart = config.multipart ? config.multipart : true;
+            json.responseType = config.responseType ? config.responseType : "";
+            json.startXHR = config.startXHR ? config.startXHR : null;
+            json.onSubmit = config.onSubmit ? config.onSubmit : null;
+            json.onComplete = config.onComplete ? config.onComplete : null;
+            json.onError = config.onError ? config.onError : null;
+
+
+            var uploader = new ss.SimpleUpload(json);
+        });
+
     
 });

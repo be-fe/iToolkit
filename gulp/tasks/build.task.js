@@ -30,23 +30,32 @@ module.exports = function (gulp, plugin, pkg) {
 
         return plugin.header(banner, {pkg: pkg, date: time});
     }
+    gulp.task('build', ['theme_css', 'css', 'essential_js']);
 
-    gulp.task('build', function () {
-        
-        gulp.src(['src/css/themes/*.css'])
-        .pipe(gulp.dest('build/themes'))
-        .pipe(plugin.minifyCss())
-        .pipe(plugin.rename({ suffix: '.min' }))
-        .pipe(gulp.dest('build/themes'));
 
-        gulp.src(['src/lib/riot.js', 'src/lib/common.js', 'src/iToolkit_pc.js'])
-        .pipe(plugin.concat('iToolkit_pc.js'))
-        .pipe(gulp.dest('build'))
-        // .pipe(jshint())
-        // .pipe(jshint.reporter('default'))
-        .pipe(plugin.uglify())
-        .pipe(plugin.rename({ suffix: '.min' }))
-        .pipe(setHeader())
-        .pipe(gulp.dest('build'));
+    gulp.task('theme_css', ['less'], function() {
+        return gulp.src(['src/css/themes/*.css'])
+            .pipe(plugin.minifyCss())
+            .pipe(plugin.rename({ suffix: '.min' }))
+            .pipe(gulp.dest('build/themes'));
+    });
+
+    gulp.task('css', ['less'], function() {
+        gulp.src(['src/css/*.css'])
+            .pipe(plugin.minifyCss())
+            .pipe(plugin.rename({ suffix: '.min' }))
+            .pipe(gulp.dest('build'));
+    });
+
+    gulp.task('essential_js',  function() {
+        return gulp.src(['src/lib/riot.js', 'src/lib/common.js', 'src/itoolkit.js'])
+            .pipe(plugin.concat('itoolkit.js'))
+            .pipe(gulp.dest('build'))
+            // .pipe(jshint())
+            // .pipe(jshint.reporter('default'))
+            .pipe(plugin.uglify())
+            .pipe(plugin.rename({ suffix: '.min' }))
+            .pipe(setHeader())
+            .pipe(gulp.dest('build'));
     });
 };

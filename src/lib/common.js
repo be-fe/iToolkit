@@ -217,7 +217,8 @@ var utils = {
     },
 
     deepCopy: function (parent, child) {
-        var child = child || {};
+        var defaultWrapper = (toString.call(parent) === '[object Array]') ? [] : {};
+        var child = child || defaultWrapper;
         for (var i in parent) {
             if (toString.call(parent[i]) === '[object Object]') {
                 child[i] = {}; //新建数组或者object来达到目的
@@ -490,17 +491,4 @@ utils.extend(utils, {
  * 全局事件监控
  */
 var EventCtrl = EC = riot.observable();
-
-/*
- * 外部方法传入
- */
-var iToolkit = {};
-iToolkit.methodRegister = function (name, fn) {
-    for (var i in iToolkit) {
-        if (name === i) {
-            return;
-        }
-    }
-    iToolkit[name] = fn;
-};
-iToolkit.tableExtend = {};
+var iToolkit = itk = riot;

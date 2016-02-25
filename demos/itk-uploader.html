@@ -1,0 +1,110 @@
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+    <link rel="stylesheet" href="css/demo.css">
+    <link rel="stylesheet" href="css/prism.css">
+    <link rel="stylesheet" href="../build/itoolkit.min.css">
+    <script src="../build/itoolkit.min.js"></script>
+    <script src="js/prism.js"></script>
+</head>
+<body>
+<div id="demo-info">
+    <h2>itk-uploader</h2>
+    <hr>
+    <p>
+        <code>itk-uploader</code>组件基于Simple-Ajax-Uploader,可以快速构建文件上传功能.可参考<a href="https://github.com/LPology/Simple-Ajax-Uploader">https://github.com/LPology/Simple-Ajax-Uploader</a>。
+        <br>注意,服务器端代码请参考 demo 。
+    </p>
+</div>
+<div id="demo-html">
+
+    <h4>默认样式</h4>
+    <itk-uploader id="uploader1"></itk-uploader>
+
+    <hr/>
+
+    <h4>自定义上传按钮</h4>
+    <itk-uploader id="uploader2">
+        <button class="btn btn-default">上传文件</button>
+    </itk-uploader>
+
+    <hr/>
+
+    <h4>修改默认文字</h4>
+    <itk-uploader id="uploader3">
+    </itk-uploader>
+
+    <hr/>
+
+    <h4>通过配置选择上传按钮</h4>
+    <itk-uploader id="uploader4">
+    </itk-uploader>
+    <button id="my-upload-btn">我是指定的上传按钮</button>
+
+</div>
+<script src="js/html-code.js"></script>
+
+<script id="demo-script">
+
+    // 常用配置项
+    var opt1 = {
+        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',// 必须
+        name: 'uploadfile',  // post 接受的 name, 后台需要用到
+        responseType: 'json',
+        // startXHR 在 onSubmit 之后
+        startXHR: function (filename, fileSize, uploadBtn) {
+            console.log('上传已经开始:');
+        },
+        onSubmit: function (filename, extension, uploadBtn, fileSize) {
+            console.log('已经提交文件:');
+        },
+
+        onComplete: function (filename, response) {
+            // 传输完成的回调
+            if (!response) {
+                alert("上传文件失败!");
+                return;
+            }
+
+            if (response.success === true) {
+                alert("上传文件成功!");
+            } else {
+                if (response.msg) {
+                    alert(response.msg);
+                } else {
+                    alert("发生未知错误!");
+                }
+            }
+        },
+
+        onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
+            console.log('发生错误');
+        },
+    };
+
+    // 自定义默认上传按钮的文字
+    var opt2 = {
+        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
+        name: 'uploadfile',
+        buttonText: '上传图片',// 默认为'上传文件',用户可以自定义上传按钮的文字
+    };
+
+    // 配置指定上传按钮
+    var opt3 = {
+        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
+        name: 'uploadfile',
+        btn: '#my-upload-btn',// 用户指定某个元素作为上传触发器
+    };
+
+    riot.mount('#uploader1', opt1);
+    riot.mount('#uploader2', opt1);
+    riot.mount('#uploader3', opt2);
+    riot.mount('#uploader4', opt3);
+
+</script>
+
+<script src="js/js-code.js"></script>
+</body>
+</html>
