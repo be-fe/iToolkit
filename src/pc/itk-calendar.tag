@@ -15,7 +15,13 @@
             <div class="itk-calendar-days">
                 <div
                     each={ dayArr }
-                    class="itk-calendar-day { overflow: overflow } { selected: parent.showSelected && parent.selectedYear === year && parent.selectedMonth === month && parent.selectedDay === day } { today: parent.showToday && parent.toYear === year && parent.toMonth === month && parent.today === day } { defuse: !year && !month }"
+                    class="itk-calendar-day
+                        { 
+                            overflow: overflow,
+                            selected: parent.showSelected && parent.selectedYear === year && parent.selectedMonth === month && parent.selectedDay === day,
+                            today: parent.showToday && parent.toYear === year && parent.toMonth === month && parent.today === day,
+                            defuse: !year && !month 
+                        }"
                     data-year={ year }
                     data-month={ month }
                     data-day={ day }
@@ -339,6 +345,7 @@
             return;
         }
         self.open = false;
+        self.openList = false;
         self.update();
     };
 
