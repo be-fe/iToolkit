@@ -14,10 +14,8 @@
     <h2>itk-uploader</h2>
     <hr>
     <p>
-        <code>itk-uploader</code>组件基于Simple-Ajax-Uploader,可以快速构建文件上传功能.可参考<a
-            href="https://github.com/LPology/Simple-Ajax-Uploader">https://github.com/LPology/Simple-Ajax-Uploader</a>。
-        <br>注意,这里的图片上传功能例子需要用到 php, 测试这个组件的时候,建议在项目根目录执行:php -S
-        localhost:8080开启服务,因为默认的 doc 页面的server 无法处理PHP 代码。
+        <code>itk-uploader</code>组件基于Simple-Ajax-Uploader,可以快速构建文件上传功能.可参考<a href="https://github.com/LPology/Simple-Ajax-Uploader">https://github.com/LPology/Simple-Ajax-Uploader</a>。
+        <br>注意,服务器端代码请参考 demo 。
     </p>
 </div>
 <div id="demo-html">
@@ -52,9 +50,8 @@
 
     // 常用配置项
     var opt1 = {
-        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
+        url: '../src/plugins/uploader/examples/basic_example/file_upload.php',// 必须
         name: 'uploadfile',  // post 接受的 name, 后台需要用到
-        multipart: true,
         responseType: 'json',
         // startXHR 在 onSubmit 之后
         startXHR: function (filename, fileSize, uploadBtn) {
@@ -63,7 +60,7 @@
         onSubmit: function (filename, extension, uploadBtn, fileSize) {
             console.log('已经提交文件:');
         },
-        
+
         onComplete: function (filename, response) {
             // 传输完成的回调
             if (!response) {
@@ -82,7 +79,7 @@
             }
         },
 
-        onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize){
+        onError: function (filename, errorType, status, statusText, response, uploadBtn, fileSize) {
             console.log('发生错误');
         },
     };
@@ -99,7 +96,6 @@
         url: '../src/plugins/uploader/examples/basic_example/file_upload.php',
         name: 'uploadfile',
         btn: '#my-upload-btn',// 用户指定某个元素作为上传触发器
-        
     };
 
     riot.mount('#uploader1', opt1);

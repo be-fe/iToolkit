@@ -15,18 +15,17 @@
     <hr>
     <p>
         <code>itk-editor</code>组件基于CKEditor,用于快速构建富文本编辑器。可参考:<a href="http://ckeditor.com/">http://ckeditor.com/</a>。
-        <br>注意,这里的图片上传功能例子需要用到 php, 测试这个组件的时候,建议在项目根目录执行:php -S
-        localhost:8080开启服务,因为默认的 doc 页面的server 无法处理PHP 代码。并且,服务端返回的代码需要符合示例的规范。
+        <br>注意,服务端返回的代码需要符合示例的规范。
     </p>
 </div>
 <div id="demo-html">
 
-    <!--最基本用法-->
+    <h3>最基本用法</h3>
     <itk-editor id="editor1"></itk-editor>
 
-    <br>
+    <hr>
 
-    <!--自定义配置项-->
+    <h3>自定义配置项</h3>
     <itk-editor id="editor2"></itk-editor>
 
     <input type="button" id="setContent" value="设置第二个编辑器的值" style="margin-top: 20px;" class="btn btn-primary"/>
@@ -43,7 +42,7 @@
         filebrowserImageUploadUrl: "/demos/_server/app.php", // 必需,服务器接受图像上传的地址,并且服务器返回值要符合示例所展示的规范.
         initEditor: function (editor) {
             console.log(editor);
-        }, // 必需,编辑器对象会被放到这个函数的参数里面
+        }, // 必需,编辑器对象会被传到这个函数,以便后续使用
     };
     riot.mount('#editor1', opt1);
 
@@ -51,10 +50,8 @@
     /*
      * 自定义配置项
      */
-    // 初始化的内容
-    var initContent = '<h1>这里是 init 的测试内容</h1>';
+    var initContent = '<h1>这里是 init 的测试内容</h1>'; // 初始化的内容
 
-    // 得到编辑器对象,然后可以再这里 getData 和 setData,其他复杂属性和方法请参考:http://ckeditor.com/
     var editor2;
     var initEditor2 = function (editor) {
         editor2 = editor;
@@ -66,7 +63,7 @@
         filebrowserImageUploadUrl: "/demos/_server/app.php",
 
         initContent: initContent,// 非必需,编辑器的初始化内容
-        initEditor: initEditor2,
+        initEditor: initEditor2, // 得到编辑器对象,然后可以再这里 getData 和 setData,其他复杂属性和方法请参考:http://ckeditor.com/
 
         // 这里的配置项,将直接传递给CKEDITOR.config, 请参考:http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html,以上四个配置比较重要,需要单独配置,不在下面editorConfig中
         editorConfig: {
@@ -77,6 +74,7 @@
                 ['Bold', 'Italic', '-', 'NumberedList', 'BulletedList', '-', 'Link', '-', 'About']
             ]
         }
+
     };
 
     var setContent = document.getElementById('setContent');
@@ -87,7 +85,7 @@
     };
 
     setContent.onclick = function () {
-        editor2.setData('<h2>啊啊啊啊啊啊啊啊啊</h2>');
+        editor2.setData('<h2>我是一个测试的 h2 字符串</h2>');
     };
 
     riot.mount('#editor2', opt2);
