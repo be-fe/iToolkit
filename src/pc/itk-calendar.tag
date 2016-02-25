@@ -339,6 +339,7 @@
             return;
         }
         self.open = false;
+        self.openList = false;
         self.update();
     };
 

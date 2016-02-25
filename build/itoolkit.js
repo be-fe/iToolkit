@@ -2157,6 +2157,7 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
             return;
         }
         self.open = false;
+        self.openList = false;
         self.update();
     };
 
