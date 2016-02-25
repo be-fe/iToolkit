@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+    <link rel="stylesheet" href="css/demo.css">
+    <link rel="stylesheet" href="css/prism.css">        
+    <link rel="stylesheet" href="../build/itoolkit.min.css">
+    <script src="../build/itoolkit.min.js"></script>
+    <script src="js/prism.js"></script>
+</head>
+<body>
+<div id="demo-html">
+
+    <h3>直接使用</h3>
+    <itk-calendar id="c1"></itk-calendar>
+    <hr />
+
+    <h3>配置语言</h3>
+    <itk-calendar id="c4"></itk-calendar>
+    <hr />
+
+    <h3>由任何元素呼出</h3>
+    <input type="text" id="input1">
+    <itk-calendar id="c2"></itk-calendar>
+    
+    <h4>由div呼出</h4>
+    <div id="div" style="width:100px;height: 100px;background:steelblue;border-radius:50%;text-align: center;line-height: 100px">time</div>
+    <itk-calendar id="c5"></itk-calendar>
+    <hr />
+
+    <h3>默认样式</h3>
+    <h4>input</h4>
+    <div style="width: 800px; height:300px;">
+        <input type="text" id="input2" calendar>
+        <itk-calendar id="c3"></itk-calendar>
+        <div>输出时间戳<span id="span1"></span></div>
+    </div>
+
+    <h4>任意元素</h4>
+    <div id="div1" calendar></div>
+    <itk-calendar id="c6"></itk-calendar>
+
+    <hr />
+
+
+    <h3>TODO</h3>
+    <ol>
+        <li>时间范围选择</li>
+        <li>正确依附（position）</li>
+        <li>'&lt;div id="div1" calendar&gt;&lt;/div&gt;' 在有calendar属性存在时有时不能正确处理样式</li>
+        <li>优化</li>
+        <li>动画效果（目前无）</li>
+    </ol>
+    <hr />
+</div>
+<script src="js/html-code.js"></script>
+
+<script id="demo-script">
+    // 直接使用
+    riot.mount('#c1');
+
+    // 配置多种语言
+    riot.mount('#c4', {
+        customLang: {
+            it: {
+                weekArr: ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'],
+                monthArr: ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottombre','novembre','dicembre']
+            }
+        },
+        language: 'it'
+    });
+
+    // 由input呼出
+    var input1 = document.getElementById('input1')
+    riot.mount('#c2', {
+        element: input1,
+        language: 'it',
+        onSelect: function (formatter) {
+            input1.value = formatter('yyyy年m月d日');
+        }
+    });
+
+    // 由div呼出
+    var div = document.getElementById('div');
+    riot.mount('#c5', {
+        element: div,
+        showSelected: true,
+        onSelect: function (formatter) {
+            alert(new Date(formatter('timeStamp')));
+        }
+    });
+
+    // 默认样式
+    var input2 = document.getElementById('input2')
+    riot.mount('#c3', {
+        element: input2,
+        initTime: new Date(2014, 0, 1).getTime(),
+        language: 'zh_cn',
+        showToday: false,
+        showSelected: true,
+        onSelect: function (formatter, y, m, d) {
+            input2.value = formatter('yyyy年m月d日');
+            console.log(y + '年' + m + '月' + d + '日');
+            var span = document.getElementById('span1');
+            span.innerText = '年：' + y + ' 月：' + m + ' 日：' + d + ';' + 'unixTimeStamp:' + formatter('unixTimeStamp') + ' timeStamp:' + formatter('timeStamp');
+        }
+    });
+
+    // 任意元素
+    var div1 = document.getElementById('div1');
+    riot.mount('#c6', {
+        element: div1,
+        showToday: true,
+        showSelected: true,
+        onSelect: function (formatter) {
+            div1.innerText = formatter('timeStamp');
+        }
+    });
+
+</script>
+<script src="js/js-code.js"></script>
+
+</body>
+</html>

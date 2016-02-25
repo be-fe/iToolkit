@@ -1,0 +1,127 @@
+itk-tree {
+
+    .tree-item-wrap {
+        position: relative;
+    }
+    .tree-item-icon {
+        cursor: pointer;
+    }
+
+    .tree-item-wrap input {
+        vertical-align: middle;
+        z-index: 2;
+        position: relative;
+        margin: 0;
+    }
+
+    .tree-item-name {
+        display: inline-block;
+        cursor: pointer;
+        font-weight: bolder;
+        color: #29282f;
+        position: relative;
+        z-index: 100;
+        max-width: 80%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .tree-item-name.active {
+        position: relative;
+        z-index: 100;
+    }
+
+    .tree-item-name:hover + .tree-item-back {
+        background: #d6d7dc;
+    }
+
+    .tree-item-name.right-active + .tree-item-back {
+        background: #d6d7dc;
+    }
+
+    selector .tree-item-back.active,
+    selector .tree-item-back:hover {
+        background: #eff3f8;
+    }
+
+    selector .tree-item-name:hover + .tree-item-back {
+        background: #eff3f8;
+    }
+
+    selector .tree-item-name.right-active + .tree-item-back {
+        background: #eff3f8;
+    }
+
+    .tree-item-back.active,
+    .tree-item-back:hover {
+        background: #d6d7dc;
+    }
+
+    .tree-child-wrap {
+        padding: 0;
+        position: relative;
+    }
+
+    .tree-item-folder,
+    .tree-item-arrow  {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAWCAYAAABtwKSvAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpEQzgyQ0M2OUNGMjQxMUU1ODRBMkM4NTgwNjk3ODQzNCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpEQzgyQ0M2QUNGMjQxMUU1ODRBMkM4NTgwNjk3ODQzNCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkRDODJDQzY3Q0YyNDExRTU4NEEyQzg1ODA2OTc4NDM0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkRDODJDQzY4Q0YyNDExRTU4NEEyQzg1ODA2OTc4NDM0Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+t9sybQAAAS5JREFUeNpi/P//P8NwASxL1++hikHRgS4D7hkmhmEEYJ7xBOJnQPwfC34GlR8ynpkLxJI41EhC5YeMZ2AeqQZidiBmhNLVSPKDPtbQ80wnEP+CskF0DwH9gyrWWND4f9H4v6CxhAv8x5M8qQYIlbiwknQolWYrgViMlJj5T88QJbGuCgNiByDOAeLVA1nPrMZRgPzH5TAcABQzq6BYjJBnGEnExIJsIH6NRfwNVI5UEArEl6E03WPmFRBnYRHPhMqRAzAClJ4FwBooxsUn1SwdaHIbsLZZNjQmXpOZvED6wqHJ6xWh0oweyS0biU1qbGTj00dvzzBQkLRCiW0BPEdqf5EKXgyWPg7MMynQNpYEifqfAnEarR1JbKDAPLONHm2s0Z4mKRXPcBrQAAgwACm3T917Ygx9AAAAAElFTkSuQmCC);
+    }
+
+    .tree-item-folder {
+        background-position: 3px 0px;
+        display: inline-block;
+        height: 24px;
+        width: 24px;
+        vertical-align: top;
+        cursor: pointer;
+    }
+
+    .tree-item-arrow {
+        background-position: -35px -4px;
+        display: inline-block;
+        vertical-align: middle;
+        height: 16px;
+        width: 16px;
+        cursor: pointer;
+        position: relative;
+        z-index: 100;
+    }
+
+    .tree-no-folder {
+        display: inline-block;
+        width: 3px;
+    }
+
+    .tree-no-arrow {
+        display: inline-block;
+        width: 3px;
+    }
+
+    .tree-item-arrow.open {
+        background-position: -20px -5px;
+    }
+
+    .tree-item-row {
+        display: inline-block;
+        padding: 2px 0;
+    }
+
+    .tree-item-row > div {
+      display: inline-block;
+      font-size: 16px;
+      vertical-align: middle;
+    }
+
+    .tree-item-arrow.empty {
+        border: none;
+    }
+
+    .tree-item-arrow ~ ul {
+        display: none;
+    }
+
+    .tree-item-arrow.open ~ ul {
+        display: block;
+    }
+}

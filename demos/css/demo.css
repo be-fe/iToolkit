@@ -1,0 +1,25 @@
+html, body {
+    /*height: 100%;*/
+    /*overflow: hidden;*/
+}
+
+#demo-html {
+    position: relative;
+    padding: 30px 20px 20px 20px;
+    border-radius: 5px;
+    border: 1px solid #e5e5e5;
+}
+
+#demo-html:before {
+    content: 'Demo:';
+    position: absolute;
+    top: -1px;
+    left: 0px;
+    padding-left: 2px;
+    border-right: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+#demo-info {
+    margin: 15px 0;
+}

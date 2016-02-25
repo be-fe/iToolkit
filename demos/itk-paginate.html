@@ -1,0 +1,88 @@
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
+        <link rel="stylesheet" href="../build/itoolkit.min.css">
+        <script src="../build/itoolkit.min.js"></script>
+        <script src="js/prism.js"></script>
+    </head>
+    <body>
+        <div id="demo-info">
+            <h2>itk-paginate</h2><hr>
+            <p>
+                <code>itk-paginate</code>组件是一个较为完备的分页解决方案, 如果数据发生变化，分页也会随之改变。
+            </p>
+        </div>
+        <div id="demo-html">
+
+            <ul id="container"></ul>
+            <itk-paginate></itk-paginate>
+            <p>The page number is <b id="page-number"></b></p>
+            <div>
+            	<button class="btn btn-primary" onclick="addItem(1)">增加一条条目</button>
+            	<button class="btn btn-primary" onclick="addItem(10)">增加十条条目</button>
+            	<button class="btn btn-primary" onclick="addItem(-1)">减少一条条目</button>
+            	<button class="btn btn-primary" onclick="addItem(-10)">减少十条条目</button>
+            </div>
+
+        </div>
+        <script src="js/html-code.js"></script>
+
+        <script id="demo-script">
+
+            utils.httpGet('./data/pagenate.json', {
+                currentPage: 1
+            }, function (data) {
+                window.data = data.data;
+                var count = window.data.length;
+                var pageOpts = {
+                    count: count,     //总条目数
+                    pagesize: 10,   //每页的条目数
+                    showNumber: 5,  //分页格的最大数量
+                    currentPage: 3, //初始化的页码，默认是1
+                    needInit: true,  //初始化时是否执行callback，默认false
+                    callback: function(index) {
+                        var container = document.getElementById('container');
+                        var html = '';
+                        var items = window.data.slice(
+                            (index - 1) * 10,
+                            index * 10
+                        );
+                        for (var i = 0; i < items.length; i++) {
+                            html += ''
+                                + '<li>name:'
+                                + items[i].name
+                                + ' score:'
+                                + items[i].score
+                                + '</li>';
+                        };
+                        container.innerHTML = html;
+                    }               //页数变化时的回调，会将跳转页码作为参数传入
+                }
+                riot.mount('itk-paginate', pageOpts);
+            });
+            var p = document.querySelector('itk-paginate');
+            function addItem(num) {
+                if (typeof num !== 'number') {
+                    return;
+                }
+                if (num < 0) {
+                    for (var i = 0; i < -num; i++) {
+                        window.data.length && window.data.pop();
+                    }
+                }
+                if (num > 0) {
+                    for (var i = 0; i < num; i++) {
+                        window.data.push({"name": "test", "score": 100})
+                    };
+                }
+                p.addCount(num);
+            }
+
+        </script>
+        <script src="js/js-code.js"></script>
+    </body>
+</html>

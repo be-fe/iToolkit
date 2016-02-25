@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
+        <link rel="stylesheet" href="../build/itoolkit.min.css">
+        <script src="../build/itoolkit.min.js"></script>
+        <script src="js/prism.js"></script>
+    </head>
+    <body>
+         <div id="demo-info">
+            <h2>itk-select</h2><hr>
+            <p>
+                <code>itk-select</code>组件可以用于多选、搜索、单选等多种场合，支持常规form提交
+            </p>
+        </div>
+        <div id="demo-html">
+
+            <h4>使用变量, 选择后不收起</h4>
+            <itk-select id="select1">
+                <select name="name" mutiple="">
+                    <option value="{ value }" each="{ data }">{ name }</option>
+                </select>
+            </itk-select>
+            
+            <h4>使用常量的多选</h4>
+            <itk-select id="select2">
+                <select name="name" mutiple="">
+                    <option value="1" selected="selected">liuyuan01</option>
+                    <option value="2">chengxing</option>
+                    <option value="3">runshi</option>
+                    <option value="4">xieyu</option>
+                    <option value="5">liangliang</option>
+                </select>
+            </itk-select>
+
+            <h4>单选</h4>
+            <itk-select id="select3">
+                <select name="name">
+                    <option value="1">liuyuan01</option>
+                    <option value="2">chengxing</option>
+                    <option value="3">runshi</option>
+                    <option value="4">xieyu</option>
+                    <option value="5">liangliang</option>
+                </select>
+            </itk-select>
+
+        </div>
+        <script src="js/html-code.js"></script>
+
+        <script id="demo-script">
+
+            //dom.export = [{id: xxx name: xx selected: true}]
+            var options = {
+                data: [
+                        { name: 'xieyu', value: 1}, 
+                        { name: 'xieyu01', value: 2},
+                        { name: 'xieyu02', value: 3}
+                    ],
+                chooseOnce: false
+            }
+            riot.mount('#select1', options);
+            riot.mount('#select2');
+            riot.mount('#select3');
+
+        </script>
+        <script src="js/js-code.js"></script>
+    </body>
+</html>

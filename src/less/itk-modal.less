@@ -1,0 +1,130 @@
+itk-modal {
+    display: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 1;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+    outline: 0;
+
+    .itk-modal-dialog {
+        width: 650px;
+        margin: 50px auto;
+        background: #fff;
+        background-clip: padding-box;
+        border: 1px solid rgba(0,0,0,.2);
+        border-radius: 6px;
+        outline: 0;
+    }
+
+    .itk-modal-title {
+        width: 100%;
+        position: relative;
+        height: 43px;
+        line-height: 43px;
+        font-size: 16px;
+        font-weight: bolder;
+        color: #333;
+        border-radius: 6px 6px 0 0;
+        // background: #f0f1f6;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .itk-modal-footer {
+        height: 54px;
+        padding: 10px 20px;
+        text-align: right;
+        border-top: 1px solid #e5e5e5;
+
+        .itk-submit-btn {
+            color: #fff;
+            background-color: #428bca;
+            border-color: #357ebd;
+        }
+
+        .itk-cancle-btn {
+            color: #333;
+            background-color: #fff;
+            border-color: #ccc;
+        }
+    }
+
+    .itk-modal-footer > button{
+        vertical-align: middle;
+        display: inline-block;
+        padding: 6px 12px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        background-image: none;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+
+    .itk-modal-title > span {
+        padding-left: 16px;
+    }
+
+    .itk-modal-title .itk-modal-close-wrap {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 43px;
+        cursor: pointer;
+        padding-left: 10px;
+    }
+    .itk-modal-title .itk-modal-close {
+        margin: 20px 10px 0 0;
+        display:inline-block; 
+        width:12px; 
+        height:2px; 
+        background:#29282f; 
+        font-size:0; 
+        line-height:0;
+        vertical-align:middle;
+        -webkit-transform: rotate(45deg);
+        -moz-transform: rotate(45deg);
+        transform: rotate(45deg);
+        cursor: pointer;
+    }
+
+    .itk-modal-title .itk-modal-close:after { 
+        content:'.'; 
+        display:block; 
+        width:12px; 
+        height:2px; 
+        background-color: #29282f;
+        -webkit-transform: rotate(-90deg);
+        -moz-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+    }
+
+    .itk-modal-container {
+        padding: 10px 20px;
+        overflow-y: auto;
+    }
+
+    .itk-modal-container *{
+        white-space: pre-line;
+        word-wrap: break-word;
+    }
+}
+
