@@ -417,7 +417,6 @@
                 validArr.push(e);
             }
         }
-        console.log(validArr);
         if (!validArr.length) {
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
@@ -591,6 +590,7 @@
                 self.rules[ruleConfig] = self.rulesConfig[ruleConfig];
             }
         }
+        self.update();
     };
     
 

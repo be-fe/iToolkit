@@ -1077,7 +1077,6 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                 validArr.push(e);
             }
         }
-        console.log(validArr);
         if (!validArr.length) {
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
@@ -1241,6 +1240,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                 self.rules[ruleConfig] = self.rulesConfig[ruleConfig];
             }
         }
+        self.update();
     };
     
 
