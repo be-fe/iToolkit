@@ -2943,7 +2943,6 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                 validArr.push(e);
             }
         }
-        console.log(validArr);
         if (!validArr.length) {
             if (config.normalSubmit) {
                 self.root.firstChild.setAttribute('action', action);
@@ -3107,6 +3106,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                 self.rules[ruleConfig] = self.rulesConfig[ruleConfig];
             }
         }
+        self.update();
     };
     
 
@@ -3153,7 +3153,10 @@ riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; 
     for (i in config) {
         self[i] = config[i];
     }
-    self.width = config.width || 600;
+    
+    config.width = (typeof config.width === 'string' && config.width.match('px')) ? config.width : config.width + 'px';
+    config.height = (typeof config.height === 'string' && config.height.match('px')) ? config.height : config.height + 'px'
+    self.width = config.width || '600px';
     self.height = config.height || 'auto';
 
     self.on('mount', function() {
@@ -3166,7 +3169,7 @@ riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; 
         var headHeight = parseInt(window.getComputedStyle(head, null).height.replace('px', ''));
         var footHeight = parseInt(window.getComputedStyle(foot, null).height.replace('px', ''));
         if (config.height) {
-            container.style.height = (self.height - footHeight - headHeight - 2) + 'px';
+            container.style.height = (parseInt(self.height) - footHeight - headHeight - 2) + 'px';
         }
 
     })
@@ -3195,7 +3198,6 @@ riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; 
     }
 
     self.confirm = self.root.confirm = function(e) {
-        self.close();
         self.onSubmit && self.onSubmit();
     }
 
