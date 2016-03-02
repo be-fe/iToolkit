@@ -1332,7 +1332,6 @@ riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; 
     }
 
     self.confirm = self.root.confirm = function(e) {
-        self.close();
         self.onSubmit && self.onSubmit();
     }
 

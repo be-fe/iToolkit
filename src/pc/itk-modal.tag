@@ -66,7 +66,6 @@
     }
 
     self.confirm = self.root.confirm = function(e) {
-        self.close();
         self.onSubmit && self.onSubmit();
     }
 
