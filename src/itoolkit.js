@@ -783,6 +783,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
     };
 
     
+
     self.numComparator = function(validation, attrs) {
         var min = parseInt(attrs.min, 10);
         var max = parseInt(attrs.max, 10);

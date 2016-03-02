@@ -108,6 +108,7 @@
      * @param  {Object} attrs 
      * @return {Object} 
      */
+
     self.numComparator = function(validation, attrs) {
         var min = parseInt(attrs.min, 10);
         var max = parseInt(attrs.max, 10);
