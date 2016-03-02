@@ -106,6 +106,10 @@
             <ul class="tag-list">
                 <li each="{ data }"><a href="#{name}">{ alias || name }</a></li>
             </ul>
+            <h5>third part</h5>
+            <ul class="tag-list">
+                <li each="{ plugins }"><a href="#{name}">{ alias || name }</a></li>
+            </ul>
         </itk-div>
 
         <div id="main" class="col-xs-9">
@@ -162,12 +166,15 @@
             {name: 'itk-table', alias: "表格"},
             {name: 'itk-form', alias: "表单"},
             {name: 'itk-tree', alias: "树结构"},
-            {name: 'itk-uploader', alias: "文件上传"},
+            {name: 'itk-calendar', alias: "日历控件"},
             {name: 'itk-paginate', alias: "分页"},
-            {name: 'itk-center', alias: "居中"},
+            {name: 'itk-center', alias: "居中"}
+        ],
+        plugins: [
+            {name: 'plugins-intr', alias: "第三方组件简介"},
+            {name: 'itk-uploader', alias: "文件上传"},
             {name: 'itk-slider', alias: "轮播"},
-            {name: 'itk-editor', alias: "富文本编辑器"},
-            {name: 'itk-calendar', alias: "日历控件"}
+            {name: 'itk-editor', alias: "富文本编辑器"}
         ],
         goto: function (e) {
             var name = e.item.name;
