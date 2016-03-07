@@ -1297,7 +1297,6 @@ riot.tag('itk-keyboard', '<yield></yield>', function(opts) {
             } else {
                 trigger = document.getElementById(config.keyboardTriggerId);
             }
-            console.log();
 
         } else {
             trigger = window;
@@ -1305,7 +1304,6 @@ riot.tag('itk-keyboard', '<yield></yield>', function(opts) {
 
         self.keyboardTrigger = trigger;
         self.mixin('itk-keyboard');
-        console.log(config.handleMap);
 
         for (x in config.handleMap) {
             self.on(x, config.handleMap[x]);

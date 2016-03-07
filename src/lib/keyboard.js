@@ -139,17 +139,73 @@ riot.mixin('itk-keyboard', {
 
             //console.log(e.which);
 
+            // 三键的顺序,ctrl 优先, alt 次之, shift 最后
+
             // 这里是单键,没有问题
-            for (x in keycodeMap) {
-                if (e.which == x) {
-                    self.trigger(keycodeMap[x]);
-                    //console.log(keycodeMap[x]);
+            if (!e.ctrlKey && !e.altKey && !e.shiftKey) {
+
+                for (x in keycodeMap) {
+                    if (e.which == x) {
+                        self.trigger(keycodeMap[x]);
+                        //console.log(keycodeMap[x]);
+                    }
                 }
+
             }
+            // 组合键下面是,一个,两个,三个特殊键外加一个正常键
+            else {
 
-            // 组合键下面是
+                var keyArr = [];
+
+                if (e.ctrlKey) {
+                    keyArr.push('Ctrl');
+                }
+
+                if (e.altKey) {
+                    keyArr.push('Alt');
+                }
+
+                if (e.shiftKey) {
+                    keyArr.push('Shift');
+                }
+
+                // 必须要下一个按键不是这三者,才能够触发下面的操作.
 
 
+                var keyString = '';
+
+                if (e.which != 16 && e.which != 17 && e.which != 18) {
+
+                    // 先排序
+                    for (var i = 0; i < keyArr.length; i++) {
+                        if (keyArr[i] === 'Ctrl') {
+                            keyString += 'Ctrl+';
+                        }
+                    }
+
+                    for (var i = 0; i < keyArr.length; i++) {
+                        if (keyArr[i] === 'Alt') {
+                            keyString += 'Alt+';
+                        }
+                    }
+
+                    for (var i = 0; i < keyArr.length; i++) {
+                        if (keyArr[i] === 'Shift') {
+                            keyString += 'Shift+';
+                        }
+                    }
+
+
+                    keyString += keycodeMap[e.which];
+
+
+                    console.log('键盘组合的 string 是:' + keyString + ',触发这个事件');
+
+                    self.trigger(keyString);
+
+                }
+
+            }
 
         });
 
