@@ -48,7 +48,7 @@ module.exports = function (gulp, plugin, pkg) {
     });
 
     gulp.task('essential_js',  function() {
-        return gulp.src(['src/lib/riot.js', 'src/lib/common.js', 'src/itoolkit.js'])
+        return gulp.src(['src/lib/riot.js', 'src/lib/common.js', 'src/itoolkit.js', 'src/lib/keyboard.js'])
             .pipe(plugin.concat('itoolkit.js'))
             .pipe(gulp.dest('build'))
             // .pipe(jshint())

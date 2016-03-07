@@ -18,6 +18,17 @@
 
             self.text = config.buttonText || '上传文件';
 
+            // 键盘检测
+            self.mixin('itk-keyboard');
+
+            self.on('Backspace', function () {
+                alert('外面的 enter');
+            });
+
+            self.on('space', function () {
+                alert('外面的 space');
+            });
+
             // 获取脚本路径,load 组件
             var js = document.scripts;
             var jsPath = '';

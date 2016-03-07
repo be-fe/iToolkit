@@ -141,8 +141,6 @@
     }
 
 
-
-
     function goto() {
         var hash = location.hash.replace('#', '');
         var name = hash || 'get-start';
@@ -166,7 +164,8 @@
             {name: 'itk-center', alias: "居中"},
             {name: 'itk-slider', alias: "轮播"},
             {name: 'itk-editor', alias: "富文本编辑器"},
-            {name: 'itk-calendar', alias: "日历控件"}
+            {name: 'itk-calendar', alias: "日历控件"},
+            {name: 'itk-keyboard', alias: " 键盘监听"}
         ],
         goto: function (e) {
             var name = e.item.name;

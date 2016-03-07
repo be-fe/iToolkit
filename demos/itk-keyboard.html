@@ -1,0 +1,46 @@
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+    <link rel="stylesheet" href="css/demo.css">
+    <link rel="stylesheet" href="css/prism.css">
+    <link rel="stylesheet" href="../build/itoolkit.min.css">
+    <script src="../build/itoolkit.js"></script>
+    <script src="js/prism.js"></script>
+</head>
+<body>
+<div id="demo-info">
+    <h2>itk-keyboard</h2>
+    <hr>
+    <p>
+        <code>itk-keyboard</code>组件用于处理通用的按键事件
+    </p>
+</div>
+<div id="demo-html">
+
+    <input value="我是外部的 input" type="text" id="outer-test">
+
+    <itk-keyboard>
+        <input id="test" value="test">
+    </itk-keyboard>
+
+</div>
+<script src="js/html-code.js"></script>
+
+<script id="demo-script">
+
+    var opts = {
+        keyboardTriggerId: 'outer-test',// 按键触发器,可以为空,那么默认 trigger 为 window,可以为 itk-keyboard 标签内的某个元素的 ID,或者任意 input 的 id
+        handleMap: {
+            'Space': function () {
+                alert('点击了Space 按键');
+            }
+        }
+    };
+    itk.mount('itk-keyboard', opts);
+
+</script>
+<script src="js/js-code.js"></script>
+</body>
+</html>

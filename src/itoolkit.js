@@ -1280,6 +1280,39 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
     }
     
 });
+riot.tag('itk-keyboard', '<yield></yield>', function(opts) {
+
+        
+
+        var self = this;
+        var EL = self.root;
+        var config = self.opts.opts || self.opts;
+
+
+        var trigger;
+        if (config.keyboardTriggerId) {
+
+            if (self[config.keyboardTriggerId]) {
+                trigger = self[config.keyboardTriggerId];
+            } else {
+                trigger = document.getElementById(config.keyboardTriggerId);
+            }
+            console.log();
+
+        } else {
+            trigger = window;
+        }
+
+        self.keyboardTrigger = trigger;
+        self.mixin('itk-keyboard');
+        console.log(config.handleMap);
+
+        for (x in config.handleMap) {
+            self.on(x, config.handleMap[x]);
+        }
+
+    
+});
 riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> <div class="itk-modal-footer"> <button class="itk-cancle-btn" onclick="{ close }">取消</button> <button class="itk-submit-btn" onclick="{ confirm }">确认</button> </div> </div>', function(opts) {
 
     var self = this;
@@ -2092,6 +2125,16 @@ riot.tag('itk-uploader', '<yield> <div class="itk-uploader-btn" name="uploadBtn"
             var config = self.opts.opts || self.opts;
 
             self.text = config.buttonText || '上传文件';
+
+            self.mixin('itk-keyboard');
+
+            self.on('Backspace', function () {
+                alert('外面的 enter');
+            });
+
+            self.on('space', function () {
+                alert('外面的 space');
+            });
 
             var js = document.scripts;
             var jsPath = '';
