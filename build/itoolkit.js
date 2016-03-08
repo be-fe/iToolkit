@@ -3145,6 +3145,80 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
     }
     
 });
+riot.tag('itk-goto-top', '<yield></yield> <div class="itk-topbtn" id="itk-goto-top-btn"> <div class="itk-arrow"></div> <div class="itk-stick"></div> </div>', function(opts) {
+        var self = this;
+        var rt = self.root;
+        var config = self.opts.opts || self.opts;
+
+        var defaultDom;
+        var ua = window.navigator.userAgent;
+        if (ua.match(/firefox/i)) {
+            defaultDom = document.documentElement;
+        }
+        else {
+            defaultDom = document.body;
+        }
+
+ 
+        self.speed = 50000*(config.speed || 100);
+        self.showHeight = config.showHeight || 300;
+        self.right = config.right || 30;
+        self.bottom = config.bottom || 30;
+        self.dom = config.dom || defaultDom;
+
+        rt.style.right = self.right + 'px';
+        rt.style.bottom = self.bottom + 'px';
+
+        self.init = function(){
+
+            var top;
+
+            var scrollHandler = function(){
+                top = self.dom.scrollTop;
+
+                if(top > self.showHeight){
+                    rt.style.display = 'block';
+                }
+                else{
+                    rt.style.display = 'none';
+                }  
+            }
+
+            var clickHandler = function(){
+
+                var dist = self.speed / top;
+                var timer = setInterval(backTop, 20);
+                function backTop(){
+                    self.dom.scrollTop -= dist;
+                    if( self.dom.scrollTop === 0 ) {
+                        clearInterval(timer);
+                    }
+                }
+            }
+
+            if (self.dom === defaultDom) {
+                var eventTrigger = window;
+            }
+            else {
+                var eventTrigger = self.dom;
+            }
+
+            eventTrigger.addEventListener("scroll",scrollHandler);
+            rt.addEventListener("click",clickHandler);
+        }
+
+        self.on('mount',function(){
+            var defaultBtn = rt.querySelector('#itk-goto-top-btn');
+            if(rt.firstElementChild === defaultBtn) {
+                defaultBtn.style.display = 'block';
+            }
+            else {
+                defaultBtn.style.display = 'none';
+            }
+            self.init();
+        })
+    
+});
 riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> <div class="itk-modal-footer"> <button class="itk-cancle-btn" onclick="{ close }">取消</button> <button class="itk-submit-btn" onclick="{ confirm }">确认</button> </div> </div>', function(opts) {
 
     var self = this;
