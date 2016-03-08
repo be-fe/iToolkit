@@ -3,7 +3,7 @@
  */
 
 /*
- *基础 mixin ,可以供 itk-keyboard 使用,或者其他任何标签使用
+ *基础 mixin ,可以供 itk-keyboard 使用,或者其他任何 tag 组件使用
  */
 riot.mixin('itk-keyboard', {
 
@@ -133,11 +133,7 @@ riot.mixin('itk-keyboard', {
             trigger = window;
         }
 
-        //console.log(trigger);
-
         trigger.addEventListener('keydown', function (e) {
-
-            //console.log(e.which);
 
             // 三键的顺序,ctrl 优先, alt 次之, shift 最后
 
@@ -147,7 +143,6 @@ riot.mixin('itk-keyboard', {
                 for (x in keycodeMap) {
                     if (e.which == x) {
                         self.trigger(keycodeMap[x]);
-                        //console.log(keycodeMap[x]);
                     }
                 }
 
@@ -170,7 +165,6 @@ riot.mixin('itk-keyboard', {
                 }
 
                 // 必须要下一个按键不是这三者,才能够触发下面的操作.
-
 
                 var keyString = '';
 
@@ -195,11 +189,9 @@ riot.mixin('itk-keyboard', {
                         }
                     }
 
-
                     keyString += keycodeMap[e.which];
 
-
-                    console.log('键盘组合的 string 是:' + keyString + ',触发这个事件');
+                    // console.log('键盘组合的 string 是:' + keyString + ',触发这个事件');
 
                     self.trigger(keyString);
 

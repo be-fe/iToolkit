@@ -1288,7 +1288,6 @@ riot.tag('itk-keyboard', '<yield></yield>', function(opts) {
         var EL = self.root;
         var config = self.opts.opts || self.opts;
 
-
         var trigger;
         if (config.keyboardTriggerId) {
 
@@ -1306,7 +1305,39 @@ riot.tag('itk-keyboard', '<yield></yield>', function(opts) {
         self.mixin('itk-keyboard');
 
         for (x in config.handleMap) {
-            self.on(x, config.handleMap[x]);
+
+
+            var keyArr = x.split('+');
+            if (keyArr.length > 1) {
+
+                var keyString = '';
+
+                for (var i = 0; i < keyArr.length; i++) {
+                    if (keyArr[i] === 'Ctrl') {
+                        keyString += 'Ctrl+';
+                    }
+                }
+
+                for (var i = 0; i < keyArr.length; i++) {
+                    if (keyArr[i] === 'Alt') {
+                        keyString += 'Alt+';
+                    }
+                }
+
+                for (var i = 0; i < keyArr.length; i++) {
+                    if (keyArr[i] === 'Shift') {
+                        keyString += 'Shift+';
+                    }
+                }
+
+                if (keyArr[keyArr.length - 1] != 'Ctrl' && keyArr[keyArr.length - 1] != 'Alt' && keyArr[keyArr.length - 1] != 'Shift') {
+                    self.on((keyString + keyArr[keyArr.length - 1]), config.handleMap[x]);
+
+                }
+
+            } else {
+                self.on(x, config.handleMap[x]);
+            }
         }
 
     

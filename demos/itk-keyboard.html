@@ -20,9 +20,16 @@
 <div id="demo-html">
 
     <input value="我是外部的 input" type="text" id="outer-test">
+    <itk-keyboard id="outer">
+    </itk-keyboard>
 
-    <itk-keyboard>
-        <input id="test" value="test">
+    <hr>
+
+    <itk-keyboard id="inner">
+        <input id="test" value="test" value="我是内部的 input">
+    </itk-keyboard>
+
+    <itk-keyboard id="window">
     </itk-keyboard>
 
 </div>
@@ -30,14 +37,17 @@
 
 <script id="demo-script">
 
-    var opts = {
-        keyboardTriggerId: 'outer-test',// 按键触发器,可以为空,那么默认 trigger 为 window,可以为 itk-keyboard 标签内的某个元素的 ID,或者任意 input 的 id
+    var opts1 = {
+        keyboardTriggerId: 'outer-test',// 按键触发器,可以为空,默认 trigger 为 window,可以为 itk-keyboard 标签内的某个元素的 ID,或者任意 input 的 id
         handleMap: {
             'Space': function () {
                 alert('点击了Space 按键');
             },
             'Ctrl+Alt+Shift+L': function () {
                 alert('点击了Ctrl+Shift+Alt+L按键');
+            },
+            'Alt+Ctrl+Shift+Q': function () {
+                alert('顺序错误下的Ctrl+Shift+Alt+Q按键');
             },
             'Ctrl+Z': function () {
                 alert('点击了Ctrl+Z按键');
@@ -50,7 +60,26 @@
             },
         }
     };
-    itk.mount('itk-keyboard', opts);
+    itk.mount('#outer', opts1);
+    
+    var opts2 = {
+        keyboardTriggerId: 'test',
+        handleMap: {
+            'Q': function () {
+                alert('点击了 Q 按键');
+            }
+        }
+    };
+    itk.mount('#inner', opts2);
+
+    var opts3 = {
+        handleMap: {
+            'Z': function () {
+                alert('全局监听 Z 键');
+            }
+        }
+    };
+    itk.mount('#window', opts3);
 
 </script>
 <script src="js/js-code.js"></script>
