@@ -200,7 +200,7 @@ var utils = {
 
     isType: function (type) {
         return function (obj) {
-            return toString.call(obj) === '[object ' + type + ']';
+            return Object.prototype.toString.call(obj) === '[object ' + type + ']';
         }
     },
 

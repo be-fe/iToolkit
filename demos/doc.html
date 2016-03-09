@@ -104,7 +104,10 @@
             </ul>
             <h5>components</h5>
             <ul class="tag-list">
-                <li each="{ data }"><a href="#{name}">{ alias || name }</a></li>
+                <li each="{ data }">
+                    <a href="#{name}" if="{ !blank }">{ alias || name }</a>
+                    <a href="{name}.html" target="_blank" if="{ blank }">{ alias || name }</a>
+                </li>
             </ul>
             <h5>third part</h5>
             <ul class="tag-list">
@@ -145,9 +148,6 @@
         }
     }
 
-
-
-
     function goto() {
         var hash = location.hash.replace('#', '');
         var name = hash || 'get-start';
@@ -168,7 +168,8 @@
             {name: 'itk-tree', alias: "树结构"},
             {name: 'itk-calendar', alias: "日历控件"},
             {name: 'itk-paginate', alias: "分页"},
-            {name: 'itk-center', alias: "居中"}
+            {name: 'itk-center', alias: "居中"},
+            {name: 'itk-goto-top', alias: "返回顶部", blank: true}
         ],
         plugins: [
             {name: 'plugins-intr', alias: "第三方组件简介"},
