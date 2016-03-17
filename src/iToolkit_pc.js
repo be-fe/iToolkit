@@ -1022,8 +1022,15 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 config.beforeSubmit && config.beforeSubmit(validArr);
             }
             catch (e) {
-                validArr.push(e);
+                validArr.push({
+                    name: 'functionError',
+                    dom: null,
+                    msg: e.message
+                });
             }
+        }
+        else {
+            config.checkFailed && config.checkFailed(validArr);
         }
 
         if (!validArr.length) {
@@ -1068,7 +1075,11 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         this.validTip = function() {
             if (this.msg.length) {
                 self.onValidRefuse(dom, this.msg[0]);
-                validArr.push(name)
+                validArr.push({
+                    name: name,
+                    dom: dom,
+                    msg: this.msg[0]
+                });
             }
             else {
                 if (config.forbidTips) {
