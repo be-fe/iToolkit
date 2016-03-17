@@ -1600,6 +1600,7 @@ var utils = {
     },
 
     deepCopy: function (parent, child) {
+        var toString = Object.prototype.toString;
         var defaultWrapper = (toString.call(parent) === '[object Array]') ? [] : {};
         var child = child || defaultWrapper;
         for (var i in parent) {
@@ -1625,7 +1626,7 @@ utils.extend(utils, {
     isObject: utils.isType('Object'),
     isFunction: utils.isType('Function'),
     isElement: function (obj) {
-        return toString.call(obj).indexOf('Element') !== -1;
+        return Object.prototype.toString.call(obj).indexOf('Element') !== -1;
     },
 });
 
