@@ -711,7 +711,6 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
         'getData',
         'setData'
     ];   //保留字，不被覆盖
-
     var checkList = [
         'allowEmpty',
         'allowempty',
@@ -721,16 +720,26 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
         'vr'
     ];
 
+    var btn = config.submitBtnId ? self[config.submitBtnId] : undefined;
+
+
+
+    if (btn) {
+        var cachedText = '';
+
+        cachedText = btn.innerHTML;
+    }
+
     var NUMBER_REGEXP = {
-        NON_NEGATIVE_INT: /^0$|^-[1-9]\d*$/,                            //非负整数（正整数 + 0） 
-        POSITIVE_INT: /^[1-9]\d*$/,                                     //正整数 
-        NON_POSITIVE_INT: /^[1-9]\d*$|^0$/,                             //非正整数（负整数 + 0） 
-        NEGATIVE_INT: /^-[1-9]\d*$/,                                    //负整数 
-        INT: /^-?[1-9]\d*$|^0$/,                                        //整数 
-        NON_NEGATIVE_FLOAT: /^(\d)(\.\d+)?$|^([1-9]\d*)(\.\d+)?$|^0$/,  //非负浮点数（正浮点数 + 0） 
-        POSITIVE_FLOAT: /^(\d)(\.\d+)?$|^([1-9]\d*)(\.\d+)?$/,          //正浮点数 
-        NON_POSITIVE_FLOAT: /^(-\d)(\.\d+)?$|^(-[1-9]\d*)(\.\d+)?$|^0$/,//非正浮点数（负浮点数 + 0） 
-        NEGATIVE_FLOAT: /^(-\d)(\.\d+)?$|^(-[1-9]\d*)(\.\d+)?$/,        //负浮点数 
+        NON_NEGATIVE_INT: /^0$|^-[1-9]\d*$/,                            //非负整数（正整数 + 0）
+        POSITIVE_INT: /^[1-9]\d*$/,                                     //正整数
+        NON_POSITIVE_INT: /^[1-9]\d*$|^0$/,                             //非正整数（负整数 + 0）
+        NEGATIVE_INT: /^-[1-9]\d*$/,                                    //负整数
+        INT: /^-?[1-9]\d*$|^0$/,                                        //整数
+        NON_NEGATIVE_FLOAT: /^(\d)(\.\d+)?$|^([1-9]\d*)(\.\d+)?$|^0$/,  //非负浮点数（正浮点数 + 0）
+        POSITIVE_FLOAT: /^(\d)(\.\d+)?$|^([1-9]\d*)(\.\d+)?$/,          //正浮点数
+        NON_POSITIVE_FLOAT: /^(-\d)(\.\d+)?$|^(-[1-9]\d*)(\.\d+)?$|^0$/,//非正浮点数（负浮点数 + 0）
+        NEGATIVE_FLOAT: /^(-\d)(\.\d+)?$|^(-[1-9]\d*)(\.\d+)?$/,        //负浮点数
         FLOAT: /^(-?\d)(\.\d+)?$|^(-?[1-9]\d*)(\.\d+)?$|^0$/            //浮点数
     };
 
@@ -818,6 +827,8 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                 }
             }
         }
+        console.log('打印elements:');
+        console.log(self.root.getElementsByTagName('form')[0].elements);
     });
 
     
@@ -869,7 +880,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                 arr.push(obj[key]);
                 arr.push(value)
                 obj[key] = arr;
-            }                  
+            }
         }
         else {
             obj[key] = value;
@@ -890,7 +901,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                            self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
                         }
                     }
-                } 
+                }
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
                         value = elems[i].value;
@@ -905,17 +916,16 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
         }
         return params;
     }
-    
-
 
     self.submitingText = config.submitingText || '提交中...';
     if (config.valid === undefined) {
         config.valid = true;
     }
-    
+
     self.maxWarning = config.maxWarning || function(n) {
         return '不得超过' + n + '个字符';
     }
+
     self.minWarning = config.minWarning || function(n) {
         return '不得小于' + n + '个字符';
     }
@@ -927,9 +937,11 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
     self.minNumWarning = config.minNumWarning || function (n) {
         return '不得小于' + n;
     }
+
     self.maxNumWarning = config.maxNumWarning || function (n) {
         return '不得大于' + n;
     }
+
     self.numBpWarning = config.numBpWarning || function (min, max) {
         return '输入数字应在' + min + '-' + max + '之间';
     }
@@ -945,7 +957,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
 
         function del() {
             for (i = 0; i < tips.length; i++) {
-                tips[i].parentNode.removeChild(tips[i]);                
+                tips[i].parentNode.removeChild(tips[i]);
                 if (tips.length) {
                     del();
                 }
@@ -957,8 +969,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
             utils.removeClass(elems[i], self.failedClass);
         }
     }
-    
-    
+
     
     self.removeTipNode = function(dom) {
         var tip = dom.nextElementSibling;
@@ -966,6 +977,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
             dom.parentNode.removeChild(tip);
         }
     };
+
     self.removeTip = EL.removeTip = function(dom){
         self.removeTipNode(dom);
         utils.removeClass(dom, self.passClass);
@@ -1025,9 +1037,15 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                          : 'value';
                 var submitingText = submitbtn[attr];
                 submitbtn.disabled = 'disabled';
-                submitbtn[attr] = self.submitingText;
+                submitbtn[attr] = self.submitingText;// 先替换,后恢复
             }
         }
+
+        if (btn) {
+
+            btn.innerHTML = self.submitingText;
+        }
+
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.open("POST", url, true);
         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -1035,8 +1053,18 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
                 self.removeTips();
-                submitbtn[attr] = submitingText;
-                submitbtn.disabled = false;
+
+                if (btn) {
+
+
+
+                    btn.innerHTML = self.submitingText;
+
+                } else {
+                    submitbtn[attr] = submitingText;
+                    submitbtn.disabled = false;
+                }
+
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
                 }
@@ -1053,10 +1081,10 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
                     config.errCallback && config.errCallback(params);
                     EC.trigger('submit_error', params);
                 }
-            } 
+            }
         };
     }
-    
+
     
     this.submit = function(e) {
         var validArr = [];
@@ -1117,7 +1145,7 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
 
     
     self.Validation = function(validArr, name, dom) {
-        this.msg = [];        
+        this.msg = [];
         this.validTip = function() {
             if (this.msg.length) {
                 self.onValidRefuse(dom, this.msg[0]);
@@ -1243,7 +1271,6 @@ riot.tag('itk-form', '<form onsubmit="{ submit }" > <yield> </form>', function(o
             }
         }
     };
-    
 
     
     function doCheck(validArr, elem) {

@@ -17,7 +17,6 @@
         'getData',
         'setData'
     ];   //保留字，不被覆盖
-
     var checkList = [
         'allowEmpty',
         'allowempty',
@@ -27,17 +26,27 @@
         'vr'
     ];
 
+    var btn = config.submitBtnId ? self[config.submitBtnId] : undefined;
+//    console.log('btn:');
+//    console.log(btn);
+    // 缓存下来之前的文本
+    if (btn) {
+        var cachedText = '';
+        // 为 value 的情况有:input,button,
+        cachedText = btn.innerHTML;
+    }
+
     // 正则
     var NUMBER_REGEXP = {
-        NON_NEGATIVE_INT: /^0$|^-[1-9]\d*$/,                            //非负整数（正整数 + 0） 
-        POSITIVE_INT: /^[1-9]\d*$/,                                     //正整数 
-        NON_POSITIVE_INT: /^[1-9]\d*$|^0$/,                             //非正整数（负整数 + 0） 
-        NEGATIVE_INT: /^-[1-9]\d*$/,                                    //负整数 
-        INT: /^-?[1-9]\d*$|^0$/,                                        //整数 
-        NON_NEGATIVE_FLOAT: /^(\d)(\.\d+)?$|^([1-9]\d*)(\.\d+)?$|^0$/,  //非负浮点数（正浮点数 + 0） 
-        POSITIVE_FLOAT: /^(\d)(\.\d+)?$|^([1-9]\d*)(\.\d+)?$/,          //正浮点数 
-        NON_POSITIVE_FLOAT: /^(-\d)(\.\d+)?$|^(-[1-9]\d*)(\.\d+)?$|^0$/,//非正浮点数（负浮点数 + 0） 
-        NEGATIVE_FLOAT: /^(-\d)(\.\d+)?$|^(-[1-9]\d*)(\.\d+)?$/,        //负浮点数 
+        NON_NEGATIVE_INT: /^0$|^-[1-9]\d*$/,                            //非负整数（正整数 + 0）
+        POSITIVE_INT: /^[1-9]\d*$/,                                     //正整数
+        NON_POSITIVE_INT: /^[1-9]\d*$|^0$/,                             //非正整数（负整数 + 0）
+        NEGATIVE_INT: /^-[1-9]\d*$/,                                    //负整数
+        INT: /^-?[1-9]\d*$|^0$/,                                        //整数
+        NON_NEGATIVE_FLOAT: /^(\d)(\.\d+)?$|^([1-9]\d*)(\.\d+)?$|^0$/,  //非负浮点数（正浮点数 + 0）
+        POSITIVE_FLOAT: /^(\d)(\.\d+)?$|^([1-9]\d*)(\.\d+)?$/,          //正浮点数
+        NON_POSITIVE_FLOAT: /^(-\d)(\.\d+)?$|^(-[1-9]\d*)(\.\d+)?$|^0$/,//非正浮点数（负浮点数 + 0）
+        NEGATIVE_FLOAT: /^(-\d)(\.\d+)?$|^(-[1-9]\d*)(\.\d+)?$/,        //负浮点数
         FLOAT: /^(-?\d)(\.\d+)?$|^(-?[1-9]\d*)(\.\d+)?$|^0$/            //浮点数
     };
 
@@ -76,8 +85,8 @@
      * [numComparator description]
      * @description 字符比较器，用于比较字符长度
      * @param  {Object} validation
-     * @param  {Object} attrs 
-     * @return {Object} 
+     * @param  {Object} attrs
+     * @return {Object}
      */
     self.strCompatator = function(validation, attrs) {
         var min = parseInt(attrs.min, 10);
@@ -105,8 +114,8 @@
      * [numComparator description]
      * @description 数字比较器，用于比较数字大小
      * @param  {Object} validation
-     * @param  {Object} attrs 
-     * @return {Object} 
+     * @param  {Object} attrs
+     * @return {Object}
      */
     self.numComparator = function(validation, attrs) {
         var min = parseInt(attrs.min, 10);
@@ -142,6 +151,8 @@
                 }
             }
         }
+        console.log('打印elements:');
+        console.log(self.root.getElementsByTagName('form')[0].elements);
     });
 
     /**
@@ -199,7 +210,7 @@
                 arr.push(obj[key]);
                 arr.push(value)
                 obj[key] = arr;
-            }                  
+            }
         }
         else {
             obj[key] = value;
@@ -220,7 +231,7 @@
                            self.checkExistKey(params, elems[i].name, encodeURIComponent(value));
                         }
                     }
-                } 
+                }
                 else if (elems[i].type === "checkbox" || elems[i].type === "radio"){
                     if (elems[i].checked) {
                         value = elems[i].value;
@@ -235,20 +246,20 @@
         }
         return params;
     }
-    
-
 
     self.submitingText = config.submitingText || '提交中...';
     if (config.valid === undefined) {
         config.valid = true;
     }
-    
+
     self.maxWarning = config.maxWarning || function(n) {
         return '不得超过' + n + '个字符';
     }
+
     self.minWarning = config.minWarning || function(n) {
         return '不得小于' + n + '个字符';
     }
+
     // boundary point边界点
     self.bpWarning = config.bpWarning || function (min, max) {
         return '只允许' + min + '-' + max + '个字符';
@@ -258,9 +269,11 @@
     self.minNumWarning = config.minNumWarning || function (n) {
         return '不得小于' + n;
     }
+
     self.maxNumWarning = config.maxNumWarning || function (n) {
         return '不得大于' + n;
     }
+
     self.numBpWarning = config.numBpWarning || function (min, max) {
         return '输入数字应在' + min + '-' + max + '之间';
     }
@@ -278,7 +291,7 @@
 
         function del() {
             for (i = 0; i < tips.length; i++) {
-                tips[i].parentNode.removeChild(tips[i]);                
+                tips[i].parentNode.removeChild(tips[i]);
                 if (tips.length) {
                     del();
                 }
@@ -290,17 +303,17 @@
             utils.removeClass(elems[i], self.failedClass);
         }
     }
-    
+
     /*
      *  插入提示
      */
-    
     self.removeTipNode = function(dom) {
         var tip = dom.nextElementSibling;
         if (tip && tip.className.match(/tip-container/)) {
             dom.parentNode.removeChild(tip);
         }
     };
+
     self.removeTip = EL.removeTip = function(dom){
         self.removeTipNode(dom);
         utils.removeClass(dom, self.passClass);
@@ -362,9 +375,15 @@
                          : 'value';
                 var submitingText = submitbtn[attr];
                 submitbtn.disabled = 'disabled';
-                submitbtn[attr] = self.submitingText;
+                submitbtn[attr] = self.submitingText;// 先替换,后恢复
             }
         }
+
+        if (btn) {
+            // 提交前的'提交中...'的文字设置'
+            btn.innerHTML = self.submitingText;
+        }
+
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.open("POST", url, true);
         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -372,8 +391,18 @@
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
                 self.removeTips();
-                submitbtn[attr] = submitingText;
-                submitbtn.disabled = false;
+
+                if (btn) {
+                    // 这里要进行 tagname 来判断
+                    //console.log(btn.tagName);
+                    // 为 value 的情况有:input,button,
+                    btn.innerHTML = self.submitingText;
+                    // console.log('已经从提交中恢复了文字:' + cachedText);
+                } else {
+                    submitbtn[attr] = submitingText;
+                    submitbtn.disabled = false;
+                }
+
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
                 }
@@ -390,10 +419,10 @@
                     config.errCallback && config.errCallback(params);
                     EC.trigger('submit_error', params);
                 }
-            } 
+            }
         };
     }
-    
+
     /*
      * 提交动作，校验流程
      */
@@ -461,7 +490,7 @@
      * @dom   对应的表单dom元素
      */
     self.Validation = function(validArr, name, dom) {
-        this.msg = [];        
+        this.msg = [];
         this.validTip = function() {
             if (this.msg.length) {
                 self.onValidRefuse(dom, this.msg[0]);
@@ -554,7 +583,7 @@
 
     /*
      *  将config中的属性拷贝到Tag对象上。
-     *  
+     *
      */
     self.on('mount', function() {
         self.init();
@@ -592,7 +621,6 @@
             }
         }
     };
-    
 
     /**
      * doCheck
