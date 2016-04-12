@@ -258,27 +258,48 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
 
     self.open = false;
 
-    self.getAbsPoint = function (elm) {
-        var x = elm.offsetLeft;
-        var y = elm.offsetTop;
-        var height = document.documentElement.offsetHeight;
-        var width = document.documentElement.offsetWidth;
-        while (elm = elm.offsetParent) {
-            x += elm.offsetLeft;
-            y += elm.offsetTop;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    self.offset = function (elm) {
+        if ( !elm.getClientRects().length ) {
+            return { top: 0, left: 0 };
         }
-        return {
-            'x': x,
-            'y': y
-        };
+
+        rect = elm.getBoundingClientRect();
+
+        if ( rect.width || rect.height ) {
+            doc = elm.ownerDocument;
+            win = window;
+            docElem = doc.documentElement;
+
+            return {
+                top: rect.top + win.pageYOffset - docElem.clientTop,
+                left: rect.left + win.pageXOffset - docElem.clientLeft
+            };
+        }
+
+        return rect;
     };
 
     self.location = function (e) {
         if (self.element) {
-            var pos = self.getAbsPoint(self.element);
-            self.root.style.position = 'absolute';
-            self.root.style.top = (pos.y + self.element.offsetHeight) + 'px';
-            self.root.style.left = pos.x + 'px';
+
+            var pos = self.offset(self.element);
+            self.root.style.position = 'fixed';
+            self.root.style.top = (pos.top + self.element.offsetHeight) + 'px';
+            self.root.style.left = pos.left + 'px';
         }
     };
 
@@ -432,6 +453,7 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
     };
     
 });
+
 riot.tag('itk-center', '<div class="itk-loading {default: default}" > <yield> </div>', function(opts) {
         var self = this;
         var config = self.opts.opts || self.opts;
