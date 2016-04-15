@@ -1,5 +1,14 @@
 /* Riot v2.2.4, @license MIT, (c) 2015 Muut Inc. + contributors */
 
+/**
+ * @warning: @liang
+ * This file has been modified to disable AMD support on 16 March 2016.
+ * (Please see the loading section at the bottom of this file)
+ *
+ * This matter should be discussed in the near future for a better fix.
+ *
+ */
+
 ;(function(window, undefined) {
     'use strict';
     var riot = { version: 'v2.2.4', settings: {} },
@@ -1363,8 +1372,11 @@
     /* istanbul ignore next */
     if (typeof exports === T_OBJECT)
         module.exports = riot
-    else if (typeof define === 'function' && define.amd)
-        define(function() { return (window.riot = riot) })
+
+    // @liang: disable define loading method to avoid errors on AMD env
+    //else if (typeof define === 'function' && define.amd)
+    //  define(function() { return (window.riot = riot) })
+
     else
         window.riot = riot
 
@@ -1588,6 +1600,7 @@ var utils = {
     },
 
     deepCopy: function (parent, child) {
+        var toString = Object.prototype.toString;
         var defaultWrapper = (toString.call(parent) === '[object Array]') ? [] : {};
         var child = child || defaultWrapper;
         for (var i in parent) {
@@ -1613,7 +1626,7 @@ utils.extend(utils, {
     isObject: utils.isType('Object'),
     isFunction: utils.isType('Function'),
     isElement: function (obj) {
-        return toString.call(obj).indexOf('Element') !== -1;
+        return Object.prototype.toString.call(obj).indexOf('Element') !== -1;
     },
 });
 
@@ -2123,27 +2136,48 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
 
     self.open = false;
 
-    self.getAbsPoint = function (elm) {
-        var x = elm.offsetLeft;
-        var y = elm.offsetTop;
-        var height = document.documentElement.offsetHeight;
-        var width = document.documentElement.offsetWidth;
-        while (elm = elm.offsetParent) {
-            x += elm.offsetLeft;
-            y += elm.offsetTop;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    self.offset = function (elm) {
+        if ( !elm.getClientRects().length ) {
+            return { top: 0, left: 0 };
         }
-        return {
-            'x': x,
-            'y': y
-        };
+
+        rect = elm.getBoundingClientRect();
+
+        if ( rect.width || rect.height ) {
+            doc = elm.ownerDocument;
+            win = window;
+            docElem = doc.documentElement;
+
+            return {
+                top: rect.top + win.pageYOffset - docElem.clientTop,
+                left: rect.left + win.pageXOffset - docElem.clientLeft
+            };
+        }
+
+        return rect;
     };
 
     self.location = function (e) {
         if (self.element) {
-            var pos = self.getAbsPoint(self.element);
-            self.root.style.position = 'absolute';
-            self.root.style.top = (pos.y + self.element.offsetHeight) + 'px';
-            self.root.style.left = pos.x + 'px';
+
+            var pos = self.offset(self.element);
+            self.root.style.position = 'fixed';
+            self.root.style.top = (pos.top + self.element.offsetHeight) + 'px';
+            self.root.style.left = pos.left + 'px';
         }
     };
 
@@ -2297,6 +2331,7 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
     };
     
 });
+
 riot.tag('itk-center', '<div class="itk-loading {default: default}" > <yield> </div>', function(opts) {
         var self = this;
         var config = self.opts.opts || self.opts;

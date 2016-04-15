@@ -1,5 +1,14 @@
 /* Riot v2.2.4, @license MIT, (c) 2015 Muut Inc. + contributors */
 
+/**
+ * @warning: @liang
+ * This file has been modified to disable AMD support on 16 March 2016.
+ * (Please see the loading section at the bottom of this file)
+ *
+ * This matter should be discussed in the near future for a better fix.
+ *
+ */
+
 ;(function(window, undefined) {
   'use strict';
 var riot = { version: 'v2.2.4', settings: {} },
@@ -1362,8 +1371,11 @@ riot.mountTo = riot.mount
   /* istanbul ignore next */
   if (typeof exports === T_OBJECT)
     module.exports = riot
-  else if (typeof define === 'function' && define.amd)
-    define(function() { return (window.riot = riot) })
+
+  // @liang: disable define loading method to avoid errors on AMD env
+  //else if (typeof define === 'function' && define.amd)
+  //  define(function() { return (window.riot = riot) })
+
   else
     window.riot = riot
 

@@ -229,14 +229,14 @@
          */
         // todo
         // if (self.max) {
-        //     self.max = 
+        //     self.max =
         // }
         // if (self.min) {
-        //     self.min = 
+        //     self.min =
         // }
         // if (self.initTime) {
-        //     self.max = 
-        //     self.min = 
+        //     self.max =
+        //     self.min =
         // }
         for (var prev = self.toYear - 10, last = self.toYear + 11; prev < last; prev++) {
             self.yearList.push(prev);
@@ -305,27 +305,51 @@
     // 首先这个是隐藏的
     self.open = false;
 
-    self.getAbsPoint = function (elm) {
-        var x = elm.offsetLeft;
-        var y = elm.offsetTop;
-        var height = document.documentElement.offsetHeight;
-        var width = document.documentElement.offsetWidth;
-        while (elm = elm.offsetParent) {
-            x += elm.offsetLeft;
-            y += elm.offsetTop;
+    // self.getAbsPoint = function (elm) {
+    //     var x = elm.offsetLeft;
+    //     var y = elm.offsetTop;
+    //     var height = document.documentElement.offsetHeight;
+    //     var width = document.documentElement.offsetWidth;
+    //     while (elm = elm.offsetParent) {
+    //         x += elm.offsetLeft;
+    //         y += elm.offsetTop;
+    //     }
+    //     return {
+    //         'x': x,
+    //         'y': y
+    //     };
+    // };
+
+    self.offset = function (elm) {
+        if ( !elm.getClientRects().length ) {
+            return { top: 0, left: 0 };
         }
-        return {
-            'x': x,
-            'y': y
-        };
+
+        rect = elm.getBoundingClientRect();
+
+        // Make sure element is not hidden (display: none)
+        if ( rect.width || rect.height ) {
+            doc = elm.ownerDocument;
+            win = window;
+            docElem = doc.documentElement;
+
+            return {
+                top: rect.top + win.pageYOffset - docElem.clientTop,
+                left: rect.left + win.pageXOffset - docElem.clientLeft
+            };
+        }
+
+        // Return zeros for disconnected and hidden elements (gh-2310)
+        return rect;
     };
 
     self.location = function (e) {
         if (self.element) {
-            var pos = self.getAbsPoint(self.element);
-            self.root.style.position = 'absolute';
-            self.root.style.top = (pos.y + self.element.offsetHeight) + 'px';
-            self.root.style.left = pos.x + 'px';
+            // var pos = self.getAbsPoint(self.element);
+            var pos = self.offset(self.element);
+            self.root.style.position = 'fixed';
+            self.root.style.top = (pos.top + self.element.offsetHeight) + 'px';
+            self.root.style.left = pos.left + 'px';
         }
     };
 
