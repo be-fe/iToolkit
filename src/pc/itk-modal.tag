@@ -10,8 +10,8 @@
            <yield>
         </div>
         <div class="itk-modal-footer">
-           <button class="itk-cancle-btn" onclick={ close }>取消</button>
-           <button class="itk-submit-btn" onclick={ confirm }>确认</button>
+           <button class="itk-cancle-btn" onclick={ close }>{ cancelText || 取消 }</button>
+           <button class="itk-submit-btn" onclick={ confirm }>{ submitText || 确认 }</button>
         </div>
     </div>
 
@@ -26,6 +26,8 @@
     config.height = (typeof config.height === 'string' && config.height.match('px')) ? config.height : config.height + 'px'
     self.width = config.width || '600px';
     self.height = config.height || 'auto';
+    self.cancleText = config.cancleText || '取消';
+    self.submitText = config.submitText || '确认';
 
     self.on('mount', function() {
         var container = self.root.querySelector('.itk-modal-container');

@@ -258,27 +258,48 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
 
     self.open = false;
 
-    self.getAbsPoint = function (elm) {
-        var x = elm.offsetLeft;
-        var y = elm.offsetTop;
-        var height = document.documentElement.offsetHeight;
-        var width = document.documentElement.offsetWidth;
-        while (elm = elm.offsetParent) {
-            x += elm.offsetLeft;
-            y += elm.offsetTop;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    self.offset = function (elm) {
+        if ( !elm.getClientRects().length ) {
+            return { top: 0, left: 0 };
         }
-        return {
-            'x': x,
-            'y': y
-        };
+
+        rect = elm.getBoundingClientRect();
+
+        if ( rect.width || rect.height ) {
+            doc = elm.ownerDocument;
+            win = window;
+            docElem = doc.documentElement;
+
+            return {
+                top: rect.top + win.pageYOffset - docElem.clientTop,
+                left: rect.left + win.pageXOffset - docElem.clientLeft
+            };
+        }
+
+        return rect;
     };
 
     self.location = function (e) {
         if (self.element) {
-            var pos = self.getAbsPoint(self.element);
-            self.root.style.position = 'absolute';
-            self.root.style.top = (pos.y + self.element.offsetHeight) + 'px';
-            self.root.style.left = pos.x + 'px';
+
+            var pos = self.offset(self.element);
+            self.root.style.position = 'fixed';
+            self.root.style.top = (pos.top + self.element.offsetHeight) + 'px';
+            self.root.style.left = pos.left + 'px';
         }
     };
 
@@ -432,6 +453,7 @@ riot.tag('itk-calendar', '<div class="itk-calendar-wrapper"> <div class="itk-cal
     };
     
 });
+
 riot.tag('itk-center', '<div class="itk-loading {default: default}" > <yield> </div>', function(opts) {
         var self = this;
         var config = self.opts.opts || self.opts;
@@ -1354,7 +1376,7 @@ riot.tag('itk-goto-top', '<yield></yield> <div class="itk-topbtn" id="itk-goto-t
         })
     
 });
-riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> <div class="itk-modal-footer"> <button class="itk-cancle-btn" onclick="{ close }">取消</button> <button class="itk-submit-btn" onclick="{ confirm }">确认</button> </div> </div>', function(opts) {
+riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> <div class="itk-modal-footer"> <button class="itk-cancle-btn" onclick="{ close }">{ cancelText || 取消 }</button> <button class="itk-submit-btn" onclick="{ confirm }">{ submitText || 确认 }</button> </div> </div>', function(opts) {
 
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -1367,6 +1389,8 @@ riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; 
     config.height = (typeof config.height === 'string' && config.height.match('px')) ? config.height : config.height + 'px'
     self.width = config.width || '600px';
     self.height = config.height || 'auto';
+    self.cancleText = config.cancleText || '取消';
+    self.submitText = config.submitText || '确认';
 
     self.on('mount', function() {
         var container = self.root.querySelector('.itk-modal-container');
