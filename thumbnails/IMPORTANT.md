@@ -1,0 +1,1 @@
+这个文件夹下的thumbnails被 `eux.baidu.com` 的展示页所引用, 请勿删除.
