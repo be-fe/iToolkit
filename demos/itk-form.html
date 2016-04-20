@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
+        <link rel="stylesheet" href="../build/itoolkit.min.css">
+        <script src="../build/itoolkit.min.js"></script>
+        <script src="js/prism.js"></script>
+    </head>
+    <body>
+        <div id="demo-info">
+            <h2>itk-form</h2><hr>
+            <p>
+                <code>itk-form</code>组件主要提供表单的ajax提交、前端格式校验、防止连续点击等必备功能。
+            </p>
+        </div>
+        <div id="demo-html">
+
+            <itk-form action="/test">
+                <input type="text" name="t1" value="{ data.a }" if="{ data.a==2 }">
+
+                <label>
+                    Must be: 
+                    <input type="text" name="present" value="1" valid="present" max="10">
+                </label><br>
+
+                <label>
+                    email: 
+                    <input type="text" name="email" value="xieyu@baidu.com" valid="email">
+                </label><br>
+
+                <label>
+                    url: 
+                    <input type="text" name="url" value="http://www.baidu.com" valid="url">
+                </label><br>
+
+                <label>
+                    mobile: 
+                    <input type="text" name="mobile" value="13927678767" valid="mobile">
+                </label><br>
+
+                <label>
+                    custom RegExp:
+                    <input type="text" name="idcard" value="41030319880612000" valid="idcard">
+                </label><br>
+
+                <label>
+                    IP:
+                    <input type="text" name="idcard" value="192.168.1.1" valid="ip">
+                </label><br>
+
+                <label>
+                    text more than 2: 
+                    <input type="text" name="t4" value="{ data.b }" min="3">
+                </label><br>
+
+                <label>
+                    text less than 9: 
+                    <input type="text" name="t5" value="good! There it is!" max="9">
+                </label><br>
+
+                <label>
+                    text less than 9 and more than 2: 
+                    <input type="text" name="t6" value="good! There it is!" max="9" min="2">
+                </label><br>
+
+                <label>
+                    text allow empty: 
+                    <input type="text" name="t7" value="good! There it is!" min="7" allowEmpty="true">
+                </label><br>
+
+                <label>
+                    number int: 
+                    <input type="text" name="n1" value="1" valid="int">
+                </label><br>
+
+                <label>
+                    int more than 2: 
+                    <input type="text" name="n3" value="1" valid="int" min="2">
+                </label><br>
+
+                <label>
+                    int less than 9: 
+                    <input type="text" name="n4" value="1" valid="int" max="9">
+                </label><br>
+
+                <label>
+                    int less than 9 and more than 2: 
+                    <input type="text" name="n5" value="1" valid="int" max="9" min="2">
+                </label><br>
+
+                <label>
+                    allowEmpty: 
+                    <input type="text" name="n6" allowEmpty="true">
+                </label><br>
+
+                <label id="test">
+                    beforeSubmit:
+                    <input type="text" name="n7" value="777" valid="int" min="1" max="65535"> <input type="text" name="n8" value="666" valid="int" min="1" max="65535">
+                </label><br>
+
+
+                <label>
+                    select:
+                    <select name="select">
+                        <option value="{ data.a }">{ data.a }</option>
+                        <option value="{ data.b }">{ data.b }</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                </label><br>
+
+                <button type="submit" class="btn btn-primary" >提交</button>
+            </itk-form>
+
+            <button class="btn btn-primary" onclick="removeTip()">清除提示</button>
+            <button class="btn btn-primary" onclick="reload()">reload</button>
+        </div>   
+        <script src="js/html-code.js"></script>
+        
+        <script id="demo-script">
+
+            var opts = {
+                data: {
+                    a: 1,
+                    b: 'he'
+                },
+                valid: true,       //是否执行校验
+                realTime: true,    //是否实时验证
+                rulesConfig: {
+                    idcard: {
+                        regexp: /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                        msg: '不是合法的身份证号码'
+                    },
+                    email: {
+                        regexp: /^([a-zA-Z0-9_\-\.])+\@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/,
+                        msg: 'email invalid'
+                    }, //允许覆盖原有规则
+                    ip: function(attrs) {
+                        if (attrs.value.match(/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/)) {
+                            return true;
+                        }
+                        else {
+                            return '不是合法的IP地址';
+                        }
+                    } //可以使用function和object两种形式
+                },
+                complete: function() {
+                    alert('complete');
+                },
+                callback: function() {
+                    alert('success');
+                },
+                errCallback: function(params) {
+                    alert("error, params:" + params);
+                },
+                beforeSubmit: function($invalid) {//在提交前执行的额外操作
+                    console.log('beforeSubmit');
+                }
+            }
+            
+            itk.mount('itk-form', opts);
+
+            var theForm = document.querySelector('itk-form');
+            console.log(theForm.getData()); //返回obj形式的key-value表单数据。
+
+            function removeTip() {    //清除提示信息，EL.removeTips
+                theForm.removeTips();
+            }
+
+            function reload() {
+                var data = {a: 'hehe', b: 'hehehe'};
+                theForm.loadData({});  //ensure your data can be reset;
+                theForm.loadData(data);
+            }
+
+        </script>
+        <script src="js/js-code.js"></script>
+    </body>
+</html>

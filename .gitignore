@@ -1,3 +1,4 @@
+/.idea
 # http://www.gnu.org/software/automake
 
 Makefile.in
@@ -15,3 +16,9 @@ Makefile.in
 /old
 node_modules
 .DS_Store
+.idea
+/src/plugins/uploader/examples/basic_example/upload_files/
+/build/plugins/uploader/examples/basic_example/upload_files/
+coverage
+psd
+/demos/_server/upload/*

@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
+        <link rel="stylesheet" href="../build/itoolkit.min.css">
+        <script src="../build/itoolkit.js"></script>
+        <script src="js/prism.js"></script>
+    </head>
+    <body>
+        <div id="demo-info">
+            <h2>itk-modal</h2><hr>
+            <p>
+                <code>itk-modal</code>组件用于构建模态弹出框，可以控制大小、配置打开/关闭/提交时的回调。
+            </p>
+        </div>
+        <div id="demo-html">
+
+            <itk-modal id="modal">
+                <h3>这里</h3>
+                <p>{ content }</p>
+                <form id="test-form">
+                    <input type="text" name="name" id="name" class="form-control">
+                    <input type="text" name="email" id="email" class="form-control">
+                </form>
+            </itk-modal>
+            <button class="btn btn-primary" onclick="openModal()">打开模态框</button>
+
+        </div>   
+        <script src="js/html-code.js"></script>
+        
+        <script id="demo-script">
+
+            var opts = {
+                title: 'Modal-Test',
+                content: '这里是内容',
+                height: 400,    //可以为'auto'，使高度自适应
+                width: 400,
+                hideFooter: false,     //如为true,则不展示footer
+                submitText: 'submit',
+                cancelText: 'cancel',
+                onClose: function() {  //关闭时的回调
+                    var email = document.getElementById('email');
+                    email.value = '';
+                },
+
+                onOpen: function() {    //打开时的回调
+                    var name = document.getElementById('name');
+                    name.value = 'test';
+                },
+
+                onSubmit: function() {  //点击确认时的回调
+                    console.log('已确认');
+                    this.close();
+                }
+            }
+            itk.mount('itk-modal', opts);
+
+            function openModal() {
+                var modal = document.getElementById('modal');
+                modal.open();
+            }
+
+        </script>
+        <script src="js/js-code.js"></script>
+    </body>
+</html>

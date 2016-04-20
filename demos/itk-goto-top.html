@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
+        <link rel="stylesheet" href="../build/itoolkit.min.css">
+        <script src="../build/itoolkit.min.js"></script>
+        <script src="js/prism.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div id="demo-info">
+                <h2>itk-goto-top</h2><hr>
+                <p>
+                    <code>itk-goto-top</code>用于返回顶部操作
+                </p>
+            </div>
+            <div id="demo-html">
+                <div style="height: 1000px">
+                    <div style="height: 1000px" class="center-block bg-success"><p class="center-block text-danger">正文...</p></div>
+                </div>
+                <itk-goto-top id="goto-top-1"></itk-goto-top>
+                <itk-goto-top id="goto-top-2">
+                    <button class="btn btn-default">回顶部</button>
+                </itk-goto-top>
+            </div>
+        </div>
+        <script src="js/html-code.js"></script>
+
+        <script id="demo-script">
+            var ua = window.navigator.userAgent;
+            var dom;
+            if (ua.match(/firefox/i)) {
+                dom = document.documentElement;
+            }
+            else {
+                dom = document.body;
+            }
+
+            itk.mount('#goto-top-1');
+            itk.mount('#goto-top-2', {
+                dom: dom,
+                speed: 10,          // 置顶速度
+                showHeight: 10,     // 滚动距离
+                right: 30,          // 距窗口的水平距离
+                bottom: 120         // 距窗口的垂直距离
+            });
+        </script>
+        <script src="js/js-code.js"></script>
+    </body>
+</html>

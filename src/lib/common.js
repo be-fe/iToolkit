@@ -200,7 +200,7 @@ var utils = {
 
     isType: function (type) {
         return function (obj) {
-            return toString.call(obj) === '[object ' + type + ']';
+            return Object.prototype.toString.call(obj) === '[object ' + type + ']';
         }
     },
 
@@ -214,7 +214,28 @@ var utils = {
                 src[key] = obj[key];
             }
         }
+    },
+
+    deepCopy: function (parent, child) {
+        var toString = Object.prototype.toString;
+        var defaultWrapper = (toString.call(parent) === '[object Array]') ? [] : {};
+        var child = child || defaultWrapper;
+        for (var i in parent) {
+            if (toString.call(parent[i]) === '[object Object]') {
+                child[i] = {}; //新建数组或者object来达到目的
+                this.deepCopy(parent[i], child[i]);
+            }
+            else if (toString.call(parent[i]) === '[object Array]') {
+                child[i] = []; //新建数组或者object来达到目的
+                this.deepCopy(parent[i], child[i]);
+            } 
+            else {
+                child[i] = parent[i];
+            }
+        }
+        return child;
     }
+
 };
 
 utils.extend(utils, {
@@ -222,7 +243,7 @@ utils.extend(utils, {
     isObject: utils.isType('Object'),
     isFunction: utils.isType('Function'),
     isElement: function (obj) {
-        return toString.call(obj).indexOf('Element') !== -1;
+        return Object.prototype.toString.call(obj).indexOf('Element') !== -1;
     },
 });
 
@@ -471,17 +492,4 @@ utils.extend(utils, {
  * 全局事件监控
  */
 var EventCtrl = EC = riot.observable();
-
-/*
- * 外部方法传入
- */
-var iToolkit = {};
-iToolkit.methodRegister = function (name, fn) {
-    for (var i in iToolkit) {
-        if (name === i) {
-            return;
-        }
-    }
-    iToolkit[name] = fn;
-};
-iToolkit.tableExtend = {};
+var iToolkit = itk = riot;

@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/prism.css">        
+        <link rel="stylesheet" href="../build/itoolkit.min.css">
+        <script src="../build/itoolkit.min.js"></script>
+        <script src="js/prism.js"></script>
+    </head>
+    <body>
+        <div id="demo-info">
+            <h2>itk-div</h2><hr>
+            <p>
+                <code>itk-div</code>组件的作用基本等效于我们常用的模板引擎, 相比模板引擎，它的优势在于可以更为低成本的进行数据更新。
+            </p>
+        </div>
+        <div id="demo-html">
+
+            <itk-div>
+                <h3>{ title }</h3>
+                <ul>
+                    <li each="{ data }">
+                        { name } 
+                        <span if="{ showType }">{ type }</span>
+                    </li>
+                </ul>
+                <button class="btn btn-primary" onclick="{ toggle }">toggle Type</button>
+                <button class="btn btn-primary" onclick="loadData()">loadData</button>
+            </itk-div>
+
+        </div>   
+        <script src="js/html-code.js"></script>
+        
+        <script id="demo-script">
+
+            var opts = {
+                title: '贺岁电影',
+                data: [
+                    { name: '三打白骨精', type: '动画' },
+                    { name: '美人鱼', type: '搞笑'},
+                    { name: '功夫熊猫3', type: '动画'}
+                ],
+                showType: true,
+                toggle: function(e) {
+                    this.showType = !this.showType;
+                    this.update();
+                }
+            }
+            itk.mount('itk-div', opts);
+
+            var dom = document.getElementsByTagName('itk-div')[0];
+            var data2 = [
+                { name: '猫和老鼠', type: '动画' },
+                { name: '甲方乙方', type: '搞笑'},
+                { name: '小鬼当家', type: '动画'}
+            ];
+            function loadData() {
+                dom.loadData(data2, 'data');
+                dom.loadData('怀旧经典', 'title');
+            }
+
+        </script>
+        <script src="js/js-code.js"></script>
+    </body>
+</html>
