@@ -350,6 +350,7 @@
             self.root.style.position = 'fixed';
             self.root.style.top = (pos.top + self.element.offsetHeight) + 'px';
             self.root.style.left = pos.left + 'px';
+            self.root.style.zIndex = '100';
         }
     };
 
