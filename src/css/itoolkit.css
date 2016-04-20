@@ -26,6 +26,7 @@ itk-calendar {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   font-size: 12px;
+  z-index: 100;
 }
 itk-calendar .itk-calendar-head {
   height: 35px;
