@@ -1383,7 +1383,7 @@ riot.tag('itk-goto-top', '<yield></yield> <div class="itk-topbtn" id="itk-goto-t
         })
     
 });
-riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> <div class="itk-modal-footer"> <button class="itk-cancle-btn" onclick="{ close }">{ cancelText || 取消 }</button> <button class="itk-submit-btn" onclick="{ confirm }">{ submitText || 确认 }</button> </div> </div>', function(opts) {
+riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; height:{height}"> <div class="itk-modal-title"> <span>{ title }</span> <div class="itk-modal-close-wrap" onclick="{ close }"> <div class="itk-modal-close"></div> </div> </div> <div class="itk-modal-container"> <yield> </div> <div class="itk-modal-footer"> <button class="itk-cancle-btn" onclick="{ close }">{ cancelText || \'取消\' }</button> <button class="itk-submit-btn" onclick="{ confirm }">{ submitText || \'确认\' }</button> </div> </div>', function(opts) {
 
     var self = this;
     var config = self.opts.opts || self.opts;
@@ -1391,7 +1391,7 @@ riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; 
     for (i in config) {
         self[i] = config[i];
     }
-    
+
     config.width = (typeof config.width === 'string' && config.width.match('px')) ? config.width : config.width + 'px';
     config.height = (typeof config.height === 'string' && config.height.match('px')) ? config.height : config.height + 'px'
     self.width = config.width || '600px';
@@ -1445,6 +1445,7 @@ riot.tag('itk-modal', '<div class="itk-modal-dialog" riot-style="width:{width}; 
 
 
 });
+
 riot.tag('itk-paginate', '<div onselectstart="return false" ondragstart="return false"> <div class="itk-paginate"> <li onclick="{ goFirst }">«</li> <li onclick="{ goPrev }">‹</li> </div> <ul class="itk-paginate"> <li each="{ pages }" onclick="{ parent.changePage }" class="{ active: parent.currentPage == page }">{ page }</li> </ul> <div class="itk-paginate"> <li onclick="{ goNext }">›</li> <li onclick="{ goLast }">»</li> </div> <div class="itk-paginate"> <form onsubmit="{ redirect }" style="position:relative;"> <span class="redirect" if="{ redirect }">跳转到<input class="jumpPage" name="page" riot-type={"number"} style="width: 40px;">页 </span> <div class="itk-paginate-tips" riot-style="top: { tipsTop }; left: { tipsLeft }; display: { showTip }"> 请输入1～{ pageCount }之间的数字 </div> <span class="page-sum" if="{ showPageCount }"> 共<em>{ pageCount }</em>页 </span> <span class="item-sum" if="{ showItemCount }"> <em>{ count }</em>条 </span> <input type="submit" style="display: none;"> </form> </div> </div>', function(opts) {
         var self = this;
         var EL = self.root;

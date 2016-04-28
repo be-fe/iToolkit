@@ -10,8 +10,8 @@
            <yield>
         </div>
         <div class="itk-modal-footer">
-           <button class="itk-cancle-btn" onclick={ close }>{ cancelText || 取消 }</button>
-           <button class="itk-submit-btn" onclick={ confirm }>{ submitText || 确认 }</button>
+           <button class="itk-cancle-btn" onclick={ close }>{ cancelText || '取消' }</button>
+           <button class="itk-submit-btn" onclick={ confirm }>{ submitText || '确认' }</button>
         </div>
     </div>
 
@@ -21,7 +21,7 @@
     for (i in config) {
         self[i] = config[i];
     }
-    
+
     config.width = (typeof config.width === 'string' && config.width.match('px')) ? config.width : config.width + 'px';
     config.height = (typeof config.height === 'string' && config.height.match('px')) ? config.height : config.height + 'px'
     self.width = config.width || '600px';
