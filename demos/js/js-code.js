@@ -8,4 +8,11 @@
     else {
         document.body.appendChild(sourceCodeArea);
     }
+
+    setTimeout(function() {
+        var height = parseInt(window.getComputedStyle(document.body).height) + 40;
+        console.log(height);
+        window.parent.postMessage(height, '*');
+    }, 100);
+    
 })();

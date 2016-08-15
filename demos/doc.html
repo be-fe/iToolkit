@@ -126,27 +126,38 @@
 </div>
 <script>
     function iFrameHeight() {
-        var ifm = document.getElementById("iframe");
-        var subWeb = document.frames ? document.frames["iframe"].document : ifm.contentDocument;
-        if (ifm != null && subWeb != null) {
+//         var ifm = document.getElementById("iframe");
+//         var subWeb = document.frames ? document.frames["iframe"].document : ifm.contentDocument;
+//         console.log(subWeb)
+//         if (ifm != null && subWeb != null) {
 
-            // 从大的高度跳转到低的高度,底部会产生空白!先设置为0,再撑起来!完美解决!
+//             // 从大的高度跳转到低的高度,底部会产生空白!先设置为0,再撑起来!完美解决!
 
-            ifm.height = 0;
-            ifm.height = subWeb.body.scrollHeight;
+//             ifm.height = 0;
+//             ifm.height = subWeb.body.scrollHeight;
 
-//            console.log(subWeb.body.scrollHeight);
-//            console.log(ifm.contentWindow.document.body);// 元素查看区域正确,但是高度依旧不对.
-//            console.log(window.document);
+// //            console.log(subWeb.body.scrollHeight);
+// //            console.log(ifm.contentWindow.document.body);// 元素查看区域正确,但是高度依旧不对.
+// //            console.log(window.document);
 
-            // 通过如下方法,能够正确处理编辑器的双滚动条问题,但是画面会有抖动.这个双滚动条问题是因为编辑器的渲染需要时间,他会撑大 iframe 的高度.因而会出现双滚动条.
-            // 而轮播为什么下面会有很大的空白呢?发现其 document 和 body 的高度不一致导致的
-//            setTimeout(function () {
-//                ifm.height = subWeb.body.scrollHeight;
-//            }, 100);
+//             // 通过如下方法,能够正确处理编辑器的双滚动条问题,但是画面会有抖动.这个双滚动条问题是因为编辑器的渲染需要时间,他会撑大 iframe 的高度.因而会出现双滚动条.
+//             // 而轮播为什么下面会有很大的空白呢?发现其 document 和 body 的高度不一致导致的
+//            // setTimeout(function () {
+//            //     ifm.height = subWeb.body.scrollHeight;
+//            // }, 100);
 
-        }
+//         }
     }
+    window.addEventListener('message', function(e) {
+        if (e.data) {
+            var ifm = document.getElementById("iframe");
+            ifm.height = 0;
+            ifm.height = e.data;
+        }
+    })
+
+
+
 
     function goto() {
         var hash = location.hash.replace('#', '');
