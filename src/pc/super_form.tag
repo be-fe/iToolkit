@@ -369,12 +369,14 @@
             }
             if (elems[i].type === "submit") {
                 var submitbtn = elems[i];
-                var attr = submitbtn.tagName === 'BUTTON'
-                         ? 'innerHTML'
-                         : 'value';
-                var submitingText = submitbtn[attr];
-                submitbtn.disabled = 'disabled';
-                submitbtn[attr] = self.submitingText;
+                if (submitbtn) {
+                    var attr = submitbtn.tagName === 'BUTTON'
+                             ? 'innerHTML'
+                             : 'value';
+                    var submitingText = submitbtn[attr];
+                    submitbtn.disabled = 'disabled';
+                    submitbtn[attr] = self.submitingText;
+                }
             }
         }
         var xmlhttp = new XMLHttpRequest();
@@ -384,8 +386,10 @@
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
                 self.removeTips();
-                submitbtn[attr] = submitingText;
-                submitbtn.disabled = false;
+                if (submitbtn) {
+                    submitbtn[attr] = submitingText;
+                    submitbtn.disabled = false;
+                }
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
                 }
@@ -409,7 +413,7 @@
     /*
      * 提交动作，校验流程
      */
-    submit(e) {
+    self.submit = function(e) {
         var validArr = [];
         var elems = self.root.getElementsByTagName('form')[0].elements;
         var action = self.action || self.root.getAttribute('action');
@@ -425,8 +429,8 @@
             try {
                 config.beforeSubmit && config.beforeSubmit(validArr);
             }
-            catch (e) {
-                validArr.push(e);
+            catch (err) {
+                validArr.push(err);
             }
         }
 
@@ -436,7 +440,7 @@
                 return true;
             }
             else {
-                e.preventDefault();
+                e && e.preventDefault();
                 self.ajaxSubmit(elems, url);
             }
         }
@@ -444,6 +448,7 @@
             return false;
         }
     }
+
 
     function getCheckParam(elem) {
         var elem = elem;

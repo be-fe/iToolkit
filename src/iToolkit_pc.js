@@ -884,12 +884,14 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             }
             if (elems[i].type === "submit") {
                 var submitbtn = elems[i];
-                var attr = submitbtn.tagName === 'BUTTON'
-                         ? 'innerHTML'
-                         : 'value';
-                var submitingText = submitbtn[attr];
-                submitbtn.disabled = 'disabled';
-                submitbtn[attr] = self.submitingText;
+                if (submitbtn) {
+                    var attr = submitbtn.tagName === 'BUTTON'
+                             ? 'innerHTML'
+                             : 'value';
+                    var submitingText = submitbtn[attr];
+                    submitbtn.disabled = 'disabled';
+                    submitbtn[attr] = self.submitingText;
+                }
             }
         }
         var xmlhttp = new XMLHttpRequest();
@@ -899,8 +901,10 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState === 4) {
                 self.removeTips();
-                submitbtn[attr] = submitingText;
-                submitbtn.disabled = false;
+                if (submitbtn) {
+                    submitbtn[attr] = submitingText;
+                    submitbtn.disabled = false;
+                }
                 if (config.complete && typeof config.complete === 'function') {
                     config.complete();
                 }
@@ -922,7 +926,7 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
     }
     
     
-    this.submit = function(e) {
+    self.submit = function(e) {
         var validArr = [];
         var elems = self.root.getElementsByTagName('form')[0].elements;
         var action = self.action || self.root.getAttribute('action');
@@ -938,8 +942,8 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
             try {
                 config.beforeSubmit && config.beforeSubmit(validArr);
             }
-            catch (e) {
-                validArr.push(e);
+            catch (err) {
+                validArr.push(err);
             }
         }
 
@@ -949,14 +953,15 @@ riot.tag('super-form', '<form onsubmit="{ submit }" > <yield> </form>', function
                 return true;
             }
             else {
-                e.preventDefault();
+                e && e.preventDefault();
                 self.ajaxSubmit(elems, url);
             }
         }
         else {
             return false;
         }
-    }.bind(this);
+    }
+
 
     function getCheckParam(elem) {
         var elem = elem;
